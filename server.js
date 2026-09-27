@@ -8,7 +8,27 @@ const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; char
 const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+    if (pathname === '/api/preview') {
+      if (request.method !== 'POST') return sendJson(response, 405, { error: 'POST required' });
+      let body = '';
+      for await (const chunk of request) {
+        body += chunk;
+        if (body.length > 16_384) return sendJson(response, 413, { error: 'Request too large' });
+      }
+      let data;
+      try { data = JSON.parse(body); } catch { return sendJson(response, 400, { error: 'Invalid JSON' }); }
+      if (typeof data.text !== 'string' || !data.text.trim() || data.text.length > 4_000) return sendJson(response, 400, { error: 'A text request of at most 4000 characters is required' });
+      try {
+        const { previewIntent } = await import('./.engine-build/runtime/preview-pipeline.js');
+        return sendJson(response, 200, await previewIntent(data.text.trim()));
+      } catch (error) {
+        console.error('Preview failed:', error);
+        return sendJson(response, 500, { error: 'Preview unavailable. Start the app with npm start.' });
+      }
+    }
+    if (request.method !== 'GET' && request.method !== 'HEAD') throw new Error('Not found');
     const relativePath = pathname === '/' ? 'index.html' : pathname.slice(1);
+    if (relativePath.split('/').some((part) => part.startsWith('.')) || relativePath.startsWith('node_modules/') || relativePath.startsWith('tests/')) throw new Error('Not found');
     const path = resolve(root, relativePath);
     if (path !== root && !path.startsWith(root + sep)) throw new Error('Not found');
     const body = await readFile(path);
@@ -19,5 +39,10 @@ const server = createServer(async (request, response) => {
     response.end('Not found');
   }
 });
+
+function sendJson(response, status, data) {
+  response.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  response.end(JSON.stringify(data));
+}
 
 server.listen(8000, '127.0.0.1', () => console.log('Bikting Engine workspace: http://127.0.0.1:8000'));

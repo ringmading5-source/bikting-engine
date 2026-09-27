@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build:engine": "tsc -p tsconfig.runtime.json",
+    "start": "npm run build:engine && node --experimental-loader ./scripts/extensionless-loader.mjs server.js",
     "test": "node --test tests/bikting.test.js tests/phase2.test.js tests/phase3.test.js tests/runtime.integration.test.js",
     "test:architecture": "node scripts/run-architecture-tests.mjs",
     "typecheck": "tsc --noEmit"

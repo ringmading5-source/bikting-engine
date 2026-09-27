@@ -4,13 +4,16 @@ A small, dependency-free browser prototype of Bikting as a modular interaction a
 
 ## Run locally
 
-Requires Node.js 18 or newer. From this directory:
+Requires Node.js 18 or newer. Install dependencies and start the canonical preview server:
 
 ```powershell
-node server.js
+npm install
+npm start
 ```
 
 Open <http://127.0.0.1:8000>. The electric motor walkthrough works without an AI service or network connection. Browser speech synthesis is used for optional narration.
+
+The **Intent → Knowledge → Plan** card now calls the compiled TypeScript intelligence pipeline through `POST /api/preview`. Try the exact sample inputs `Build my personal website` and `Teach me about cells in biology`. The provider is a deterministic fixture adapter, so other requests report an interpretation gap. Teaching requires evidence that this demo has not retrieved; the preview marks the plan blocked. No plan or external action is executed by this endpoint. The existing JavaScript workspace walkthrough remains separate while the execution integration and real provider adapter are built.
 
 ## Pipeline
 
