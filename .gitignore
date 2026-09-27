@@ -11,4 +11,4 @@ coverage/
 .DS_Store
 Thumbs.db
 *.log
-
+.engine-build/

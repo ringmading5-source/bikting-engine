@@ -24,7 +24,7 @@
         <label for="prompt">What would you like to understand or create?</label>
         <form id="request-form">
           <textarea id="prompt" rows="2" placeholder="Explain how an electric motor works." required></textarea>
-          <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
+          <div class="composer-footer"><label class="model-option"><input id="live-model" type="checkbox" /> Use configured live model</label><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
         </form>
       </section>
 
@@ -42,6 +42,12 @@
             <div class="playback"><button id="previous-step" aria-label="Previous step" disabled>←</button><div class="progress-track"><div id="progress-fill"></div></div><button id="next-step" aria-label="Next step" disabled>→</button></div>
           </article>
         </div>
+      </section>
+
+      <section class="preview-card" aria-label="Canonical engine preview">
+        <div class="card-head"><span>INTENT → KNOWLEDGE → PLAN</span><span>DETERMINISTIC DEMO</span></div>
+        <p>Demo: try “Build my personal website” or “Teach me about cells in biology”. For other requests, select the live model if the server has been configured. The visual workspace above still uses its separate mock engine.</p>
+        <div id="engine-preview" role="status" aria-live="polite">Submit a request to inspect the canonical engine.</div>
       </section>
 
       <details class="debug-panel" open>
