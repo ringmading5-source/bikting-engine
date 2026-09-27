@@ -15,6 +15,8 @@ Open <http://127.0.0.1:8000>. Without a model key, the deterministic preview rec
 
 The Gemini adapter produces proposals through `IntelligencePipeline`. Bikting validates capability references and the proposed plan. Factual teaching without configured knowledge sources reports missing knowledge and does not propose teaching steps. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation. This model path is tested with simulated HTTP responses; a live API call requires your own server-side key.
 
+The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This is read-only: an available candidate is not selected, authorized, or executed. The website example currently finds a simulated text provider and an unavailable code placeholder.
+
 ## Pipeline
 
 `src/main.js` sends browser requests to `src/runtime/BiktingRuntime.js`, the production composition root. The runtime owns semantic interpretation, relationship processing, capability-driven planning, execution, and normalized results; the browser only presents its workspace projection.
