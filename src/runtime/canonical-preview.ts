@@ -7,6 +7,7 @@ import { CapabilityProviderRegistry } from '../providers/provider.registry';
 import { inspectPlanReadiness } from './plan-readiness';
 import { runPlannedWebsiteScaffold } from './website-scaffold';
 import { createBiktingOwnedTools } from './bikting-owned-tools';
+import { isPersonalWebsiteRequest } from './intent-router';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
@@ -32,7 +33,7 @@ for (const adapter of [...legacy.tools.list(), ...legacy.models.list()]) {
 const providers = new IntelligenceProviderRegistry();
 providers.register(new MockIntelligenceProvider({
   intentFixtures: [{
-    match: (raw) => /^build for me my personal website[.!?]?$/i.test(raw.text?.trim() ?? ''),
+    match: (raw) => isPersonalWebsiteRequest(raw.text ?? ''),
     intentType: 'create', objective: 'Create a personal website', domain: 'software/web',
     target: 'personal website', concepts: ['website'],
     requestedOutputs: ['workspace', 'code', 'explanation'],
@@ -51,7 +52,6 @@ providers.register(new MockIntelligenceProvider({
 }));
 
 const pipeline = new IntelligencePipeline(providers);
-const isWebsiteExample = (text: string) => /^build for me my personal website[.!?]?$/i.test(text.trim());
 
 /** Local deterministic preview: planning only, with no capability execution. */
 export async function previewIntent(text: string) {
@@ -82,7 +82,7 @@ export async function previewIntent(text: string) {
 }
 
 export async function runWebsiteFromIntent(text: unknown, expectedPlanId: unknown) {
-  if (typeof text !== 'string' || !isWebsiteExample(text) || typeof expectedPlanId !== 'string') throw new TypeError('This local coding example supports the personal website request only.');
+  if (typeof text !== 'string' || !isPersonalWebsiteRequest(text) || typeof expectedPlanId !== 'string') throw new TypeError('This local coding example supports the personal website request only.');
   const planned = await pipeline.run({ projectId: 'browser-preview', raw: { text: text.trim(), modality: 'text' }, capabilities, providerId: 'mock.deterministic' });
   if (!planned.plan || planned.plan.id !== expectedPlanId) throw new Error('The plan changed. Preview the request again before running it.');
   return runPlannedWebsiteScaffold(planned.plan);
