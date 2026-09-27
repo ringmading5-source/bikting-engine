@@ -22,7 +22,7 @@ async function runPipeline(request) {
   summary.style.padding = '2rem';
   summary.textContent = preview.plan ? `Plan: ${preview.plan.steps.length} steps. No tools have run.` : 'No plan could be produced for this request.';
   elements.visual.append(summary);
-  elements.caption.textContent = 'Canonical intelligence pipeline · deterministic local preview';
+  elements.caption.textContent = `Canonical intelligence pipeline · ${preview.mode ?? 'unavailable'} · no execution`;
   elements.explanation.textContent = preview.refusal ?? preview.conclusions?.join(' ') ?? 'The plan is ready for review.';
   elements.count.textContent = preview.plan ? `${preview.plan.steps.length} planned steps` : '—';
   elements.play.disabled = true;
@@ -31,6 +31,8 @@ async function runPipeline(request) {
   renderTrace([
     { section: 'INTENT', detail: preview.interpretation?.objective ?? request.text },
     { section: 'INTERPRETATION', detail: preview.interpretation?.intentType ?? 'unknown' },
+    ...(preview.missingKnowledge ?? []).map((topic) => ({ section: 'KNOWLEDGE NEEDED', detail: topic })),
+    ...(preview.planningIssues ?? []).map((issue) => ({ section: 'VALIDATION', detail: issue })),
     ...(preview.plan?.steps ?? []).map((step) => ({ section: 'PLANNED', detail: `${step.action} · ${step.capabilityId ?? 'no capability'}` })),
     { section: preview.plan ? 'STATUS' : 'REFUSAL', detail: preview.plan ? 'Planning complete; execution has not started.' : preview.refusal ?? 'No plan.' },
   ]);
