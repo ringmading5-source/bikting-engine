@@ -17,6 +17,10 @@ The Gemini adapter produces proposals through `IntelligencePipeline`. Bikting va
 
 The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This is read-only: an available candidate is not selected, authorized, or executed. The website example currently finds a simulated text provider and an unavailable code placeholder.
 
+## First guarded execution path
+
+Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. The website and teaching flows still preview plans only.
+
 ## Pipeline
 
 `src/main.js` sends browser requests to `src/runtime/BiktingRuntime.js`, the production composition root. The runtime owns semantic interpretation, relationship processing, capability-driven planning, execution, and normalized results; the browser only presents its workspace projection.
