@@ -3,11 +3,13 @@ import { readTextRequest } from './input/textInput.js';
 const byId = (id) => document.getElementById(id);
 const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization') };
 const calculationButton = byId('calculate-button');
+const scaffoldButton = byId('scaffold-button');
 
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request));
 
 async function runPipeline(request) {
   calculationButton.hidden = true;
+  scaffoldButton.hidden = true;
   const expression = /^\s*calculate\s+([\d\s.+\-*/%^()×÷eE]+)\s*$/i.exec(request.text)?.[1]?.trim();
   if (expression) {
     elements.title.textContent = 'Local arithmetic';
@@ -50,6 +52,31 @@ async function runPipeline(request) {
   elements.visual.append(summary);
   elements.caption.textContent = `Canonical intelligence pipeline · ${preview.mode ?? 'unavailable'} · no execution`;
   elements.explanation.textContent = preview.refusal ?? preview.conclusions?.join(' ') ?? 'The plan is ready for review.';
+  if (preview.plan?.status === 'ready' && preview.plan.steps.length === 1 && preview.plan.steps[0].capabilityId === 'code.scaffold' && preview.stepReadiness?.[0]?.state === 'ready_for_review') {
+    scaffoldButton.hidden = false;
+    scaffoldButton.onclick = async () => {
+      scaffoldButton.disabled = true;
+      try {
+        const response = await fetch('/api/scaffold', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: request.text, planId: preview.plan.id }) });
+        const output = await response.json();
+        if (!response.ok) throw new Error(output.error ?? 'Website generation failed.');
+        elements.stage.textContent = 'FILES READY';
+        elements.explanation.textContent = 'Generated a local website starter. Edit the placeholder name, projects, and contact section before sharing it.';
+        elements.visual.replaceChildren();
+        for (const [name, content] of Object.entries(output.files)) {
+          const group = document.createElement('div');
+          group.style.cssText = 'padding:1rem;min-width:0;width:100%';
+          const heading = document.createElement('strong'); heading.textContent = name;
+          const download = document.createElement('a'); download.textContent = ' Download'; download.download = name;
+          download.href = URL.createObjectURL(new Blob([content], { type: name.endsWith('.html') ? 'text/html' : name.endsWith('.css') ? 'text/css' : 'text/javascript' }));
+          const source = document.createElement('pre'); source.textContent = content; source.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:15rem;overflow:auto';
+          group.append(heading, download, source); elements.visual.append(group);
+        }
+        renderTrace([{ section: 'PLAN', detail: output.planId }, { section: 'PROVIDER', detail: output.providerId }, { section: 'OUTPUT', detail: `${Object.keys(output.files).length} validated project files` }]);
+      } catch (error) { elements.explanation.textContent = error.message; elements.stage.textContent = 'FAILED'; }
+      finally { scaffoldButton.disabled = false; }
+    };
+  }
   elements.count.textContent = preview.plan ? `${preview.plan.steps.length} planned steps` : '—';
   elements.play.disabled = true;
   elements.previous.disabled = true;
