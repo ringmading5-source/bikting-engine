@@ -2,10 +2,36 @@ import { readTextRequest } from './input/textInput.js';
 
 const byId = (id) => document.getElementById(id);
 const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization') };
+const calculationButton = byId('calculate-button');
 
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request));
 
 async function runPipeline(request) {
+  calculationButton.hidden = true;
+  const expression = /^\s*calculate\s+([\d\s.+\-*/%^()×÷eE]+)\s*$/i.exec(request.text)?.[1]?.trim();
+  if (expression) {
+    elements.title.textContent = 'Local arithmetic';
+    elements.stage.textContent = 'READY';
+    elements.visual.textContent = `Expression: ${expression}`;
+    elements.explanation.textContent = 'Ready to run the local deterministic calculator. Click Run local calculation to execute and verify it.';
+    elements.count.textContent = '1 step';
+    elements.caption.textContent = 'Local math only · explicit action required';
+    calculationButton.hidden = false;
+    calculationButton.onclick = async () => {
+      calculationButton.disabled = true;
+      try {
+        const response = await fetch('/api/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ expression }) });
+        const output = await response.json();
+        if (!response.ok) throw new Error(output.error ?? 'Calculation failed.');
+        elements.explanation.textContent = `${output.expression} = ${output.value}. Verified by the local calculator.`;
+        elements.stage.textContent = 'VERIFIED';
+        renderTrace([{ section: 'PROVIDER', detail: output.providerId }, { section: 'VERIFICATION', detail: `Expression check passed. Result: ${output.value}` }]);
+      } catch (error) { elements.explanation.textContent = error.message; elements.stage.textContent = 'FAILED'; }
+      finally { calculationButton.disabled = false; }
+    };
+    renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'PLAN', detail: 'math.calculate · local deterministic provider' }, { section: 'STATUS', detail: 'Waiting for explicit run action' }]);
+    return;
+  }
   elements.stage.textContent = 'PLANNING';
   let preview;
   try {
