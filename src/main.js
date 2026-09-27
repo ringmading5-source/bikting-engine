@@ -34,6 +34,7 @@ async function runPipeline(request) {
     ...(preview.missingKnowledge ?? []).map((topic) => ({ section: 'KNOWLEDGE NEEDED', detail: topic })),
     ...(preview.planningIssues ?? []).map((issue) => ({ section: 'VALIDATION', detail: issue })),
     ...(preview.plan?.steps ?? []).map((step) => ({ section: 'PLANNED', detail: `${step.action} · ${step.capabilityId ?? 'no capability'}` })),
+    ...(preview.stepReadiness ?? []).map((step) => ({ section: 'ACCESS', detail: `${step.capabilityId}: ${step.state.replaceAll('_', ' ')}. ${step.reason}${step.accountSteps?.length ? ` Account: ${step.accountSteps.join(', ')}.` : ''}${step.permissions?.length ? ` Permissions: ${step.permissions.join(', ')}.` : ''}` })),
     { section: preview.plan ? 'STATUS' : 'REFUSAL', detail: preview.plan ? 'Planning complete; execution has not started.' : preview.refusal ?? 'No plan.' },
   ]);
 }
