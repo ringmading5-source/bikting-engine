@@ -2,7 +2,6 @@ import { CapabilityRegistry } from '../capabilities/capability.registry';
 import { IntelligencePipeline } from '../intelligence/intelligence.pipeline';
 import { IntelligenceProviderRegistry } from '../intelligence/intelligence-provider.registry';
 import { MockIntelligenceProvider } from '../intelligence/mock-intelligence.provider';
-import { GeminiIntelligenceProvider } from '../intelligence/gemini-intelligence.provider';
 import { adaptLegacyProvider } from '../providers/legacyCapabilityAdapter';
 import { CapabilityProviderRegistry } from '../providers/provider.registry';
 import { inspectPlanReadiness } from './plan-readiness';
@@ -49,9 +48,6 @@ providers.register(new MockIntelligenceProvider({
   }],
 }));
 
-const environment = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
-const geminiKey = environment.GEMINI_API_KEY;
-if (geminiKey) providers.register(new GeminiIntelligenceProvider({ apiKey: geminiKey, model: environment.GEMINI_MODEL ?? 'gemini-2.5-flash' }));
 const pipeline = new IntelligencePipeline(providers);
 const isWebsiteExample = (text: string) => /^build for me my personal website[.!?]?$/i.test(text.trim());
 
@@ -62,7 +58,7 @@ export async function previewIntent(text: string) {
   }
   const result = await pipeline.run({
     projectId: 'browser-preview', raw: { text: text.trim(), modality: 'text' }, capabilities,
-    providerId: geminiKey && !isWebsiteExample(text) ? 'gemini.remote' : 'mock.deterministic',
+    providerId: 'mock.deterministic',
   });
   const missingKnowledge = [...new Set([
     ...result.intent.knowledgeNeeds.map(({ topic }) => topic),
@@ -70,7 +66,7 @@ export async function previewIntent(text: string) {
   ])];
   const plan = result.plan?.steps.length ? result.plan : null;
   return {
-    mode: geminiKey && !isWebsiteExample(text) ? 'gemini-preview' : 'deterministic-preview',
+    mode: 'deterministic-preview',
     interpretation: result.intent,
     conclusions: result.reasoningRun.reasoning.conclusions,
     missingKnowledge,
