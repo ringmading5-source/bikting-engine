@@ -109,6 +109,7 @@ async function runPipeline(request) {
   renderTrace([
     { section: 'INTENT', detail: preview.interpretation?.objective ?? request.text },
     { section: 'INTERPRETATION', detail: preview.interpretation?.intentType ?? 'unknown' },
+    ...(preview.installedTools ?? []).map((tool) => ({ section: 'BUILT-IN TOOL', detail: `${tool.id}: ${tool.description} · ${tool.capabilityId}` })),
     ...(preview.missingKnowledge ?? []).map((topic) => ({ section: 'KNOWLEDGE NEEDED', detail: topic })),
     ...(preview.planningIssues ?? []).map((issue) => ({ section: 'VALIDATION', detail: issue })),
     ...(preview.plan?.steps ?? []).map((step) => ({ section: 'PLANNED', detail: `${step.action} · ${step.capabilityId ?? 'no capability'}` })),
