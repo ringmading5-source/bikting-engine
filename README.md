@@ -15,11 +15,15 @@ Open <http://127.0.0.1:8000>. Without a model key, the deterministic preview rec
 
 The Gemini adapter produces proposals through `IntelligencePipeline`. Bikting validates capability references and the proposed plan. Factual teaching without configured knowledge sources reports missing knowledge and does not propose teaching steps. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation. This model path is tested with simulated HTTP responses; a live API call requires your own server-side key.
 
-The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This is read-only: an available candidate is not selected, authorized, or executed. The website example currently finds a simulated text provider and an unavailable code placeholder.
+The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This inspection itself is read-only.
+
+## Coding example
+
+Enter `Build for me my personal website`, inspect the `code.scaffold` plan, then click **Generate website files**. Bikting recomputes and checks the plan ID on the server, selects a local template provider through the canonical execution guard, and returns three source files: `index.html`, `styles.css`, and `script.js`. The browser shows their source and offers separate downloads. The files form a basic personal website starter with placeholder content to edit. No shell command, model-generated program, filesystem write, or deployment is performed. Arbitrary coding requests still need a real coding provider and a separate execution policy.
 
 ## First guarded execution path
 
-Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. The website and teaching flows still preview plans only.
+Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. Teaching requests still preview plans only.
 
 ## Pipeline
 
