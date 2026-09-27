@@ -17,28 +17,28 @@
       <section class="intro">
         <p class="eyebrow">UNIVERSAL AI INTERACTION SYSTEM</p>
         <h1>Turn an idea into<br /><span>a working model.</span></h1>
-        <p class="intro-copy">One orchestration layer for intent, tools, knowledge, and a workspace that responds.</p>
+        <p class="intro-copy">Preview how Bikting interprets an intent and plans its tools. This local demo uses a deterministic provider and does not execute the plan.</p>
       </section>
 
       <section class="composer" aria-label="Ask Bikting">
         <label for="prompt">What would you like to understand or create?</label>
         <form id="request-form">
           <textarea id="prompt" rows="2" placeholder="Explain how an electric motor works." required></textarea>
-          <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
+          <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> TRY: Build for me my personal website</span><button type="submit">Preview plan <span aria-hidden="true">↗</span></button></div>
         </form>
       </section>
 
       <section class="workspace" aria-label="Bikting workspace">
-        <div class="workspace-head"><div><p class="eyebrow">LIVE WORKSPACE</p><h2 id="workspace-title">Your workspace is ready</h2></div><button class="quiet-button" id="narrate-button" disabled>▶ <span>Play explanation</span></button></div>
+        <div class="workspace-head"><div><p class="eyebrow">PLAN PREVIEW</p><h2 id="workspace-title">Your workspace is ready</h2></div><button class="quiet-button" id="narrate-button" disabled>▶ <span>Play explanation</span></button></div>
         <div class="work-grid">
           <article class="visual-card">
             <div class="card-head"><span>RELATIONSHIP MODEL</span><span class="live-tag"><i></i><span id="stage-label">WAITING</span></span></div>
-            <div id="visualization" class="visualization empty-state"><div class="empty-orbit">b</div><p>Your selected module will build a visual model here.</p></div>
+            <div id="visualization" class="visualization empty-state"><div class="empty-orbit">b</div><p>Your plan summary will appear here.</p></div>
             <div class="visual-caption" id="visual-caption">A domain module determines how its ideas should be rendered.</div>
           </article>
           <article class="explanation-card">
             <div class="card-head"><span>EXPLANATION</span><span id="step-count">—</span></div>
-            <div id="explanation" class="explanation empty-explanation">Submit a request to see its explanation and synchronized visual steps.</div>
+            <div id="explanation" class="explanation empty-explanation">Submit a request to inspect its interpretation and planning result.</div>
             <div class="playback"><button id="previous-step" aria-label="Previous step" disabled>←</button><div class="progress-track"><div id="progress-fill"></div></div><button id="next-step" aria-label="Next step" disabled>→</button></div>
           </article>
         </div>
