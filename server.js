@@ -3,23 +3,24 @@ import { readFile } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { previewIntent } from './.runtime-build/src/runtime/canonical-preview.js';
+import { runLocalCalculation } from './.runtime-build/src/runtime/local-calculation.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
 const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    if (pathname === '/api/preview') {
+    if (pathname === '/api/preview' || pathname === '/api/calculate') {
       if (request.method !== 'POST') { response.writeHead(405); response.end(); return; }
       let body = '';
       for await (const chunk of request) {
         body += chunk;
         if (body.length > 8192) { response.writeHead(413); response.end(); return; }
       }
-      let text;
-      try { text = JSON.parse(body).text; } catch { response.writeHead(400); response.end('Invalid JSON'); return; }
+      let input;
+      try { input = JSON.parse(body); } catch { response.writeHead(400); response.end('Invalid JSON'); return; }
       try {
-        const result = await previewIntent(text);
+        const result = pathname === '/api/calculate' ? await runLocalCalculation(input.expression) : await previewIntent(input.text);
         response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
         response.end(JSON.stringify(result));
       } catch (error) {
