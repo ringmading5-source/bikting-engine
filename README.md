@@ -11,9 +11,13 @@ npm ci
 npm start
 ```
 
-Open <http://127.0.0.1:8000>. Without a model key, the deterministic preview recognizes “Build for me my personal website”; other requests return an explicit refusal. To enable varied requests, set `GEMINI_API_KEY` in the server's environment before `npm start`. Optionally set `GEMINI_MODEL` (default `gemini-2.5-flash`). The key stays server-side; model API usage may incur costs. No account connection or tool execution is performed by the browser preview.
+Open <http://127.0.0.1:8000>. The deterministic website preview recognizes “Build for me my personal website”. Arithmetic and simple learning requests have separate local and public-search routes. Other requests return an explicit refusal. No model key is required or used in the running browser application.
 
-The Gemini adapter produces proposals through `IntelligencePipeline`. Bikting validates capability references and the proposed plan. Factual teaching without configured knowledge sources reports missing knowledge and does not propose teaching steps. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation. This model path is tested with simulated HTTP responses; a live API call requires your own server-side key.
+The experimental Gemini adapter remains in the codebase as an inactive module. The running browser application does not register or invoke it. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation.
+
+## Public knowledge lookup
+
+Enter `Teach me cells in biology` or `Explain photosynthesis`. Bikting extracts the topic with a small deterministic rule and queries Wikipedia's public MediaWiki search API through `/api/knowledge`. It displays up to five source links and plain-text search snippets; it does not assemble a lesson or claim the snippets have been checked. The endpoint has a fixed public host, a topic limit, a response limit, and a timeout. If the source is unreachable, it reports the failure. A later knowledge module can evaluate sources and represent their relationships before generating a teaching sequence.
 
 The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This inspection itself is read-only.
 
