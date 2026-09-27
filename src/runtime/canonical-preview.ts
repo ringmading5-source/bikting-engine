@@ -6,6 +6,7 @@ import { GeminiIntelligenceProvider } from '../intelligence/gemini-intelligence.
 import { adaptLegacyProvider } from '../providers/legacyCapabilityAdapter';
 import { CapabilityProviderRegistry } from '../providers/provider.registry';
 import { inspectPlanReadiness } from './plan-readiness';
+import { runPlannedWebsiteScaffold } from './website-scaffold';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
@@ -24,6 +25,8 @@ for (const adapter of [...legacy.tools.list(), ...legacy.models.list()]) {
     }
   }
 }
+capabilities.registerCapability({ id: 'code.scaffold', kind: 'capability', name: 'Local website starter', operations: ['scaffold'], inputs: [], outputs: [{ name: 'files', type: 'workspace_files' }] });
+executionProviders.register({ id: 'local.website-scaffold', name: 'Local website template', capabilityIds: ['code.scaffold'], executorKind: 'deterministic', availability: 'available' });
 
 const providers = new IntelligenceProviderRegistry();
 providers.register(new MockIntelligenceProvider({
@@ -32,18 +35,16 @@ providers.register(new MockIntelligenceProvider({
     intentType: 'create', objective: 'Create a personal website', domain: 'software/web',
     target: 'personal website', concepts: ['website'],
     requestedOutputs: ['workspace', 'code', 'explanation'],
-    possibleCapabilities: ['code.execute', 'text.generate'],
+    possibleCapabilities: ['code.scaffold'],
   }],
   reasoningFixtures: [{
     match: (request) => request.intent?.intentType === 'create',
     conclusions: ['A personal website requires a project plan and project files.'],
     proposedTasks: [
-      { purpose: 'Plan the site structure', capabilityId: 'text.generate' },
-      { purpose: 'Produce the project files', capabilityId: 'code.execute' },
+      { purpose: 'Produce a three-file website starter', capabilityId: 'code.scaffold' },
     ],
     outputRequirements: [
-      { type: 'workspace', required: true, capabilityId: 'code.execute' },
-      { type: 'explanation', required: true, capabilityId: 'text.generate' },
+      { type: 'workspace_files', required: true, capabilityId: 'code.scaffold' },
     ],
   }],
 }));
@@ -52,6 +53,7 @@ const environment = (globalThis as { process?: { env?: Record<string, string | u
 const geminiKey = environment.GEMINI_API_KEY;
 if (geminiKey) providers.register(new GeminiIntelligenceProvider({ apiKey: geminiKey, model: environment.GEMINI_MODEL ?? 'gemini-2.5-flash' }));
 const pipeline = new IntelligencePipeline(providers);
+const isWebsiteExample = (text: string) => /^build for me my personal website[.!?]?$/i.test(text.trim());
 
 /** Local deterministic preview: planning only, with no capability execution. */
 export async function previewIntent(text: string) {
@@ -60,7 +62,7 @@ export async function previewIntent(text: string) {
   }
   const result = await pipeline.run({
     projectId: 'browser-preview', raw: { text: text.trim(), modality: 'text' }, capabilities,
-    providerId: geminiKey ? 'gemini.remote' : 'mock.deterministic',
+    providerId: geminiKey && !isWebsiteExample(text) ? 'gemini.remote' : 'mock.deterministic',
   });
   const missingKnowledge = [...new Set([
     ...result.intent.knowledgeNeeds.map(({ topic }) => topic),
@@ -68,7 +70,7 @@ export async function previewIntent(text: string) {
   ])];
   const plan = result.plan?.steps.length ? result.plan : null;
   return {
-    mode: geminiKey ? 'gemini-preview' : 'deterministic-preview',
+    mode: geminiKey && !isWebsiteExample(text) ? 'gemini-preview' : 'deterministic-preview',
     interpretation: result.intent,
     conclusions: result.reasoningRun.reasoning.conclusions,
     missingKnowledge,
@@ -78,4 +80,11 @@ export async function previewIntent(text: string) {
     refusal: result.planningRefusal ?? (!plan ? missingKnowledge.length ? `Knowledge needed: ${missingKnowledge.join(', ')}. No source is configured yet.` : 'No executable plan was proposed.' : null),
     executed: false,
   };
+}
+
+export async function runWebsiteFromIntent(text: unknown, expectedPlanId: unknown) {
+  if (typeof text !== 'string' || !isWebsiteExample(text) || typeof expectedPlanId !== 'string') throw new TypeError('This local coding example supports the personal website request only.');
+  const planned = await pipeline.run({ projectId: 'browser-preview', raw: { text: text.trim(), modality: 'text' }, capabilities, providerId: 'mock.deterministic' });
+  if (!planned.plan || planned.plan.id !== expectedPlanId) throw new Error('The plan changed. Preview the request again before running it.');
+  return runPlannedWebsiteScaffold(planned.plan);
 }
