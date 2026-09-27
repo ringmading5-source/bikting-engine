@@ -25,6 +25,10 @@ The browser trace also inspects each planned step against the canonical provider
 
 Enter `Build for me my personal website`, inspect the `code.scaffold` plan, then click **Generate website files**. Bikting recomputes and checks the plan ID on the server, selects a local template provider through the canonical execution guard, and returns three source files: `index.html`, `styles.css`, and `script.js`. The browser shows their source and offers separate downloads. The files form a basic personal website starter with placeholder content to edit. No shell command, model-generated program, filesystem write, or deployment is performed. Arbitrary coding requests still need a real coding provider and a separate execution policy.
 
+## Built-in toolbox
+
+`src/runtime/bikting-owned-tools.ts` is the composition point for installed first-party tools. It registers executable implementations and capability metadata together. The current Bikting-owned tools are `math.calculate` and `code.scaffold`; both run locally without external accounts. Other legacy entries may be placeholders or mocks and are not counted as owned executable tools. Wikipedia is an external knowledge source accessed through Bikting's read-only search adapter, not knowledge that Bikting owns.
+
 ## First guarded execution path
 
 Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. Teaching requests still preview plans only.
