@@ -34,6 +34,31 @@ async function runPipeline(request) {
     renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'PLAN', detail: 'math.calculate · local deterministic provider' }, { section: 'STATUS', detail: 'Waiting for explicit run action' }]);
     return;
   }
+  const topic = /^\s*(?:teach me|explain|learn about)\s+(.+?)\s*[.!?]?\s*$/i.exec(request.text)?.[1]?.trim();
+  if (topic) {
+    elements.title.textContent = `Knowledge search: ${topic}`;
+    elements.stage.textContent = 'SEARCHING';
+    elements.visual.textContent = 'Searching a public knowledge source…';
+    elements.caption.textContent = 'Public Wikipedia search · linked evidence';
+    elements.explanation.textContent = 'Searching for source material. Read the linked articles to check relevance and accuracy.';
+    try {
+      const response = await fetch('/api/knowledge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic }) });
+      const found = await response.json();
+      if (!response.ok) throw new Error(found.error ?? 'Search failed.');
+      elements.visual.replaceChildren();
+      for (const item of found.results) {
+        const article = document.createElement('article'); article.style.cssText = 'padding:1rem;width:100%';
+        const link = document.createElement('a'); link.href = item.url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = item.title;
+        const excerpt = document.createElement('p'); excerpt.textContent = item.snippet;
+        article.append(link, excerpt); elements.visual.append(article);
+      }
+      elements.stage.textContent = found.results.length ? 'SOURCES FOUND' : 'NO RESULTS';
+      elements.explanation.textContent = `${found.results.length} public source links found for “${found.topic}”. These search snippets are not a verified lesson.`;
+      elements.count.textContent = `${found.results.length} sources`;
+      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'KNOWLEDGE', detail: `Public search: ${found.topic}` }, { section: 'SOURCE', detail: 'Wikipedia · read-only' }]);
+    } catch (error) { elements.stage.textContent = 'SEARCH FAILED'; elements.explanation.textContent = error.message; elements.visual.textContent = 'The public source could not be reached.'; }
+    return;
+  }
   elements.stage.textContent = 'PLANNING';
   let preview;
   try {
