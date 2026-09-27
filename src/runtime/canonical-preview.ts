@@ -6,6 +6,7 @@ import { adaptLegacyProvider } from '../providers/legacyCapabilityAdapter';
 import { CapabilityProviderRegistry } from '../providers/provider.registry';
 import { inspectPlanReadiness } from './plan-readiness';
 import { runPlannedWebsiteScaffold } from './website-scaffold';
+import { createBiktingOwnedTools } from './bikting-owned-tools';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
@@ -13,10 +14,13 @@ import { createDefaultRegistries } from '../bikting/core/registry/createDefaultR
 const capabilities = new CapabilityRegistry();
 const executionProviders = new CapabilityProviderRegistry();
 const seen = new Set<string>();
+const owned = createBiktingOwnedTools();
+for (const capability of owned.capabilities.list()) { capabilities.registerCapability(capability); seen.add(capability.id); }
+for (const provider of owned.providers.list()) executionProviders.register(provider);
 const legacy = createDefaultRegistries();
 for (const adapter of [...legacy.tools.list(), ...legacy.models.list()]) {
   const adapted = adaptLegacyProvider(adapter);
-  executionProviders.register(adapted.provider);
+  if (!executionProviders.has(adapted.provider.id)) executionProviders.register(adapted.provider);
   for (const capability of adapted.capabilities) {
     if (!seen.has(capability.id)) {
       capabilities.registerCapability(capability);
@@ -24,8 +28,6 @@ for (const adapter of [...legacy.tools.list(), ...legacy.models.list()]) {
     }
   }
 }
-capabilities.registerCapability({ id: 'code.scaffold', kind: 'capability', name: 'Local website starter', operations: ['scaffold'], inputs: [], outputs: [{ name: 'files', type: 'workspace_files' }] });
-executionProviders.register({ id: 'local.website-scaffold', name: 'Local website template', capabilityIds: ['code.scaffold'], executorKind: 'deterministic', availability: 'available' });
 
 const providers = new IntelligenceProviderRegistry();
 providers.register(new MockIntelligenceProvider({
@@ -73,6 +75,7 @@ export async function previewIntent(text: string) {
     planningIssues: result.reasoningRun.issues.map(({ message }) => message),
     plan,
     stepReadiness: inspectPlanReadiness(plan, capabilities, executionProviders),
+    installedTools: owned.installed,
     refusal: result.planningRefusal ?? (!plan ? missingKnowledge.length ? `Knowledge needed: ${missingKnowledge.join(', ')}. No source is configured yet.` : 'No executable plan was proposed.' : null),
     executed: false,
   };
