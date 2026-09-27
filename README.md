@@ -29,6 +29,10 @@ Enter `Build for me my personal website`, inspect the `code.scaffold` plan, then
 
 `src/runtime/bikting-owned-tools.ts` is the composition point for installed first-party tools. It registers executable implementations and capability metadata together. The current Bikting-owned tools are `math.calculate` and `code.scaffold`; both run locally without external accounts. Other legacy entries may be placeholders or mocks and are not counted as owned executable tools. Wikipedia is an external knowledge source accessed through Bikting's read-only search adapter, not knowledge that Bikting owns.
 
+## General request routing
+
+`src/runtime/intent-router.ts` registers small intent rules. The browser asks `/api/route` for an intent and capability instead of parsing each command in the UI. The same calculation capability handles “Calculate …” and “Compute …”; the website starter handles “Build for me …” and “Create …”; the learning lookup handles “Teach me …” and “What is …”. A new rule can be registered without modifying the browser dispatch. This is a bounded no-model router: requests outside the registered patterns remain unresolved. Broad semantic understanding and new execution domains require additional interpreters, tools, and evidence handling.
+
 ## First guarded execution path
 
 Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. Teaching requests still preview plans only.
