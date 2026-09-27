@@ -4,3 +4,4 @@
 .preview-card .card-head { display: flex; justify-content: space-between; gap: 12px; color: #8fd6c8; font-size: .78rem; letter-spacing: .08em; }
 .preview-card p { line-height: 1.5; }
 .preview-card ol { padding-left: 1.5rem; }
+.model-option { display: inline-flex; align-items: center; gap: 8px; font-size: .8rem; cursor: pointer; }

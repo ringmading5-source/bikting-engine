@@ -76,3 +76,4 @@ export * from "./intelligence/reasoning.service";
 export * from "./intelligence/mock-intelligence.provider";
 export * from "./intelligence/proposal-planning.adapter";
 export * from "./intelligence/intelligence.pipeline";
+export * from "./intelligence/json-intelligence.provider";

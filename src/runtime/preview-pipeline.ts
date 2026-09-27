@@ -1,6 +1,7 @@
 import { CapabilityRegistry } from "../capabilities/capability.registry";
 import { IntelligencePipeline } from "../intelligence/intelligence.pipeline";
 import { IntelligenceProviderRegistry } from "../intelligence/intelligence-provider.registry";
+import { JsonIntelligenceProvider, JsonModelTransport } from "../intelligence/json-intelligence.provider";
 import { MockIntelligenceProvider } from "../intelligence/mock-intelligence.provider";
 
 // Sample capabilities describe potential work. This preview never invokes them.
@@ -28,8 +29,10 @@ providers.register(provider);
 const pipeline = new IntelligencePipeline(providers);
 
 /** Runs the canonical Phase 7 interpretation and planning path with declared demo fixtures. */
-export async function previewIntent(text: string) {
-  const result = await pipeline.run({
+export async function previewIntent(text: string, live?: { transport: JsonModelTransport; providerId: string }) {
+  const selectedProviders = live ? new IntelligenceProviderRegistry() : providers;
+  if (live) selectedProviders.register(new JsonIntelligenceProvider(live.transport, { id: live.providerId, name: "Configured model" }));
+  const result = await (live ? new IntelligencePipeline(selectedProviders) : pipeline).run({
     projectId: "browser-preview",
     raw: { modality: "text", text },
     capabilities,
@@ -38,7 +41,7 @@ export async function previewIntent(text: string) {
   });
   const unresolvedKnowledge = result.intent.knowledgeNeeds.filter(({ required }) => required).map(({ topic }) => topic);
   return {
-    mode: "deterministic_demo",
+    mode: live ? "live_model" : "deterministic_demo",
     interpretation: { valid: result.interpretation.valid, objective: result.intent.objective, intentType: result.intent.intentType, domain: result.intent.domain, concepts: result.intent.concepts, issues: result.interpretation.issues },
     knowledge: { needs: result.intent.knowledgeNeeds, unresolvedRequirementIds: result.reasoningRun.knowledgeContext?.unresolvedRequirementIds ?? [], unresolvedTopics: unresolvedKnowledge },
     planning: { valid: result.reasoningRun.valid, refusal: result.planningRefusal ?? (unresolvedKnowledge.length ? "Required knowledge has not been retrieved." : undefined), status: unresolvedKnowledge.length ? "blocked_knowledge" : result.plan?.status ?? "refused", steps: result.plan?.steps.map(({ id, capabilityId, dependsOn, status }) => ({ id, capabilityId, dependsOn, status })) ?? [] },

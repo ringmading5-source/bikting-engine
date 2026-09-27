@@ -17,9 +17,14 @@ const server = createServer(async (request, response) => {
       }
       let data;
       try { data = JSON.parse(body); } catch { return sendJson(response, 400, { error: 'Invalid JSON' }); }
-      if (typeof data.text !== 'string' || !data.text.trim() || data.text.length > 4_000) return sendJson(response, 400, { error: 'A text request of at most 4000 characters is required' });
+      if (typeof data.text !== 'string' || !data.text.trim() || data.text.length > 4_000 || ![undefined, 'demo', 'live'].includes(data.mode)) return sendJson(response, 400, { error: 'A valid text request and mode are required' });
       try {
         const { previewIntent } = await import('./.engine-build/runtime/preview-pipeline.js');
+        if (data.mode === 'live') {
+          if (!process.env.OPENAI_API_KEY || !process.env.OPENAI_MODEL) return sendJson(response, 503, { error: 'Live model is not configured. Set OPENAI_API_KEY and OPENAI_MODEL on the server.' });
+          const { createOpenAITransport } = await import('./.engine-build/runtime/openai-transport.js');
+          return sendJson(response, 200, await previewIntent(data.text.trim(), { transport: createOpenAITransport(process.env.OPENAI_API_KEY, process.env.OPENAI_MODEL), providerId: 'openai.configured' }));
+        }
         return sendJson(response, 200, await previewIntent(data.text.trim()));
       } catch (error) {
         console.error('Preview failed:', error);
