@@ -4,15 +4,20 @@ import { IntelligenceProviderRegistry } from '../intelligence/intelligence-provi
 import { MockIntelligenceProvider } from '../intelligence/mock-intelligence.provider';
 import { GeminiIntelligenceProvider } from '../intelligence/gemini-intelligence.provider';
 import { adaptLegacyProvider } from '../providers/legacyCapabilityAdapter';
+import { CapabilityProviderRegistry } from '../providers/provider.registry';
+import { inspectPlanReadiness } from './plan-readiness';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
 
 const capabilities = new CapabilityRegistry();
+const executionProviders = new CapabilityProviderRegistry();
 const seen = new Set<string>();
 const legacy = createDefaultRegistries();
 for (const adapter of [...legacy.tools.list(), ...legacy.models.list()]) {
-  for (const capability of adaptLegacyProvider(adapter).capabilities) {
+  const adapted = adaptLegacyProvider(adapter);
+  executionProviders.register(adapted.provider);
+  for (const capability of adapted.capabilities) {
     if (!seen.has(capability.id)) {
       capabilities.registerCapability(capability);
       seen.add(capability.id);
@@ -69,6 +74,7 @@ export async function previewIntent(text: string) {
     missingKnowledge,
     planningIssues: result.reasoningRun.issues.map(({ message }) => message),
     plan,
+    stepReadiness: inspectPlanReadiness(plan, capabilities, executionProviders),
     refusal: result.planningRefusal ?? (!plan ? missingKnowledge.length ? `Knowledge needed: ${missingKnowledge.join(', ')}. No source is configured yet.` : 'No executable plan was proposed.' : null),
     executed: false,
   };
