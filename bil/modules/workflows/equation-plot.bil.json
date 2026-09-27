@@ -1,0 +1,11 @@
+{
+  "id": "bil.workflow.equation_plot", "version": "1.0.0", "kind": "workflow", "name": "Equation plot", "description": "Plans deterministic equation plotting and structured visualization.",
+  "appliesWhen": { "intents": ["plot"], "contextEquals": { "domain": "mathematics" }, "allRequestedOutputs": ["graph"] },
+  "intents": ["plot"], "concepts": [{ "id": "function", "name": "Function" }], "relationships": [],
+  "reasoningStrategies": [{ "id": "strategy.equation_plot", "type": "deterministic" }],
+  "capabilityRequirements": [{ "capabilityId": "math.calculate", "required": true }, { "capabilityId": "visual.scene", "required": true }],
+  "workflow": { "id": "workflow.equation_plot", "steps": [{ "id": "step-math-calculate", "capabilityId": "math.calculate", "inputBindings": [{ "target": "expression", "source": { "type": "intent", "path": ["context", "equation"] } }] }, { "id": "step-visual-scene", "capabilityId": "visual.scene", "dependsOn": ["step-math-calculate"], "inputBindings": [{ "target": "plotData", "source": { "type": "step_output", "stepId": "step-math-calculate", "path": ["graph"] } }] }] },
+  "constraints": [], "executionRequirements": [{ "id": "execution.deterministic_plot", "type": "deterministic_providers", "required": true }],
+  "verificationRequirements": [{ "id": "verification.plot_points", "method": "plot_data_presence", "capabilityId": "visual.scene", "required": true }],
+  "outputRequirements": [{ "id": "output.graph", "type": "graph", "capabilityId": "math.calculate", "required": true }, { "id": "output.structured_scene", "type": "structured_scene", "capabilityId": "visual.scene", "required": true }]
+}

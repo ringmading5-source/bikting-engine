@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101820" />
+    <title>Bikting Engine</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Bikting Engine home"><span class="brand-mark">b</span><span>Bikting <span class="muted">Engine</span></span></a>
+        <div class="system-state"><i></i> ENGINE READY</div>
+      </header>
+
+      <section class="intro">
+        <p class="eyebrow">UNIVERSAL AI INTERACTION SYSTEM</p>
+        <h1>Turn an idea into<br /><span>a working model.</span></h1>
+        <p class="intro-copy">One orchestration layer for intent, tools, knowledge, and a workspace that responds.</p>
+      </section>
+
+      <section class="composer" aria-label="Ask Bikting">
+        <label for="prompt">What would you like to understand or create?</label>
+        <form id="request-form">
+          <textarea id="prompt" rows="2" placeholder="Explain how an electric motor works." required></textarea>
+          <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
+        </form>
+      </section>
+
+      <section class="workspace" aria-label="Bikting workspace">
+        <div class="workspace-head"><div><p class="eyebrow">LIVE WORKSPACE</p><h2 id="workspace-title">Your workspace is ready</h2></div><button class="quiet-button" id="narrate-button" disabled>▶ <span>Play explanation</span></button></div>
+        <div class="work-grid">
+          <article class="visual-card">
+            <div class="card-head"><span>RELATIONSHIP MODEL</span><span class="live-tag"><i></i><span id="stage-label">WAITING</span></span></div>
+            <div id="visualization" class="visualization empty-state"><div class="empty-orbit">b</div><p>Your selected module will build a visual model here.</p></div>
+            <div class="visual-caption" id="visual-caption">A domain module determines how its ideas should be rendered.</div>
+          </article>
+          <article class="explanation-card">
+            <div class="card-head"><span>EXPLANATION</span><span id="step-count">—</span></div>
+            <div id="explanation" class="explanation empty-explanation">Submit a request to see its explanation and synchronized visual steps.</div>
+            <div class="playback"><button id="previous-step" aria-label="Previous step" disabled>←</button><div class="progress-track"><div id="progress-fill"></div></div><button id="next-step" aria-label="Next step" disabled>→</button></div>
+          </article>
+        </div>
+      </section>
+
+      <details class="debug-panel" open>
+        <summary><span>ENGINE TRACE</span><span id="trace-status">Waiting for input</span></summary>
+        <div id="trace" class="trace-list"><div class="trace-row idle"><span>00</span><b>Pipeline trace will appear here</b><span>—</span></div></div>
+      </details>
+      <footer>BIKTING ENGINE <span>·</span> MODULAR BY DESIGN</footer>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

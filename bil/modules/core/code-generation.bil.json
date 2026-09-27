@@ -1,0 +1,9 @@
+{
+  "id": "bil.core.code_generation", "version": "1.0.0", "kind": "capability", "name": "Code generation", "description": "Declares the existing tested code and explanation requirements.",
+  "appliesWhen": { "intents": ["write_code"], "contextEquals": { "domain": "coding" }, "allRequestedOutputs": ["code"] },
+  "intents": ["write_code"], "concepts": [{ "id": "compound_interest" }], "relationships": [], "reasoningStrategies": [{ "id": "strategy.code_generation", "type": "model_assisted" }],
+  "capabilityRequirements": [{ "capabilityId": "code.execute", "required": true }, { "capabilityId": "text.generate", "required": true }], "constraints": [],
+  "executionRequirements": [{ "id": "execution.controlled_runtime", "type": "controlled_runtime", "required": true }],
+  "verificationRequirements": [{ "id": "verification.code_result", "method": "output_shape_validation", "capabilityId": "code.execute", "required": true }],
+  "outputRequirements": [{ "id": "output.code", "type": "code", "capabilityId": "code.execute", "required": true }, { "id": "output.explanation", "type": "explanation", "capabilityId": "text.generate", "required": true }]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "bil.science.force_relationship", "version": "1.0.0", "kind": "knowledge", "name": "Force relationship explanation", "description": "Declares the tested relationship explanation for force, mass, and acceleration.",
+  "appliesWhen": { "intents": ["explain"], "allConcepts": ["force", "mass", "acceleration"], "contextEquals": { "domain": "physics" } },
+  "intents": ["explain"], "concepts": [{ "id": "force" }, { "id": "mass" }, { "id": "acceleration" }],
+  "relationships": [{ "id": "relationship.force_depends_mass", "type": "depends_on", "from": "force", "to": "mass" }, { "id": "relationship.force_produces_acceleration", "type": "produces", "from": "force", "to": "acceleration" }, { "id": "relationship.mass_interacts_acceleration", "type": "interacts_with", "from": "mass", "to": "acceleration" }],
+  "reasoningStrategies": [{ "id": "strategy.relationship_explanation", "type": "retrieve_then_reason" }],
+  "capabilityRequirements": [{ "capabilityId": "physics.represent", "required": true }, { "capabilityId": "math.calculate", "required": true }, { "capabilityId": "visual.scene", "required": true }, { "capabilityId": "text.generate", "required": true }],
+  "constraints": [], "executionRequirements": [], "verificationRequirements": [{ "id": "verification.force_relationships", "method": "relationship_consistency", "required": true }],
+  "outputRequirements": [{ "id": "output.explanation", "type": "explanation", "capabilityId": "text.generate", "required": true }, { "id": "output.visual", "type": "visual", "capabilityId": "visual.scene", "required": true }]
+}

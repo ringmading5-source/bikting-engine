@@ -1,0 +1,8 @@
+{
+  "id": "bil.core.vision_interpretation", "version": "1.0.0", "kind": "capability", "name": "Vision interpretation", "description": "Declares visual-semantic interpretation requirements.",
+  "appliesWhen": { "intents": ["interpret_visual"], "modalities": ["vision"], "allRequestedOutputs": ["visual_semantics"] },
+  "intents": ["interpret_visual"], "concepts": [{ "id": "image" }], "relationships": [], "reasoningStrategies": [{ "id": "strategy.visual_interpretation", "type": "model_assisted" }],
+  "capabilityRequirements": [{ "capabilityId": "vision.interpret", "required": true }], "constraints": [], "executionRequirements": [],
+  "verificationRequirements": [{ "id": "verification.visual_semantics", "method": "output_shape_validation", "capabilityId": "vision.interpret", "required": true }],
+  "outputRequirements": [{ "id": "output.visual_semantics", "type": "visual_semantics", "capabilityId": "vision.interpret", "required": true }]
+}

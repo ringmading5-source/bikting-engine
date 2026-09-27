@@ -1,0 +1,8 @@
+{
+  "id": "bil.core.dataset_analysis", "version": "1.0.0", "kind": "capability", "name": "Dataset analysis", "description": "Declares the current tested statistics and explanation requirements.",
+  "appliesWhen": { "intents": ["analyze_dataset"], "contextEquals": { "domain": "statistics" }, "anyRequestedOutputs": ["trend_analysis", "statistical_analysis"] },
+  "intents": ["analyze_dataset"], "concepts": [{ "id": "dataset_trend" }], "relationships": [], "reasoningStrategies": [{ "id": "strategy.statistical_analysis", "type": "deterministic" }],
+  "capabilityRequirements": [{ "capabilityId": "statistics.analyze", "required": true }, { "capabilityId": "text.generate", "required": true }], "constraints": [], "executionRequirements": [],
+  "verificationRequirements": [{ "id": "verification.statistics", "method": "deterministic_result_check", "capabilityId": "statistics.analyze", "required": true }],
+  "outputRequirements": [{ "id": "output.trend_analysis", "type": "trend_analysis", "capabilityId": "statistics.analyze", "required": true }, { "id": "output.explanation", "type": "explanation", "capabilityId": "text.generate", "required": true }]
+}

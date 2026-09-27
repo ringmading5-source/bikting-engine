@@ -1,0 +1,22 @@
+{
+  "id": "bil.core.calculation",
+  "version": "1.0.0",
+  "kind": "capability",
+  "name": "Deterministic calculation",
+  "description": "Declares the calculation capability required by structured mathematical calculation intents.",
+  "appliesWhen": { "intents": ["calculate"], "contextEquals": { "domain": "mathematics" }, "anyRequestedOutputs": ["numeric_result", "equation"] },
+  "intents": ["calculate"],
+  "concepts": [],
+  "relationships": [],
+  "reasoningStrategies": [{ "id": "strategy.direct_calculation", "type": "deterministic", "description": "Use a deterministic calculation provider." }],
+  "capabilityRequirements": [{ "capabilityId": "math.calculate", "required": true, "purpose": "Evaluate the structured mathematical expression." }],
+  "workflow": { "id": "workflow.calculation", "steps": [{ "id": "step-math-calculate", "capabilityId": "math.calculate", "inputBindings": [{ "target": "expression", "source": { "type": "intent", "path": ["context", "expression"] } }] }] },
+  "constraints": [],
+  "executionRequirements": [{ "id": "execution.structured_input", "type": "structured_input", "required": true }],
+  "verificationRequirements": [{ "id": "verification.numeric_result", "method": "expression_satisfaction", "capabilityId": "math.calculate", "required": true }],
+  "outputRequirements": [
+    { "id": "output.numeric_result", "type": "numeric_result", "capabilityId": "math.calculate", "required": true },
+    { "id": "output.equation", "type": "equation", "capabilityId": "math.calculate", "required": false }
+  ],
+  "metadata": { "source": "phase1-parity" }
+}

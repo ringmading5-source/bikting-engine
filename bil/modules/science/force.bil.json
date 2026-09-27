@@ -1,0 +1,28 @@
+{
+  "id": "bil.science.force",
+  "version": "1.0.0",
+  "kind": "knowledge",
+  "name": "Force calculation",
+  "description": "Declares force, mass, and acceleration relationships for structured physics calculations.",
+  "appliesWhen": { "intents": ["calculate"], "allConcepts": ["force", "mass", "acceleration"], "contextEquals": { "domain": "physics" }, "anyRequestedOutputs": ["numeric_result", "equation"] },
+  "intents": ["calculate"],
+  "concepts": [
+    { "id": "force", "name": "Force" },
+    { "id": "mass", "name": "Mass" },
+    { "id": "acceleration", "name": "Acceleration" }
+  ],
+  "relationships": [
+    { "id": "relationship.force_depends_on_mass", "type": "depends_on", "from": "force", "to": "mass" },
+    { "id": "relationship.force_depends_on_acceleration", "type": "depends_on", "from": "force", "to": "acceleration" }
+  ],
+  "reasoningStrategies": [{ "id": "strategy.newtons_second_law", "type": "deterministic", "requiredContext": ["mass", "acceleration"] }],
+  "capabilityRequirements": [{ "capabilityId": "physics.calculate_force", "required": true, "purpose": "Calculate force from structured mass and acceleration values." }],
+  "constraints": [],
+  "executionRequirements": [{ "id": "execution.finite_numbers", "type": "finite_numeric_inputs", "required": true }],
+  "verificationRequirements": [{ "id": "verification.force_equation", "method": "equation_satisfaction", "capabilityId": "physics.calculate_force", "required": true }],
+  "outputRequirements": [
+    { "id": "output.force_numeric_result", "type": "numeric_result", "capabilityId": "physics.calculate_force", "required": true },
+    { "id": "output.force_equation", "type": "equation", "capabilityId": "physics.calculate_force", "required": true }
+  ],
+  "metadata": { "source": "phase1-parity" }
+}

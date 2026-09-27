@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noCheck": true,
+    "noEmit": false,
+    "outDir": ".architecture-test-build",
+    "rootDir": "."
+  },
+  "include": ["src/**/*.ts", "tests/**/*.test.ts", "tests/**/*.cases.ts"]
+}

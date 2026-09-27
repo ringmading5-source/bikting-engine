@@ -1,0 +1,6 @@
+import { KnowledgeConflict } from "./knowledge-context";
+import { KnowledgeGap, KnowledgeSufficiencyResult } from "./knowledge-discovery.types";
+
+export class KnowledgeSufficiencyEvaluator {
+  evaluate(gaps: readonly KnowledgeGap[], conflicts: readonly KnowledgeConflict[]): KnowledgeSufficiencyResult { const required = gaps.filter(({ required }) => required), optional = gaps.filter(({ required }) => !required); const relevantConflicts = gaps.filter(({ type }) => type === "conflict").map(({ provenance }) => provenance[0]?.sourceId).filter((id): id is string => Boolean(id)); const status = relevantConflicts.length ? "conflicted" : !required.length ? "sufficient" : required.some(({ type }) => ["missing_concept", "freshness_mismatch"].includes(type)) ? "insufficient" : "partial"; const reasons = [...required.map((item) => ({ code: item.type, referenceIds: [item.id], message: item.reason })), ...optional.map((item) => ({ code: `optional_${item.type}`, referenceIds: [item.id], message: item.reason }))]; return { status, sufficient: status === "sufficient", reasons, requiredGapIds: required.map(({ id }) => id), optionalGapIds: optional.map(({ id }) => id), conflictIds: conflicts.filter(({ id }) => relevantConflicts.includes(id)).map(({ id }) => id) }; }
+}

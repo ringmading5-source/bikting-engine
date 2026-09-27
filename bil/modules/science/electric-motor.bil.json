@@ -1,0 +1,20 @@
+{
+  "id": "bil.science.electric_motor", "version": "1.0.0", "kind": "knowledge", "name": "Electric motor explanation", "description": "Declares current tested electric motor explanation requirements.",
+  "appliesWhen": { "intents": ["explain"], "allConcepts": ["electric_motor"], "contextEquals": { "domain": "physics" } },
+  "intents": ["explain"],
+  "concepts": [{ "id": "electrical_energy" }, { "id": "current" }, { "id": "magnetic_field" }, { "id": "force" }, { "id": "torque" }, { "id": "rotation" }, { "id": "mechanical_motion" }],
+  "relationships": [
+    { "id": "relationship.energy_flows_to_current", "type": "flows_to", "from": "electrical_energy", "to": "current" },
+    { "id": "relationship.current_produces_field", "type": "produces", "from": "current", "to": "magnetic_field" },
+    { "id": "relationship.field_causes_force", "type": "causes", "from": "magnetic_field", "to": "force" },
+    { "id": "relationship.force_produces_torque", "type": "produces", "from": "force", "to": "torque" },
+    { "id": "relationship.torque_causes_rotation", "type": "causes", "from": "torque", "to": "rotation" },
+    { "id": "relationship.rotation_transforms_motion", "type": "transforms_into", "from": "rotation", "to": "mechanical_motion" }
+  ],
+  "reasoningStrategies": [{ "id": "strategy.causal_explanation", "type": "retrieve_then_reason" }],
+  "capabilityRequirements": [{ "capabilityId": "physics.represent", "required": true }, { "capabilityId": "math.calculate", "required": true }, { "capabilityId": "visual.scene", "required": true }, { "capabilityId": "text.generate", "required": true }, { "capabilityId": "voice.synthesize", "required": true }],
+  "knowledgeRequirements": [{ "id": "knowledge-electric-motor", "domain": "physics", "concepts": ["current", "magnetic_field", "force", "torque", "rotation"], "relationshipTypes": ["produces", "causes"], "freshness": "stable", "requireProvenance": true, "evidenceRequired": true, "required": true }],
+  "constraints": [], "executionRequirements": [],
+  "verificationRequirements": [{ "id": "verification.relationship_consistency", "method": "relationship_consistency", "required": true }],
+  "outputRequirements": [{ "id": "output.explanation", "type": "explanation", "capabilityId": "text.generate", "required": true }, { "id": "output.visual", "type": "visual", "capabilityId": "visual.scene", "required": true }, { "id": "output.voice", "type": "voice", "capabilityId": "voice.synthesize", "required": true }]
+}

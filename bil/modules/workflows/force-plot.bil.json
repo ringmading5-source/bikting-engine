@@ -1,0 +1,50 @@
+{
+  "id": "bil.workflow.force_plot",
+  "version": "1.0.0",
+  "kind": "workflow",
+  "name": "Force plot workflow",
+  "description": "Declares the existing range, force-series, plot, and structured-scene workflow.",
+  "appliesWhen": { "intents": ["plot"], "allConcepts": ["force", "mass", "acceleration"], "contextEquals": { "domain": "physics" }, "allRequestedOutputs": ["graph"] },
+  "intents": ["plot"],
+  "concepts": [
+    { "id": "force", "name": "Force" },
+    { "id": "mass", "name": "Mass" },
+    { "id": "acceleration", "name": "Acceleration" }
+  ],
+  "relationships": [
+    { "id": "relationship.mass_interacts_with_acceleration", "type": "interacts_with", "from": "mass", "to": "acceleration" },
+    { "id": "relationship.mass_depends_on_force", "type": "depends_on", "from": "mass", "to": "force" },
+    { "id": "relationship.acceleration_causes_force", "type": "causes", "from": "acceleration", "to": "force" }
+  ],
+  "reasoningStrategies": [{ "id": "strategy.force_series", "type": "deterministic", "requiredContext": ["mass", "acceleration"] }],
+  "capabilityRequirements": [
+    { "capabilityId": "data.generate_range", "required": true },
+    { "capabilityId": "physics.calculate_force_series", "required": true },
+    { "capabilityId": "math.calculate", "required": true },
+    { "capabilityId": "visual.scene", "required": true }
+  ],
+  "workflow": {
+    "id": "workflow.force_plot",
+    "steps": [
+      { "id": "input-generation", "capabilityId": "data.generate_range", "inputBindings": [{ "target": "start", "source": { "type": "context", "path": ["massStart"] } }, { "target": "end", "source": { "type": "context", "path": ["massEnd"] } }, { "target": "step", "source": { "type": "literal", "value": 1 } }] },
+      { "id": "physics-calculation", "capabilityId": "physics.calculate_force_series", "dependsOn": ["input-generation"], "inputBindings": [{ "target": "masses", "source": { "type": "step_output", "stepId": "input-generation", "path": ["numeric_data"] } }, { "target": "acceleration", "source": { "type": "intent", "path": ["context", "acceleration"] } }] },
+      { "id": "plot-generation", "capabilityId": "math.calculate", "dependsOn": ["input-generation", "physics-calculation"], "inputBindings": [{ "target": "xValues", "source": { "type": "step_output", "stepId": "input-generation", "path": ["numeric_data"] } }, { "target": "yValues", "source": { "type": "step_output", "stepId": "physics-calculation", "path": ["numeric_data"] } }] },
+      { "id": "visual-output", "capabilityId": "visual.scene", "dependsOn": ["plot-generation"], "inputBindings": [{ "target": "plotData", "source": { "type": "step_output", "stepId": "plot-generation", "path": ["graph"] } }] }
+    ]
+  },
+  "constraints": [{ "type": "maximum_sample_count", "value": 1001 }],
+  "executionRequirements": [
+    { "id": "execution.dependency_order", "type": "dependency_order", "required": true },
+    { "id": "execution.deterministic_providers", "type": "deterministic_providers", "required": true }
+  ],
+  "verificationRequirements": [
+    { "id": "verification.force_series", "method": "series_equation_satisfaction", "capabilityId": "physics.calculate_force_series", "required": true },
+    { "id": "verification.plot_points", "method": "plot_data_presence", "capabilityId": "visual.scene", "required": true }
+  ],
+  "outputRequirements": [
+    { "id": "output.graph", "type": "graph", "capabilityId": "math.calculate", "required": true },
+    { "id": "output.numeric_data", "type": "numeric_data", "capabilityId": "physics.calculate_force_series", "required": true },
+    { "id": "output.structured_scene", "type": "structured_scene", "capabilityId": "visual.scene", "required": true }
+  ],
+  "metadata": { "source": "phase1-parity" }
+}
