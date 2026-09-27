@@ -10,7 +10,16 @@ readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(r
 async function runPipeline(request) {
   calculationButton.hidden = true;
   scaffoldButton.hidden = true;
-  const expression = /^\s*calculate\s+([\d\s.+\-*/%^()×÷eE]+)\s*$/i.exec(request.text)?.[1]?.trim();
+  let route;
+  try {
+    const response = await fetch('/api/route', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: request.text }) });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload.error ?? 'The router could not process this request.');
+    route = payload.route;
+  } catch (error) {
+    elements.stage.textContent = 'ROUTING FAILED'; elements.explanation.textContent = error.message; return;
+  }
+  const expression = route?.id === 'arithmetic' ? route.inputs.expression : null;
   if (expression) {
     elements.title.textContent = 'Local arithmetic';
     elements.stage.textContent = 'READY';
@@ -34,7 +43,7 @@ async function runPipeline(request) {
     renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'PLAN', detail: 'math.calculate · local deterministic provider' }, { section: 'STATUS', detail: 'Waiting for explicit run action' }]);
     return;
   }
-  const topic = /^\s*(?:teach me|explain|learn about)\s+(.+?)\s*[.!?]?\s*$/i.exec(request.text)?.[1]?.trim();
+  const topic = route?.id === 'public-knowledge' ? route.inputs.topic : null;
   if (topic) {
     elements.title.textContent = `Knowledge search: ${topic}`;
     elements.stage.textContent = 'SEARCHING';
