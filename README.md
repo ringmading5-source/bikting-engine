@@ -1,16 +1,19 @@
 # Bikting Engine
 
-A small, dependency-free browser prototype of Bikting as a modular interaction and orchestration system. The current vertical slice accepts text, interprets a request, creates a plan, routes it to a domain module, and delivers structured explanation, visual state, and narration to a workspace.
+A browser prototype of Bikting as a modular interaction and orchestration system. The current browser path previews canonical intent interpretation and planning. It does not execute the plan.
 
 ## Run locally
 
-Requires Node.js 18 or newer. From this directory:
+Requires Node.js 20 or newer. From this directory:
 
 ```powershell
-node server.js
+npm ci
+npm start
 ```
 
-Open <http://127.0.0.1:8000>. The electric motor walkthrough works without an AI service or network connection. Browser speech synthesis is used for optional narration.
+Open <http://127.0.0.1:8000>. Without a model key, the deterministic preview recognizes “Build for me my personal website”; other requests return an explicit refusal. To enable varied requests, set `GEMINI_API_KEY` in the server's environment before `npm start`. Optionally set `GEMINI_MODEL` (default `gemini-2.5-flash`). The key stays server-side; model API usage may incur costs. No account connection or tool execution is performed by the browser preview.
+
+The Gemini adapter produces proposals through `IntelligencePipeline`. Bikting validates capability references and the proposed plan. Factual teaching without configured knowledge sources reports missing knowledge and does not propose teaching steps. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation. This model path is tested with simulated HTTP responses; a live API call requires your own server-side key.
 
 ## Pipeline
 
