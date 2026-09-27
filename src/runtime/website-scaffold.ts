@@ -1,12 +1,10 @@
-import { CapabilityRegistry } from '../capabilities/capability.registry';
-import { CapabilityProviderRegistry } from '../providers/provider.registry';
 import { resolvePlanProviders } from '../providers/provider.resolver';
 import { evaluatePlanAuthorization } from '../core/authorization';
 import { prepareExecutionPlan, withProviderSelections } from '../planning/prepared-plan';
 import { SingleAuthorizedProviderPolicy, selectPreparedPlanProviders } from '../providers/provider-selection.policy';
 import { CanonicalExecutionKernel } from '../execution/canonical-execution-kernel';
-import { CanonicalProviderInvoker } from '../execution/provider-invoker';
 import type { ExecutionPlan } from '../planning/plan.types';
+import { createBiktingOwnedTools } from './bikting-owned-tools';
 
 export interface ScaffoldFiles { 'index.html': string; 'styles.css': string; 'script.js': string }
 
@@ -21,12 +19,7 @@ export function createWebsiteScaffold(): ScaffoldFiles {
 
 export async function runPlannedWebsiteScaffold(plan: ExecutionPlan) {
   if (plan.status !== 'ready' || plan.steps.length !== 1 || plan.steps[0].capabilityId !== 'code.scaffold' || plan.requiredCapabilityIds?.length !== 1 || plan.requiredCapabilityIds[0] !== 'code.scaffold') throw new Error('Only a validated one-step website scaffold plan can run locally.');
-  const capabilities = new CapabilityRegistry();
-  capabilities.registerCapability({ id: 'code.scaffold', kind: 'capability', name: 'Website starter', operations: ['scaffold'], inputs: [], outputs: [{ name: 'files', type: 'workspace_files' }] });
-  const providers = new CapabilityProviderRegistry();
-  providers.register({ id: 'local.website-scaffold', name: 'Local website template', capabilityIds: ['code.scaffold'], executorKind: 'deterministic', availability: 'available' });
-  const invoker = new CanonicalProviderInvoker();
-  invoker.register({ providerId: 'local.website-scaffold', capabilityIds: ['code.scaffold'], async invoke() { return { files: createWebsiteScaffold() }; } });
+  const { capabilities, providers, invoker } = createBiktingOwnedTools();
   const resolution = resolvePlanProviders(plan, capabilities, providers);
   const authorization = evaluatePlanAuthorization(resolution, []);
   let prepared = prepareExecutionPlan(plan, resolution, authorization);
