@@ -19,6 +19,8 @@ export interface CapabilityProvider {
   name: string;
   description?: string;
   capabilityIds: string[];
+  /** Observable contract for this implementation, independent of its display name. */
+  properties?: { operations: string[]; inputs: Array<{ name: string; type: string }>; outputs: Array<{ name: string; type: string }> };
   executorKind: ExecutorKind;
   availability: ProviderAvailability;
   authorizationRequirements?: AuthorizationRequirement[];
