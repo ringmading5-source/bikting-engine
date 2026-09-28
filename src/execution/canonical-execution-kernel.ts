@@ -15,7 +15,7 @@ import { verifyObservation } from "./deterministic-verifier";
 import { VerificationResult } from "./verifier";
 import { validateCanonicalPlan } from "../bil/bil.planning.adapter";
 
-export interface CanonicalExecutionKernelInput { preparedPlan: PreparedExecutionPlan; projectId: string; runId?: string; context?: Record<string, unknown>; authorizationGrants?: readonly AuthorizationGrant[]; }
+export interface CanonicalExecutionKernelInput { preparedPlan: PreparedExecutionPlan; projectId: string; runId?: string; context?: Record<string, unknown>; authorizationGrants?: readonly AuthorizationGrant[]; onEvent?: (event: ExecutionEvent) => void; }
 export interface CanonicalStepExecutionResult { stepId: string; status: CanonicalStepState; invocationStatus: "not_invoked" | "completed" | "failed"; providerId?: string; resolvedInputs?: Readonly<Record<string, unknown>>; output?: unknown; observationId?: string; verificationResultIds: string[]; failures: ExecutionBlock[]; }
 export interface CanonicalExecutionResult { runId: string; planId: string; status: "completed" | "failed" | "blocked"; stepResults: CanonicalStepExecutionResult[]; attempts: ExecutionAttempt[]; observations: Observation[]; verificationResults: VerificationResult[]; blockedStepIds: string[]; failures: ExecutionBlock[]; outputs: Record<string, unknown>; events: ExecutionEvent[]; state: CanonicalExecutionState; provenance: PreparedExecutionPlan["provenance"]; }
 
@@ -26,7 +26,7 @@ export class CanonicalExecutionKernel {
   async execute(input: CanonicalExecutionKernelInput): Promise<CanonicalExecutionResult> {
     validateCanonicalPlan(input.preparedPlan.plan);
     const prepared = input.authorizationGrants ? { ...input.preparedPlan, authorization: evaluatePlanAuthorization(input.preparedPlan.providerResolution, input.authorizationGrants) } : input.preparedPlan;
-    const runId = input.runId ?? `execution-${hash(stableStringify({ preparedPlanId: prepared.id, projectId: input.projectId, context: input.context ?? {} }))}`; const log = new InMemoryExecutionEventLog(runId);
+    const runId = input.runId ?? `execution-${hash(stableStringify({ preparedPlanId: prepared.id, projectId: input.projectId, context: input.context ?? {} }))}`; const log = new InMemoryExecutionEventLog(runId, undefined, input.onEvent);
     const attempts: ExecutionAttempt[] = [], observations: Observation[] = [], verificationResults: VerificationResult[] = [], stepResults: CanonicalStepExecutionResult[] = [], outputs = new Map<string, unknown>(), completed = new Set<string>();
     log.append({ type: "execution_started", projectId: input.projectId, data: { planId: prepared.plan.id, preparedPlanId: prepared.id } });
     const pending = new Map(prepared.plan.steps.map((step) => [step.id, step]));
