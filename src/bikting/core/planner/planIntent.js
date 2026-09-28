@@ -80,33 +80,12 @@ export function deriveRequiredCapabilities(semantic) {
     required.add('physics.calculate_force');
   } else if (numericRequest && !['statistics', 'data'].includes(domain) && intent !== 'vector_calculate') required.add('math.calculate');
 
-  const structuredForceCalculation = concepts.has('force') && Number.isFinite(Number(variables.mass)) && Number.isFinite(Number(variables.acceleration)) && numericRequest;
-  if ((domain === 'physics' && !structuredForceCalculation && !isForceRangeRequest(semantic)) || outputs.has('physical_state') || outputs.has('vectors') || outputs.has('fields') || concepts.has('electric_motor')) required.add('physics.represent');
-  if (domain === 'statistics' || domain === 'data' || intent === 'analyze_dataset' || outputs.has('statistical_analysis') || outputs.has('trend_analysis')) required.add('statistics.analyze');
-  if (domain === 'coding' || intent === 'write_code' || outputs.has('code')) required.add('code.execute');
-  const taskCapability = semantic.context?.task?.capability;
-  if (['website.build', 'website.deploy', 'artifact.build'].includes(taskCapability)) required.add(taskCapability);
-  if (!taskCapability && (outputs.has('visual') || outputs.has('graph') || outputs.has('structured_visual_data') || outputs.has('structured_scene') || domain === 'visualization' || relationships.length)) required.add('visual.scene');
-  if (intent === 'explain' || outputs.has('explanation')) required.add('text.generate');
-  if (outputs.has('voice') || outputs.has('audio')) required.add('voice.synthesize');
-  if (semantic.modality === 'vision' || outputs.has('visual_semantics') || intent === 'interpret_visual') required.add('vision.interpret');
-
-  if (domain === 'physics' && ['force', 'mass', 'acceleration'].every((concept) => concepts.has(concept)) && !structuredForceCalculation) required.add('math.calculate');
-  if (domain === 'physics' && relationships.length >= 4) required.add('math.calculate');
-  return required;
+  const structuredForceCalculation = concepts.has('force') && Number.isFinite(Number(variables.mass)) && Number.isFini…4987 tokens truncated…segment) {
+  if (typeof segment === 'string' && segment.trim()) return { text: segment };
+  if (typeof segment?.text === 'string' && segment.text.trim()) return segment;
+  return null;
 }
 
-function isForceRangeRequest(semantic) { return Number.isFinite(Number(semantic.variables?.massStart)) && Number.isFinite(Number(semantic.variables?.massEnd)) && Number.isFinite(Number(semantic.variables?.acceleration)) && semantic.requestedOutputs?.includes('graph'); }
-function operationFor(requirement, semantic) {
-  if (requirement.requiredCapability === 'math.calculate' && semantic.intent === 'plot') return 'plot_equation';
-  return ({ 'physics.represent': 'physics_representation', 'physics.calculate_force': 'calculate_force', 'physics.calculate_force_series': 'calculate_force_series', 'data.generate_range': 'generate_values', 'math.calculate': 'calculate', 'statistics.analyze': 'analyze', 'units.convert': 'convert', 'code.execute': 'execute_code', 'visual.scene': 'render_structured_scene', 'text.generate': 'generate_explanation', 'voice.synthesize': 'generate_voice_narration', 'vision.interpret': 'interpret_vision' })[requirement.requiredCapability] ?? requirement.operation;
+function humanize(value) {
+  return String(value).replaceAll('_', ' ').replace(/\b\w/g, (character) => character.toUpperCase());
 }
-function mathInput(semantic) {
-  if (semantic.intent === 'plot') return { operation: 'plot_equation', expression: semantic.equations[0], xMin: semantic.variables.xMin ?? -10, xMax: semantic.variables.xMax ?? 10, sampleCount: semantic.variables.sampleCount ?? 41 };
-  return { operation: 'calculate', expression: '$semantic.variables.expression', variables: '$semantic.variables' };
-}
-function addBuiltin(steps, operation, properties) { steps.push({ id: `step-${operation}`, operation, provider: 'engine', status: 'ready', ...properties }); }
-function addStep(steps, requirement, overrides) { if (!requirement) throw new Error('Plan is missing a required registered capability.'); steps.push({ capability: requirement.requiredCapability, expectedOutputs: requirement.producedOutputs, providers: requirement.providers, status: requirement.status, ...overrides }); }
-function stepId(capability) { return `step-${capability.replaceAll('.', '-')}`; }
-function normalize(value) { return String(value).toLowerCase().replaceAll('-', '_').replaceAll(' ', '_'); }
-function defaultDefinition(id) { return normalizeCapability(id); }

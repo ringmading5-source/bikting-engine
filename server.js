@@ -45,7 +45,9 @@ const server = createServer(async (request, response) => {
       if (pathname === '/api/intent') {
         const semantic = await mockSemanticInterpreter({ text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' });
         response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        response.end(JSON.stringify({ task: semantic.context.task ?? null, relationships: semantic.relationships, scene: semantic.context.task?.capability === 'website.build' ? { type: 'website', title: semantic.variables.siteTitle, states: [{ title: 'Intent sketch' }] } : null }));
+        const objects = semantic.entities.map(({ id, label, type }) => ({ id, label, type }));
+        const scene = semantic.relationships.length ? { type: 'diagram', objects, relationships: semantic.relationships.map(({ from, relation, to }) => ({ from, relation, to })), states: semantic.relationships.map(({ from, relation, to }, index) => ({ activeNodes: [from, to], activeEdge: index, action: /flows|causes|produces/.test(relation) ? 'flow' : 'highlight', title: `${from} ${relation} ${to}`, text: `${from} ${relation.replaceAll('_', ' ')} ${to}.` })) } : semantic.context.task?.capability === 'website.build' ? { type: 'website', title: semantic.variables.siteTitle, states: [{ title: 'Intent sketch' }] } : null;
+        response.end(JSON.stringify({ task: semantic.context.task ?? null, relationships: semantic.relationships, scene }));
         return;
       }
       const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, source: 'browser', modality: 'text' });
