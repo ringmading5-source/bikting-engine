@@ -1,4 +1,5 @@
 export function readTextRequest(form, field, onRequest, sketch) {
+  if (!form || !field) return;
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     const text = field.value.trim();
