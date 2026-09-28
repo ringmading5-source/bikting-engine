@@ -89,4 +89,8 @@ Supported structured operations include arithmetic expressions (`+ - * / % ^` an
 
 The present pilot has two owned executable tools and read-only public search. Catalog offers, external tool installation, account connections, and interactive input collection require additional integrations before this can handle arbitrary tasks.
 
+### Live execution pilot
+
+The calculator's **Run local calculation** action streams actual canonical execution events to the browser. The trace updates as events arrive; verified output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions and the answer. Browser speech depends on the user's device and browser. Website generation and public knowledge search still display their results after each request; game/animation tools and general-purpose live narration are not yet installed.
+
 Text input and the electric motor science module form the working vertical slice. Other domain recognition currently routes to a structured capability placeholder until a module or execution tool for that domain is registered. Voice is output-only in this slice; voice input and external AI/API adapters remain extension points.
