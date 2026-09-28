@@ -42,16 +42,40 @@ async function readLiveRun(endpoint, input, onEntry) {
 
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request));
 
-async function runPipeline(request) {
+async function runPipeline(request, answers = {}) {
   calculationButton.hidden = true;
   scaffoldButton.hidden = true;
   agentButton.hidden = true;
   let route; let workerAvailable = false;
   try {
-    const response = await fetch('/api/route', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: request.text }) });
+    const response = await fetch('/api/goal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goal: request.text, answers }) });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error ?? 'The router could not process this request.');
-    route = payload.route;
+    const decision = payload.decision;
+    if (decision.status === 'needs_input' || decision.status === 'needs_confirmation') {
+      elements.title.textContent = 'Clarify your goal'; elements.stage.textContent = 'NEEDS INPUT';
+      elements.explanation.textContent = decision.question;
+      elements.visual.replaceChildren();
+      if (decision.status === 'needs_input') for (const choice of decision.choices) {
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = choice.label;
+        button.onclick = () => runPipeline(request, { ...answers, websiteScope: choice.id });
+        elements.visual.append(button);
+      }
+      if (decision.status === 'needs_confirmation') {
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = `Use “${decision.suggestion.inferredGoal}”`;
+        button.onclick = () => runPipeline({ text: decision.suggestion.inferredGoal });
+        elements.visual.append(button);
+      }
+      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'QUESTION', detail: decision.question }, { section: 'MODEL CALLS', detail: String(decision.modelCalls) }]);
+      return;
+    }
+    if (decision.status === 'unavailable') {
+      elements.title.textContent = request.text; elements.stage.textContent = 'CAPABILITY NEEDED'; elements.explanation.textContent = decision.reason;
+      elements.visual.textContent = 'Bikting needs another capability or a clearer goal.';
+      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'NEXT ACTION', detail: decision.reason }]);
+      return;
+    }
+    route = decision.route;
     workerAvailable = payload.workerAvailable === true;
   } catch (error) {
     elements.stage.textContent = 'ROUTING FAILED'; elements.explanation.textContent = error.message; return;
@@ -93,13 +117,14 @@ async function runPipeline(request) {
         const trace = [{ section: 'PLAN', detail: 'math.calculate · math.calculator' }];
         const narration = { execution_started: 'Starting the approved calculation.', provider_invoked: 'The local calculator is working.', verification_started: 'Checking the result.', step_succeeded: 'The result passed verification.' };
         elements.stage.textContent = 'RUNNING';
-        const output = await readLiveRun('/api/calculate/live', { expression }, (entry) => {
+        const run = await readLiveRun('/api/goal/live', { goal: request.text, answers }, (entry) => {
           if (entry.kind !== 'event') return;
-          trace.push({ section: 'LIVE', detail: `${entry.event.sequence}. ${entry.event.type.replaceAll('_', ' ')}${entry.event.providerId ? ` · ${entry.event.providerId}` : ''}` });
+          trace.push({ section: 'LIVE', detail: `${entry.event.type.replaceAll('_', ' ')}${entry.event.detail ? ` · ${entry.event.detail}` : ''}` });
           renderTrace(trace);
           const line = narration[entry.event.type];
           if (line) { elements.explanation.textContent = line; speak(line); }
         });
+        const output = run.result;
         elements.explanation.textContent = `${output.expression} = ${output.value}. Verified by the local calculator.`;
         elements.stage.textContent = 'VERIFIED';
         renderMathResult(elements.visual, output.expression, output.value);
@@ -122,13 +147,14 @@ async function runPipeline(request) {
     elements.explanation.textContent = 'Searching for source material. Read the linked articles to check relevance and accuracy.';
     try {
       const trace = [{ section: 'KNOWLEDGE', detail: `Public search: ${topic}` }];
-      const found = await readLiveRun('/api/knowledge/live', { topic }, (entry) => {
+      const run = await readLiveRun('/api/goal/live', { goal: request.text, answers }, (entry) => {
         if (entry.kind !== 'event') return;
-        trace.push({ section: 'LIVE', detail: `${entry.event.type.replaceAll('_', ' ')} · ${entry.event.providerId}` });
+        trace.push({ section: 'LIVE', detail: `${entry.event.type.replaceAll('_', ' ')} · ${entry.event.detail}` });
         renderTrace(trace);
         if (entry.event.type === 'knowledge_retrieval_started') speak('Searching the public knowledge source.');
-        if (entry.event.type === 'knowledge_retrieval_completed') speak(`Found ${entry.event.data.count} source links.`);
+        if (entry.event.type === 'knowledge_retrieval_completed') speak(entry.event.detail);
       });
+      const found = run.result;
       elements.visual.replaceChildren();
       for (const item of found.results) {
         const article = document.createElement('article'); article.style.cssText = 'padding:1rem;width:100%';
@@ -168,13 +194,14 @@ async function runPipeline(request) {
       try {
         const trace = [{ section: 'PLAN', detail: preview.plan.id }];
         elements.stage.textContent = 'GENERATING';
-        const output = await readLiveRun('/api/scaffold/live', { text: request.text, planId: preview.plan.id }, (entry) => {
+        const run = await readLiveRun('/api/goal/live', { goal: request.text, answers }, (entry) => {
           if (entry.kind !== 'event') return;
-          trace.push({ section: 'LIVE', detail: `${entry.event.sequence}. ${entry.event.type.replaceAll('_', ' ')}${entry.event.providerId ? ` · ${entry.event.providerId}` : ''}` });
+          trace.push({ section: 'LIVE', detail: `${entry.event.type.replaceAll('_', ' ')}${entry.event.detail ? ` · ${entry.event.detail}` : ''}` });
           renderTrace(trace);
           if (entry.event.type === 'provider_invoked') speak('The website scaffold tool is generating files.');
           if (entry.event.type === 'step_succeeded') speak('The website files passed verification.');
         });
+        const output = run.result;
         elements.stage.textContent = 'FILES READY';
         elements.explanation.textContent = 'Generated a local website starter. Edit the placeholder name, projects, and contact section before sharing it.';
         elements.visual.replaceChildren();
