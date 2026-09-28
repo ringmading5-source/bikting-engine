@@ -10,7 +10,8 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
   let selectedModel = model;
   const visualProgramCache = new Map();
-  return async (request) => {
+  const interpretationCache = new Map();
+  const interpret = async (request) => {
     const baseline = await mockSemanticInterpreter(request);
     // Deterministic operations use only values extracted from the user's actual input.
     if (['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent)) return baseline;
@@ -55,7 +56,8 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     const relationships = (Array.isArray(proposed.relationships) ? proposed.relationships : []).slice(0, 12)
       .filter((item) => item && typeof item.from === 'string' && typeof item.to === 'string' && relationshipTypes.has(item.relation))
       .map(({ from, relation, to }) => ({ from: slug(from), relation, to: slug(to) }))
-      .filter(({ from, to }) => from && to);
+      .filter(({ from, to }) => from && to)
+      .filter((edge, index, all) => all.findIndex((item) => item.from === edge.from && item.relation === edge.relation && item.to === edge.to) === index);
     const labels = [...new Set([...concepts.map(slug), ...relationships.flatMap(({ from, to }) => [from, to])])];
     const explanation = typeof proposed.explanation === 'string' ? proposed.explanation.slice(0, 3000).trim() : '';
     const domain = String(proposed.domain ?? 'general').slice(0, 40);
@@ -96,6 +98,15 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
+  };
+  return (request) => {
+    const key = String(request?.text ?? '').trim();
+    if (!key || interpretationCache.has(key)) return interpretationCache.get(key) ?? interpret(request);
+    const pending = interpret(request);
+    interpretationCache.set(key, pending);
+    if (interpretationCache.size > 100) interpretationCache.delete(interpretationCache.keys().next().value);
+    pending.catch(() => { if (interpretationCache.get(key) === pending) interpretationCache.delete(key); });
+    return pending;
   };
 }
 

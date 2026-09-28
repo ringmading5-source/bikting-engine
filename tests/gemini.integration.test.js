@@ -84,7 +84,7 @@ test('quota errors stop model retries', async () => {
   assert.equal(calls, 3);
 });
 
-test('visual behavior prompt is reused for repeated relationship sets', async () => {
+test('identical requests reuse their full interpretation and visual behavior', async () => {
   let calls = 0;
   const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url, options) => {
     calls++;
@@ -96,7 +96,18 @@ test('visual behavior prompt is reused for repeated relationship sets', async ()
   } });
   const first = await interpret({ text: 'Explain water and plants' });
   const second = await interpret({ text: 'Explain water and plants' });
-  assert.equal(calls, 3);
+  assert.equal(calls, 2);
   assert.equal(first.context.visualProgramStatus, 'generated');
-  assert.equal(second.context.visualProgramStatus, 'cached');
+  assert.deepEqual(second, first);
+});
+
+test('concurrent identical requests share one Gemini interpretation', async () => {
+  let calls = 0;
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => {
+    calls++;
+    return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ intent: 'explain', domain: 'biology', concepts: ['cell'], relationships: [], explanation: 'Cells are living units.' }) }] } }] }) };
+  } });
+  const [first, second] = await Promise.all([interpret({ text: 'Explain cells' }), interpret({ text: 'Explain cells' })]);
+  assert.equal(calls, 1);
+  assert.deepEqual(first, second);
 });

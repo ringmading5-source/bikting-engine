@@ -1,5 +1,3 @@
-const positions = [[48, 95], [170, 95], [292, 95], [414, 95], [536, 95], [658, 95]];
-
 export function renderGraph(container, visual, stepIndex = 0) {
   if (!visual) return renderEmpty(container);
   if (visual.type === 'graph' && Array.isArray(visual.series)) {
@@ -14,20 +12,29 @@ export function renderGraph(container, visual, stepIndex = 0) {
 }
 
 function renderRelationshipGraph(container, visual, stepIndex) {
-  const width = Math.max(690, 122 * visual.nodes.length + 48);
+  const columns = Math.min(4, Math.max(1, visual.nodes.length));
+  const width = 690;
+  const height = Math.max(190, Math.ceil(visual.nodes.length / columns) * 100 + 40);
   const state = visual.states?.[Math.min(stepIndex, visual.states.length - 1)];
-  const coords = visual.nodes.map((node, index) => ({ node, x: positions[index]?.[0] ?? 48 + index * 122, y: positions[index]?.[1] ?? 95 }));
+  const coords = visual.nodes.map((node, index) => ({ node, x: 92 + (index % columns) * (506 / Math.max(1, columns - 1)), y: 75 + Math.floor(index / columns) * 100 }));
   const edges = visual.edges.map((edge, index) => {
     const source = coords.find(({ node }) => node.id === edge.from);
     const target = coords.find(({ node }) => node.id === edge.to);
     if (!source || !target) return '';
     const active = state?.activeEdge === index;
     const edgeClass = ['edge', active && 'active', active && ['flow', 'pulse'].includes(state?.action) && `behavior-${state.action}`].filter(Boolean).join(' ');
-    return `<g><path class="${edgeClass}" d="M ${source.x + 49} ${source.y} L ${target.x - 49} ${target.y}" marker-end="url(#arrow)"/><text x="${(source.x + target.x) / 2}" y="${source.y - 12}" class="edge-label">${escapeHtml(edge.relation)}</text></g>`;
+    const dx = target.x - source.x; const dy = target.y - source.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const inset = 52;
+    const x1 = source.x + dx / length * inset; const y1 = source.y + dy / length * inset;
+    const x2 = target.x - dx / length * inset; const y2 = target.y - dy / length * inset;
+    return `<g><path class="${edgeClass}" d="M ${x1} ${y1} L ${x2} ${y2}" marker-end="url(#arrow)"/><text x="${(source.x + target.x) / 2}" y="${(source.y + target.y) / 2 - 7}" class="edge-label">${escapeHtml(edge.relation.replaceAll('_', ' '))}</text></g>`;
   }).join('');
   const nodes = coords.map(({ node, x, y }) => `<g class="node ${state?.activeNodes.includes(node.id) ? 'active' : ''} ${state?.action === 'pulse' && node.id === visual.edges[state.activeEdge]?.to ? 'behavior-pulse' : ''}"><rect x="${x - 49}" y="${y - 25}" width="98" height="50" rx="9"/><text x="${x}" y="${y - 2}">${escapeHtml(node.label)}</text><text x="${x}" y="${y + 13}" class="node-subtitle">${escapeHtml(node.subtitle ?? '')}</text></g>`).join('');
   container.classList.remove('empty-state');
-  container.innerHTML = `<svg class="visual-svg" viewBox="0 0 ${width} 190" role="img" aria-label="${escapeHtml(visual.type)}"><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#84978a" stroke-width="1.2"/></marker></defs>${edges}${nodes}</svg>`;
+  container.innerHTML = `<svg class="visual-svg" style="min-width:690px;min-height:${height}px" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(visual.type)}"><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#84978a" stroke-width="1.2"/></marker></defs>${edges}${nodes}</svg>`;
+  const active = container.querySelector?.('.node.active');
+  active?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
 }
 
 function renderPlot(container, graph, stepIndex) {

@@ -18,7 +18,7 @@ export function createWorkspaceProjection(result) {
       title: `Narration ${String(index + 1).padStart(2, '0')}`,
       text: segment.text,
       narration: segment.text,
-      visualState: segment.visualState,
+      visualState: typeof segment.visualState === 'number' ? segment.visualState : scene?.states?.length ? Math.min(index, scene.states.length - 1) : undefined,
     }))
     : fallbackSteps({ explanation, outputs, errors, unexecuted, scene });
 
@@ -39,8 +39,8 @@ export function createWorkspaceProjection(result) {
 
 function fallbackSteps({ explanation, outputs, errors, unexecuted, scene }) {
   const steps = [];
-  if (explanation) steps.push({ title: 'Explanation', text: explanation });
   if (scene?.states?.length) steps.push(...scene.states.map((state, index) => ({ title: state.title ?? `Visual frame ${index + 1}`, text: state.text ?? `Showing ${state.pointCount} plotted points.`, visualState: index })));
+  if (explanation) steps.push({ title: 'Explanation', text: explanation, visualState: scene?.states?.length ? scene.states.length - 1 : undefined });
   for (const error of errors) steps.push({ title: 'Execution error', text: error.message ?? String(error) });
   if (outputs.numericData?.length && scene?.source?.id !== 'execution-visualizer') steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
   if (scene && !steps.length) steps.push({ title: 'Visual result', text: 'Generated structured visual output.' });

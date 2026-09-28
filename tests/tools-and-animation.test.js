@@ -27,6 +27,16 @@ test('relationship scenes have progressive states visible in the renderer', asyn
   assert.match(container.innerHTML, /class="edge active"/);
 });
 
+test('playback begins with a visual frame and keeps every relationship reachable', async () => {
+  const result = await createBiktingRuntime().run({ text: 'Explain how an electric motor works', type: 'text' });
+  assert.equal(result.workspace.steps[0].visualState, 0);
+  assert.equal(result.workspace.steps.filter((step) => typeof step.visualState === 'number').length >= result.workspace.scene.states.length, true);
+  const container = { classList: { remove() {} }, innerHTML: '' };
+  renderGraph(container, result.workspace.scene, result.workspace.scene.states.length - 1);
+  assert.match(container.innerHTML, /min-height:\d+px/);
+  assert.match(container.innerHTML, /class="node active/);
+});
+
 test('invalid vector dimensions report an execution error', async () => {
   const result = await createBiktingRuntime().run({ text: 'Calculate dot product of [1,2] and [3,4,5]', type: 'text' });
   assert.ok(result.outputs.errors.length);

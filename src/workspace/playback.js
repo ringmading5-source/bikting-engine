@@ -17,10 +17,10 @@ export class PlaybackController {
   next() { if (this.index < this.steps.length - 1) this.show(this.index + 1); else this.stop(); }
   previous() { this.stop(); this.show(this.index - 1); }
   play() {
+    this.stop();
     const spokenSteps = this.steps.map((step, index) => ({ step, index, speech: step.narration || step.text })).filter(({ speech }) => typeof speech === 'string' && speech.trim());
     if (!spokenSteps.length || !('speechSynthesis' in window)) {
       if (!this.scene?.states?.length) return;
-      this.stop();
       const firstFrame = this.steps.findIndex((step) => typeof step.visualState === 'number');
       this.show(firstFrame < 0 ? 0 : firstFrame);
       this.timer = setInterval(() => {
@@ -29,8 +29,8 @@ export class PlaybackController {
       }, 1400);
       return;
     }
-    this.stop(); this.speaking = true;
-    let position = spokenSteps.findIndex(({ index }) => index >= this.index);
+    this.speaking = true;
+    let position = spokenSteps.findIndex(({ index }) => typeof this.steps[index].visualState === 'number');
     if (position < 0) position = 0;
     const speakNext = (nextPosition) => {
       if (!this.speaking || nextPosition >= spokenSteps.length) { this.speaking = false; return; }
