@@ -79,7 +79,7 @@ function createWebsiteWorker({ env, fetchImpl, search, memory, telemetry, inputR
       const payload = await response.json();
       const raw = payload.candidates?.[0]?.content?.parts?.map(part => part.text ?? '').join('');
       if (!raw) throw new Error('Website worker returned no output.');
-      return { output: JSON.parse(raw), inputTokens: payload.usageMetadata?.promptTokenCount, outputTokens: payload.usageMetadata?.candidatesTokenCount };
+      return { output: JSON.parse(raw), inputTokens: payload.usageMetadata?.promptTokenCount, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0) };
     },
     async interpretIntent() { throw new Error('Bounded website worker cannot interpret intent.'); },
     async reason() { throw new Error('Bounded website worker cannot reason about the project.'); },

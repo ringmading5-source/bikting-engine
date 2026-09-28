@@ -30,7 +30,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
           response.json = async () => {
             const payload = await readJson();
             const estimate = onModelCall?.({ ...details, latencyMs: now() - started, status: 'passed', inputTokensActual: payload.usageMetadata?.promptTokenCount,
-              outputTokens: payload.usageMetadata?.candidatesTokenCount });
+              outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0) });
             if (estimate !== undefined) payload.biktingEstimatedCostUsd = estimate;
             return payload;
           };
@@ -167,7 +167,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],
-      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus, knowledge, modelUsage: { calls: modelCalls, inputTokens: (payload.usageMetadata?.promptTokenCount ?? 0) + researchUsage.inputTokens, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + researchUsage.outputTokens, estimatedCostUsd: payload.biktingEstimatedCostUsd == null || researchUsage.estimatedCostUsd == null && request.knowledgeMode === 'web' ? null : payload.biktingEstimatedCostUsd + (researchUsage.estimatedCostUsd ?? 0) } },
+      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus, knowledge, modelUsage: { calls: modelCalls, inputTokens: (payload.usageMetadata?.promptTokenCount ?? 0) + researchUsage.inputTokens, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0) + researchUsage.outputTokens, estimatedCostUsd: payload.biktingEstimatedCostUsd == null || researchUsage.estimatedCostUsd == null && request.knowledgeMode === 'web' ? null : payload.biktingEstimatedCostUsd + (researchUsage.estimatedCostUsd ?? 0) } },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };
@@ -192,7 +192,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
 }
 
 function usageFrom(payload, calls) {
-  return { calls, inputTokens: payload.usageMetadata?.promptTokenCount ?? 0, outputTokens: payload.usageMetadata?.candidatesTokenCount ?? 0, estimatedCostUsd: payload.biktingEstimatedCostUsd ?? null };
+  return { calls, inputTokens: payload.usageMetadata?.promptTokenCount ?? 0, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0), estimatedCostUsd: payload.biktingEstimatedCostUsd ?? null };
 }
 
 function taskKey(request) { return createHash('sha256').update(`${request.knowledgeMode ?? 'model'}\0${request.text}`).digest('hex'); }

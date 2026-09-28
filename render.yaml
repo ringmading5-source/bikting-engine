@@ -14,5 +14,11 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
+      - key: GEMINI_INPUT_COST_PER_MILLION
+        value: "0.30"
+      - key: GEMINI_OUTPUT_COST_PER_MILLION
+        value: "2.50"
+      - key: BIKTING_WORKER_MAX_COST_USD
+        value: "0.05"
       - key: KNOWLEDGE_STORE_PATH
         value: data/knowledge-cache.json
