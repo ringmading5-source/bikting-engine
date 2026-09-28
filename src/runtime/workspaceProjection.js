@@ -44,7 +44,7 @@ function fallbackSteps({ explanation, outputs, errors, unexecuted, scene }) {
   for (const error of errors) steps.push({ title: 'Execution error', text: error.message ?? String(error) });
   if (outputs.numericData?.length && scene?.source?.id !== 'execution-visualizer') steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
   if (scene && !steps.length) steps.push({ title: 'Visual result', text: 'Generated structured visual output.' });
-  if (unexecuted.length) steps.push({ title: 'Unexecuted work', text: unexecuted.map((item) => item.metadata?.capability ?? item.requiredCapability ?? item.id).join(', ') });
+  if (unexecuted.length) steps.push({ title: 'Unexecuted work', text: `No connected tool can execute: ${unexecuted.map((item) => item.metadata?.capability ?? item.requiredCapability ?? item.id).join(', ')}.` });
   return steps;
 }
 

@@ -13,7 +13,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   const interpret = async (request) => {
     const baseline = await mockSemanticInterpreter(request);
     // Recognized intents already have structured inputs and registered tool routes.
-    if (['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate', 'build_website'].includes(baseline.intent) || baseline.concepts.includes('electric_motor') || (baseline.intent === 'explain' && baseline.context.domain === 'physics' && baseline.relationships.length)) {
+    if (baseline.context.task || ['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent) || baseline.concepts.includes('electric_motor') || (baseline.intent === 'explain' && baseline.context.domain === 'physics' && baseline.relationships.length)) {
       return withRelationshipProgram(baseline);
     }
     const body = JSON.stringify({

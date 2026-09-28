@@ -116,6 +116,19 @@ test('a website build request executes the builder without Gemini', async () => 
   assert.deepEqual(result.plan.capabilities, ['website.build']);
   assert.equal(result.workspace.scene.type, 'website');
   assert.match(result.workspace.scene.html, /Welcome to a bakery/);
+  assert.deepEqual(result.semantic.context.task, { action: 'build', target: 'website', capability: 'website.build' });
+  assert.deepEqual(result.semantic.relationships.map(({ from, relation, to }) => [from, relation, to]), [['build', 'produces', 'website']]);
+});
+
+test('intent engine preserves unsupported action targets rather than explaining them', async () => {
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => { throw new Error('Gemini should not be called'); } });
+  for (const [request, capability] of [['Build me a mobile app', 'artifact.build'], ['Deploy my website', 'website.deploy']]) {
+    const result = await createBiktingRuntime({ interpret }).run({ text: request, type: 'text' });
+    assert.deepEqual(result.plan.capabilities, [capability]);
+    assert.ok(result.outputs.unexecuted.some((item) => item.metadata?.capability === capability));
+    assert.equal(result.outputs.explanation, null);
+    assert.match(result.workspace.steps.at(-1).text, /No connected tool can execute/);
+  }
 });
 
 test('concurrent identical requests share one Gemini interpretation', async () => {

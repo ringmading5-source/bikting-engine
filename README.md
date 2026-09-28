@@ -20,6 +20,8 @@ The browser submits text to `POST /api/run`. Recognized calculations, plots, con
 
 Requests such as “Build me a website for a bakery” route to `website.build` without Gemini. The deterministic builder returns a single HTML file, displays it in a sandboxed preview, and offers a download. It creates a starter page with editable About and Contact placeholders; it does not publish the website or produce a custom app from arbitrary requirements.
 
+The intent resolver records an explicit action, target, and required capability before planning. For example, “Build me a mobile app” requests `artifact.build`, while “Deploy my website” requests `website.deploy`. Because these capabilities have no registered provider, the workspace reports them as unexecuted rather than replacing the requested action with an explanation. Additional action targets need dedicated capability providers to execute.
+
 ## Calculations and animation
 
 `GET /api/capabilities` lists available tool properties. Current deterministic calculations include arithmetic, equation plots, statistics, unit conversion, force and force series, numeric ranges, and vector magnitude/dot product. For example: `Calculate dot product of [1,2] and [3,4]` and `Calculate magnitude of [3,4]`.

@@ -1,6 +1,6 @@
 import { normalizeCapability } from '../types/capability.js';
 
-const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
+const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.deploy', 'artifact.build', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
 /** Build an ordered, capability-backed plan from structured semantic fields. */
 export function planIntent(semantic, registries = {}) {
@@ -78,8 +78,9 @@ export function deriveRequiredCapabilities(semantic) {
   if ((domain === 'physics' && !structuredForceCalculation && !isForceRangeRequest(semantic)) || outputs.has('physical_state') || outputs.has('vectors') || outputs.has('fields') || concepts.has('electric_motor')) required.add('physics.represent');
   if (domain === 'statistics' || domain === 'data' || intent === 'analyze_dataset' || outputs.has('statistical_analysis') || outputs.has('trend_analysis')) required.add('statistics.analyze');
   if (domain === 'coding' || intent === 'write_code' || outputs.has('code')) required.add('code.execute');
-  if (intent === 'build_website') required.add('website.build');
-  if (outputs.has('visual') || outputs.has('graph') || outputs.has('structured_visual_data') || outputs.has('structured_scene') || domain === 'visualization' || relationships.length) required.add('visual.scene');
+  const taskCapability = semantic.context?.task?.capability;
+  if (['website.build', 'website.deploy', 'artifact.build'].includes(taskCapability)) required.add(taskCapability);
+  if (!taskCapability && (outputs.has('visual') || outputs.has('graph') || outputs.has('structured_visual_data') || outputs.has('structured_scene') || domain === 'visualization' || relationships.length)) required.add('visual.scene');
   if (intent === 'explain' || outputs.has('explanation')) required.add('text.generate');
   if (outputs.has('voice') || outputs.has('audio')) required.add('voice.synthesize');
   if (semantic.modality === 'vision' || outputs.has('visual_semantics') || intent === 'interpret_visual') required.add('vision.interpret');
