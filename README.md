@@ -83,4 +83,10 @@ Supported structured operations include arithmetic expressions (`+ - * / % ^` an
 
 ## Current scope
 
+### Capability resolution before execution
+
+`CapabilityResolutionLoop` checks a fixed canonical plan against the installed capability registry, provider registry, user access grants, executable adapters, required inputs, and unresolved knowledge requirements. Each check returns concrete next actions and can be repeated after those dependencies change. A supplied catalog of offers can suggest providers for missing capabilities. The loop stops after a configurable number of checks; it never installs a tool, grants access, or invokes a provider. `ready_for_run` supplies a prepared plan, but execution still requires a separate guarded request. Browser previews show the current next actions under **NEXT ACTION**.
+
+The present pilot has two owned executable tools and read-only public search. Catalog offers, external tool installation, account connections, and interactive input collection require additional integrations before this can handle arbitrary tasks.
+
 Text input and the electric motor science module form the working vertical slice. Other domain recognition currently routes to a structured capability placeholder until a module or execution tool for that domain is registered. Voice is output-only in this slice; voice input and external AI/API adapters remain extension points.
