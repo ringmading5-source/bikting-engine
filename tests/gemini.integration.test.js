@@ -9,7 +9,6 @@ test('Gemini interpretation becomes a validated semantic input to the engine', a
     calls++;
     assert.match(url, /gemini-2\.5-flash:generateContent$/);
     assert.equal(options.headers['x-goog-api-key'], 'test-key');
-    if (calls === 2) return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ steps: [{ from: 'plant', relation: 'causes', to: 'growth', action: 'pulse', narration: 'The plant causes growth.' }] }) }] } }] }) };
     return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({
       intent: 'explain', domain: 'science', concepts: ['plant'],
       relationships: [{ from: 'plant', relation: 'causes', to: 'growth' }, { from: 'plant', relation: 'unregistered_tool', to: 'money' }],
@@ -17,7 +16,7 @@ test('Gemini interpretation becomes a validated semantic input to the engine', a
     }) }] } }] }) };
   } });
   const result = await createBiktingRuntime({ interpret }).run({ text: 'Explain plant growth', type: 'text' });
-  assert.equal(calls, 2);
+  assert.equal(calls, 1);
   assert.equal(result.semantic.intent, 'explain');
   assert.deepEqual(result.semantic.relationships.map((item) => item.relation), ['causes']);
   assert.ok(result.plan.requiredCapabilities.some((item) => item.requiredCapability === 'text.generate'));
@@ -96,9 +95,17 @@ test('identical requests reuse their full interpretation and visual behavior', a
   } });
   const first = await interpret({ text: 'Explain water and plants' });
   const second = await interpret({ text: 'Explain water and plants' });
-  assert.equal(calls, 2);
-  assert.equal(first.context.visualProgramStatus, 'generated');
+  assert.equal(calls, 1);
+  assert.equal(first.context.visualProgramStatus, 'relationship_engine');
   assert.deepEqual(second, first);
+});
+
+test('recognized relationship intent runs its visual behavior without Gemini', async () => {
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => { throw new Error('Gemini should not be called'); } });
+  const result = await createBiktingRuntime({ interpret }).run({ text: 'Explain how an electric motor works', type: 'text' });
+  assert.equal(result.workspace.scene.states.length, result.semantic.relationships.length);
+  assert.equal(result.workspace.scene.states[0].action, 'flow');
+  assert.equal(result.semantic.context.visualProgramStatus, 'relationship_engine');
 });
 
 test('concurrent identical requests share one Gemini interpretation', async () => {

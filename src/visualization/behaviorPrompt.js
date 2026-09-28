@@ -2,13 +2,24 @@ import { selectVisualTool } from './visualToolCatalog.js';
 
 const actions = new Set(['highlight', 'flow', 'pulse']);
 
+/** Execute relationship semantics with the browser renderer, without a model call. */
+export function programFromRelationships(relationships) {
+  return { language: 'bikting-visual-v1', steps: relationships.map(({ from, relation, to }) => ({
+    from, relation, to,
+    action: /flow|transfer|move|transform/.test(relation) ? 'flow' : /cause|produce|activate|increase|decrease/.test(relation) ? 'pulse' : 'highlight',
+    narration: `${label(from)} ${relation.replaceAll('_', ' ')} ${label(to)}.`
+  })) };
+}
+
+function label(value) { return String(value).replaceAll('_', ' '); }
+
 /** Compile a small prompt from verified relationship IDs and the renderer that can actually run. */
 export function compileBehaviorPrompt({ domain, artifact, relationships }) {
   const selection = selectVisualTool({ domain, artifact });
   return {
     selection,
     text: JSON.stringify({
-      task: 'Propose visual behavior instructions as JSON. Use only the listed relationships, in a meaningful teaching order. Each step must reference one exact from/relation/to triple. Actions: highlight, flow, pulse. A flow animates movement along the relationship; a pulse emphasizes an effect; highlight focuses both concepts. Write one concise narration sentence per step. Do not invent objects, facts, code, formulas, physics, or unavailable renderer operations.',
+      task: 'Relationship behavior contract for a visualization tool. Use only the listed relationships, in teaching order. Each step references one exact from/relation/to triple. Actions: highlight, flow, pulse. Flow animates movement; pulse emphasizes an effect; highlight focuses both concepts. The engine executes these behaviors directly. Do not invent objects, facts, formulas, physics, or unavailable renderer operations.',
       domain, requestedArtifact: artifact, executableRenderer: selection.selected.id,
       relationships: relationships.map(({ from, relation, to }) => ({ from, relation, to }))
     })

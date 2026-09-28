@@ -1,6 +1,6 @@
 import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticInterpreter.js';
 import { relationshipTypes } from '../bikting/core/relationships/RelationshipTypeRegistry.js';
-import { compileBehaviorPrompt, validateVisualProgram } from '../visualization/behaviorPrompt.js';
+import { compileBehaviorPrompt, programFromRelationships } from '../visualization/behaviorPrompt.js';
 
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
 const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
@@ -9,12 +9,13 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
   let selectedModel = model;
-  const visualProgramCache = new Map();
   const interpretationCache = new Map();
   const interpret = async (request) => {
     const baseline = await mockSemanticInterpreter(request);
-    // Deterministic operations use only values extracted from the user's actual input.
-    if (['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent)) return baseline;
+    // Recognized intents already have structured inputs and registered tool routes.
+    if (['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent) || baseline.concepts.includes('electric_motor') || (baseline.intent === 'explain' && baseline.context.domain === 'physics' && baseline.relationships.length)) {
+      return withRelationshipProgram(baseline);
+    }
     const body = JSON.stringify({
       systemInstruction: { parts: [{ text: 'Interpret the user request for Bikting. Return a short factual explanation and semantic labels. Never claim to have executed tools, built a website, accessed accounts, or verified facts. Only include relationships clearly supported by the request. Do not include executable code or numeric tool inputs.' }] },
       contents: [{ role: 'user', parts: [{ text: request.text }] }],
@@ -62,33 +63,12 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     const explanation = typeof proposed.explanation === 'string' ? proposed.explanation.slice(0, 3000).trim() : '';
     const domain = String(proposed.domain ?? 'general').slice(0, 40);
     const visualArtifact = visualArtifacts.has(proposed.visualArtifact) ? proposed.visualArtifact : 'diagram';
-    let visualProgram = null; let visualPrompt = null; let visualProgramStatus = relationships.length ? 'fallback' : 'not_needed';
+    let visualProgram = null; let visualPrompt = null; let visualProgramStatus = 'not_needed';
     if (relationships.length) {
       const compiled = compileBehaviorPrompt({ domain, artifact: visualArtifact, relationships });
       visualPrompt = compiled.text;
-      const cacheKey = compiled.text;
-      if (visualProgramCache.has(cacheKey)) { visualProgram = visualProgramCache.get(cacheKey); visualProgramStatus = 'cached'; }
-      else {
-        try {
-          const visualResponse = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent`, {
-            method: 'POST', signal: AbortSignal.timeout(12000),
-            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: compiled.text }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: {
-              type: 'OBJECT', properties: { steps: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
-                from: { type: 'STRING' }, relation: { type: 'STRING' }, to: { type: 'STRING' }, action: { type: 'STRING', enum: ['highlight', 'flow', 'pulse'] }, narration: { type: 'STRING' }
-              }, required: ['from', 'relation', 'to', 'action', 'narration'] } } }, required: ['steps']
-            } } })
-          });
-          if (visualResponse.ok) {
-            const data = await visualResponse.json();
-            const visualText = data.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
-            visualProgram = validateVisualProgram(JSON.parse(visualText), relationships);
-            visualProgramStatus = 'generated';
-            if (visualProgramCache.size >= 100) visualProgramCache.delete(visualProgramCache.keys().next().value);
-            visualProgramCache.set(cacheKey, visualProgram);
-          }
-        } catch { /* The deterministic relationship renderer remains available. */ }
-      }
+      visualProgram = programFromRelationships(relationships);
+      visualProgramStatus = 'relationship_engine';
     }
     return {
       intent: proposed.intent, modality: 'text', concepts: concepts.map(slug),
@@ -108,6 +88,12 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     pending.catch(() => { if (interpretationCache.get(key) === pending) interpretationCache.delete(key); });
     return pending;
   };
+}
+
+function withRelationshipProgram(semantic) {
+  if (!semantic.relationships.length) return semantic;
+  const visualPrompt = compileBehaviorPrompt({ domain: semantic.context.domain, artifact: 'diagram', relationships: semantic.relationships }).text;
+  return { ...semantic, context: { ...semantic.context, visualPrompt, visualProgram: programFromRelationships(semantic.relationships), visualProgramStatus: 'relationship_engine' } };
 }
 
 function cleanStrings(value, limit) { return (Array.isArray(value) ? value : []).filter((item) => typeof item === 'string').map((item) => item.slice(0, 80).trim()).filter(Boolean).slice(0, limit); }
