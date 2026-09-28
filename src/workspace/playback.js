@@ -1,6 +1,7 @@
 export class PlaybackController {
-  constructor({ result, onStep }) {
+  constructor({ result, onStep, preferences = {} }) {
     this.result = result;
+    this.preferences = preferences;
     this.steps = result.workspace?.steps ?? result.explanation ?? [];
     this.scene = result.workspace?.scene ?? result.visual;
     this.onStep = onStep;
@@ -37,7 +38,8 @@ export class PlaybackController {
       const { speech, index } = spokenSteps[nextPosition];
       this.show(index);
       const utterance = new SpeechSynthesisUtterance(speech);
-      utterance.rate = 0.95;
+      utterance.rate = this.preferences.rate ?? 0.95;
+      utterance.lang = this.preferences.language ?? 'en-US';
       utterance.onend = () => speakNext(nextPosition + 1);
       utterance.onerror = () => { this.speaking = false; };
       speechSynthesis.speak(utterance);

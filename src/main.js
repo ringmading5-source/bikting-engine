@@ -1,3 +1,4 @@
+import { setupHome } from './home/home.js';
 import { readTextRequest } from './input/textInput.js';
 import { renderGraph } from './workspace/renderGraph.js';
 import { PlaybackController } from './workspace/playback.js';
@@ -8,6 +9,30 @@ const elements = { title: byId('workspace-title'), caption: byId('visual-caption
 let playback;
 let testToken = '';
 let latestRun = 0;
+let activeProject = null;
+let voicePreferences = { language: 'en-US', rate: 0.95 };
+const home = setupHome({
+  onOpen: () => playback?.stop(),
+  onPreferences: (preferences) => { voicePreferences = preferences; },
+  onNew: () => {
+    latestRun++; activeProject = null; playback?.stop(); playback = null;
+    byId('prompt').value = ''; byId('clear-sketch').click();
+    byId('intent-checkpoint').hidden = true; byId('run-usage').textContent = '';
+    renderGraph(elements.visual, null); elements.title.textContent = 'Your workspace is ready';
+    elements.explanation.textContent = 'Enter a question or an idea to start.';
+    elements.caption.textContent = ''; elements.count.textContent = '—'; elements.progress.style.width = '0%'; elements.stage.textContent = 'WAITING';
+    elements.play.disabled = elements.next.disabled = elements.previous.disabled = true;
+    renderTrace([]); byId('prompt').focus();
+  },
+  onResume: (project) => {
+    latestRun++; activeProject = project.id; playback?.stop();
+    byId('prompt').value = project.text; byId('intent-checkpoint').hidden = true;
+    elements.sketch.restore?.(project.sketch, project.sketchLayout);
+    if (project.result) displayResult(project.result);
+    else { renderGraph(elements.visual, null); elements.stage.textContent = 'DRAFT'; elements.explanation.textContent = 'Draft restored. Run request to review its intent.'; elements.play.disabled = elements.next.disabled = elements.previous.disabled = true; }
+    byId('prompt').focus();
+  }
+});
 
 setupSketch(elements.sketch, byId('clear-sketch'), byId('concept-image'), byId('puzzle-pieces'));
 setupVoice(byId('voice-input'), byId('prompt'));
@@ -15,6 +40,8 @@ readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(r
 
 async function runPipeline(request) {
   const run = ++latestRun;
+  const projectId = home.record(request, null, activeProject ?? undefined);
+  activeProject = projectId;
   let completed = false;
   const checkpoint = byId('intent-checkpoint');
   checkpoint.hidden = true;
@@ -80,13 +107,18 @@ async function runPipeline(request) {
   if (run !== latestRun) return;
   completed = true;
   clearInterval(stageTimer);
+  home.record(request, result, projectId);
+  displayResult(result);
+}
+
+function displayResult(result) {
   renderTrace(result.trace);
   const usage = result.usage;
   if (usage) byId('run-usage').textContent = `${usage.modelCalls} model call${usage.modelCalls === 1 ? '' : 's'} · ${usage.inputTokens + usage.outputTokens} reported tokens · ${usage.deterministicToolCalls} deterministic tool call${usage.deterministicToolCalls === 1 ? '' : 's'}${usage.cacheHit ? ' · cache hit' : ''}. Exact cost unavailable.`;
   elements.stage.textContent = result.workspace.status.toUpperCase();
   renderGraph(elements.visual, result.workspace.scene, 0);
   playback?.stop();
-  playback = new PlaybackController({ result, onStep: (index, step, state) => {
+  playback = new PlaybackController({ result, preferences: voicePreferences, onStep: (index, step, state) => {
     renderStep(step, index, result.workspace.steps.length, state, elements);
     renderGraph(elements.visual, result.workspace.scene, typeof step.visualState === 'number' ? step.visualState : index);
     elements.stage.textContent = result.workspace.status.toUpperCase();
@@ -118,14 +150,21 @@ function setupSketch(canvas, clear, upload, pieces) {
   const renderPieces = () => { if (!pieces || !image) return; pieces.innerHTML = ''; const cols = 3; const rows = 3; if (!order.length) order = Array.from({ length: 9 }, (_, i) => i); order.forEach((source, slot) => { const tile = document.createElement('canvas'); tile.width = 120; tile.height = 70; tile.draggable = true; tile.className = 'puzzle-piece'; const tc = tile.getContext('2d'); const sx = source % cols * image.width / cols; const sy = Math.floor(source / cols) * image.height / rows; tc.drawImage(image, sx, sy, image.width / cols, image.height / rows, 0, 0, tile.width, tile.height); tile.title = `Piece ${source + 1}; drag to reorder`; tile.addEventListener('dragstart', (event) => event.dataTransfer.setData('text/plain', String(slot))); tile.addEventListener('dragover', (event) => event.preventDefault()); tile.addEventListener('drop', (event) => { event.preventDefault(); const from = Number(event.dataTransfer.getData('text/plain')); [order[from], order[slot]] = [order[slot], order[from]]; renderPieces(); draw(); }); pieces.appendChild(tile); }); };
   upload?.addEventListener('change', () => { const file = upload.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { image = new Image(); image.onload = () => { order = []; draw(); renderPieces(); }; image.src = reader.result; }; reader.readAsDataURL(file); });
   clear?.addEventListener('click', () => { image = null; order = []; context.clearRect(0, 0, canvas.width, canvas.height); if (pieces) pieces.innerHTML = ''; if (upload) upload.value = ''; });
+  canvas.restore = (data, layout) => {
+    clear.click();
+    if (!data) return;
+    const restored = new Image();
+    restored.onload = () => { image = restored; order = layout?.pieces?.length === 9 ? [...layout.pieces] : []; draw(); renderPieces(); };
+    restored.src = data;
+  };
   canvas.layout = () => image ? { type: 'image-puzzle', pieces: [...order], columns: 3, rows: 3 } : null;
 }
 
 function setupVoice(button, field) {
   const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!button || !Recognition) { if (button) button.disabled = true; return; }
-  const recognition = new Recognition(); recognition.lang = 'en-US'; recognition.interimResults = false;
-  button.addEventListener('click', () => { if (button.classList.contains('listening')) return; button.classList.add('listening'); button.textContent = '● Listening'; try { recognition.start(); } catch { recognition.onend(); } });
+  const recognition = new Recognition(); recognition.lang = voicePreferences.language; recognition.interimResults = false;
+  button.addEventListener('click', () => { if (button.classList.contains('listening')) return; button.classList.add('listening'); button.textContent = '● Listening'; try { recognition.lang = voicePreferences.language; recognition.start(); } catch { recognition.onend(); } });
   recognition.onresult = (event) => { field.value = event.results[0][0].transcript; };
   recognition.onend = () => { button.classList.remove('listening'); button.textContent = '● Speak'; };
   recognition.onerror = () => recognition.onend();

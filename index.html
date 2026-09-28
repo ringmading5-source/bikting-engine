@@ -14,12 +14,6 @@
         <div class="top-actions"><button id="voice-input" class="voice-button" type="button" aria-label="Speak your question">● Speak</button><div class="system-state"><i></i> ENGINE READY</div></div>
       </header>
 
-      <section class="intro">
-        <p class="eyebrow">UNIVERSAL AI INTERACTION SYSTEM</p>
-        <h1>Turn an idea into<br /><span>a working model.</span></h1>
-        <p class="intro-copy">One orchestration layer for intent, tools, knowledge, and a workspace that responds.</p>
-      </section>
-
       <section class="composer" aria-label="Question and sketch space">
         <div class="space-tabs"><b>QUESTION SPACE</b><span>SKETCH SPACE</span></div>
         <label for="prompt">What would you like to understand or create?</label>
@@ -61,7 +55,18 @@
       </details>
       <footer>BIKTING ENGINE <span>·</span> MODULAR BY DESIGN</footer>
     </main>
-    <a class="home-profile" href="#" aria-label="Home and profile"><span>⌂</span><small>Profile</small></a>
+    <button class="home-profile" id="home-toggle" type="button" aria-label="Open Home and profile" aria-haspopup="dialog" aria-controls="home-panel" aria-expanded="false"><span>⌂</span><small>Home</small></button>
+    <dialog id="home-panel" aria-labelledby="home-title">
+      <div class="home-heading"><h1 id="home-title">Your Bikting Home</h1><button id="close-home" type="button">Back to workspace</button></div>
+      <p>Continue an idea, revisit a creation, or start something new.</p>
+      <button id="new-project" type="button">＋ New project</button>
+      <p id="storage-note" role="status"></p>
+      <section><h2>Continue working</h2><div id="saved-projects"></div></section>
+      <section><h2>My creations</h2><div id="saved-creations" class="home-creations"></div></section>
+      <section><h2>Tools and connections</h2><div id="home-tools" aria-live="polite"></div></section>
+      <section><h2>Voice preferences</h2><label for="voice-language">Language</label><select id="voice-language"><option value="en-US">English (US)</option><option value="en-GB">English (UK)</option><option value="ar">Arabic</option><option value="sw">Swahili</option></select><label for="voice-rate">Speaking speed</label><select id="voice-rate"><option value="0.75">Slow</option><option value="0.95">Normal</option><option value="1.2">Fast</option></select><p>Voice availability depends on your browser. This does not translate results.</p></section>
+      <section><h2>Usage</h2><p id="home-usage"></p></section>
+    </dialog>
     <script defer src="/vendor/plotly.min.js"></script>
     <script type="module" src="./src/main.js"></script>
   </body>
