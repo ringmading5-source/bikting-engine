@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bikting-private-pilot
+    runtime: node
+    buildCommand: npm ci && npm run build:runtime
+    startCommand: node --experimental-loader ./scripts/extensionless-loader.mjs server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PILOT_MODE
+        value: 'true'
+      - key: PILOT_USERNAME
+        sync: false
+      - key: PILOT_PASSWORD
+        sync: false
