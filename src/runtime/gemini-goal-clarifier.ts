@@ -10,11 +10,16 @@ export function createGeminiGoalClarifier(config: { apiKey: string; model: strin
       signal: AbortSignal.timeout(20000),
     });
     if (!response.ok) throw new Error(`Intent clarifier failed (${response.status}).`);
-    const body = await response.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const body = await response.json() as { candidates?: { content?: { parts?: { text?: string }[] } }[]; usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number } };
     const text = body.candidates?.[0]?.content?.parts?.map(({ text }) => text ?? '').join('');
     if (!text || text.length > 4000) throw new Error('Intent clarifier returned no bounded response.');
     let value: unknown;
     try { value = JSON.parse(text); } catch { throw new Error('Intent clarifier returned invalid JSON.'); }
-    return value as GoalSuggestion;
+    const suggestion = value as GoalSuggestion;
+    const usage = body.usageMetadata;
+    if (usage && [usage.promptTokenCount, usage.candidatesTokenCount, usage.totalTokenCount].every((count) => typeof count === 'number' && Number.isFinite(count) && count >= 0)) {
+      suggestion.usage = { promptTokens: usage.promptTokenCount!, candidateTokens: usage.candidatesTokenCount!, totalTokens: usage.totalTokenCount! };
+    }
+    return suggestion;
   } };
 }
