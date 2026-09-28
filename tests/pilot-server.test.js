@@ -69,3 +69,13 @@ test('website tool streams canonical events and validated files', async () => {
     assert.deepEqual(Object.keys(entries.at(-1).result.files).sort(), ['index.html', 'script.js', 'styles.css']);
   } finally { server.stop(); }
 });
+
+test('LLM worker stays disabled without server credentials', async () => {
+  const server = await startServer({ GEMINI_API_KEY: '', GEMINI_MODEL: '' });
+  try {
+    const route = await fetch(`${server.base}/api/route`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: 'Calculate 2 + 2' }) });
+    assert.equal((await route.json()).workerAvailable, false);
+    const response = await fetch(`${server.base}/api/agent/live`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ goal: 'Calculate 2 + 2' }) });
+    assert.equal(response.status, 400);
+  } finally { server.stop(); }
+});
