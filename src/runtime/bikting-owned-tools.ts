@@ -25,8 +25,8 @@ export function createBiktingOwnedTools() {
   ];
   capabilities.registerCapability({ id: 'math.calculate', kind: 'capability', name: 'Local arithmetic', operations: ['calculate'], inputs: [{ name: 'expression', type: 'string', required: true }], outputs: [{ name: 'numericResult', type: 'number' }] });
   capabilities.registerCapability({ id: 'code.scaffold', kind: 'capability', name: 'Local website starter', operations: ['scaffold'], inputs: [], outputs: [{ name: 'files', type: 'workspace_files' }] });
-  providers.register({ id: 'math.calculator', name: 'Bikting calculator', capabilityIds: ['math.calculate'], executorKind: 'deterministic', availability: 'available', metadata: { owner: 'bikting', installed: true } });
-  providers.register({ id: 'local.website-scaffold', name: 'Bikting website template', capabilityIds: ['code.scaffold'], executorKind: 'deterministic', availability: 'available', metadata: { owner: 'bikting', installed: true } });
+  providers.register({ id: 'math.calculator', name: 'Bikting calculator', capabilityIds: ['math.calculate'], properties: { operations: ['calculate'], inputs: [{ name: 'expression', type: 'string' }], outputs: [{ name: 'numericResult', type: 'number' }] }, executorKind: 'deterministic', availability: 'available', metadata: { owner: 'bikting', installed: true } });
+  providers.register({ id: 'local.website-scaffold', name: 'Bikting website template', capabilityIds: ['code.scaffold'], properties: { operations: ['scaffold'], inputs: [], outputs: [{ name: 'files', type: 'workspace_files' }] }, executorKind: 'deterministic', availability: 'available', metadata: { owner: 'bikting', installed: true } });
   invoker.register({ providerId: 'math.calculator', capabilityIds: ['math.calculate'], async invoke({ input }) { return calculatorTool.execute(input); } });
   invoker.register({ providerId: 'local.website-scaffold', capabilityIds: ['code.scaffold'], async invoke() { return { files: createWebsiteScaffold() }; } });
   return { capabilities, providers, invoker, installed: Object.freeze(installed.map((tool) => Object.freeze({ ...tool }))) };
