@@ -74,7 +74,7 @@ export async function mockSemanticInterpreter(request) {
     intent = 'analyze_dataset'; domain = 'statistics'; concepts = ['dataset_trend']; requestedOutputs = ['trend_analysis', 'explanation'];
   } else if (/\bcalculate\b|\bsolve\b/i.test(text)) {
     intent = 'calculate'; domain = 'mathematics';
-    const expression = /(?:calculate|solve)\s+(.+?)(?:[?.!]|$)/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
+    const expression = /(?:calculate|solve)\s+(.+?)[?!]?$/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
     variables = { expression }; requestedOutputs = ['numeric_result', 'equation'];
   } else if (/\bexplain\b/i.test(text)) {
     intent = 'explain'; requestedOutputs = ['explanation'];
