@@ -11,7 +11,7 @@
     <main class="shell">
       <header class="topbar">
         <a class="brand" href="#" aria-label="Bikting Engine home"><span class="brand-mark">b</span><span>Bikting <span class="muted">Engine</span></span></a>
-        <div class="system-state"><i></i> ENGINE READY</div>
+        <div class="top-actions"><button id="voice-input" class="voice-button" type="button" aria-label="Speak your question">● Speak</button><div class="system-state"><i></i> ENGINE READY</div></div>
       </header>
 
       <section class="intro">
@@ -20,7 +20,8 @@
         <p class="intro-copy">One orchestration layer for intent, tools, knowledge, and a workspace that responds.</p>
       </section>
 
-      <section class="composer" aria-label="Ask Bikting">
+      <section class="composer" aria-label="Question and sketch space">
+        <div class="space-tabs"><b>QUESTION SPACE</b><span>SKETCH SPACE</span></div>
         <label for="prompt">What would you like to understand or create?</label>
         <form id="request-form">
           <textarea id="prompt" rows="2" placeholder="Explain how an electric motor works." required></textarea>
@@ -53,6 +54,7 @@
       </details>
       <footer>BIKTING ENGINE <span>·</span> MODULAR BY DESIGN</footer>
     </main>
+    <a class="home-profile" href="#" aria-label="Home and profile"><span>⌂</span><small>Profile</small></a>
     <script defer src="/vendor/plotly.min.js"></script>
     <script type="module" src="./src/main.js"></script>
   </body>
