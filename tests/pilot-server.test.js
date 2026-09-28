@@ -79,3 +79,19 @@ test('LLM worker stays disabled without server credentials', async () => {
     assert.equal(response.status, 400);
   } finally { server.stop(); }
 });
+
+test('unified goal endpoint asks about website scope and streams a verified local result without a model', async () => {
+  const server = await startServer({ GEMINI_API_KEY: '', GEMINI_MODEL: '' });
+  try {
+    const post = (path, value) => fetch(`${server.base}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(value) });
+    const question = (await (await post('/api/goal', { goal: 'Build for me my personal website' })).json()).decision;
+    assert.equal(question.status, 'needs_input'); assert.equal(question.modelCalls, 0);
+    const ready = (await (await post('/api/goal', { goal: 'Build for me my personal website', answers: { websiteScope: 'starter' } })).json()).decision;
+    assert.equal(ready.status, 'ready');
+    const stream = await post('/api/goal/live', { goal: 'Calculate 125 * 48' });
+    const entries = (await stream.text()).trim().split('\n').map(JSON.parse);
+    assert.ok(entries.some(({ event }) => event?.type === 'provider_invoked'));
+    assert.equal(entries.at(-1).result.result.value, 6000);
+    assert.equal(entries.at(-1).result.modelCalls, 0);
+  } finally { server.stop(); }
+});
