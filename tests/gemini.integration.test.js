@@ -33,14 +33,14 @@ test('a missing model reports available IDs without exposing the API key', async
     ? { ok: false, status: 404 }
     : { ok: true, json: async () => ({ models: [{ name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] }] }) } });
   await assert.rejects(interpret({ text: 'Explain cells' }), (error) => {
-    assert.match(error.message, /wrong-model.*not found/);
+    assert.match(error.message, /No available Gemini text model.*Tried: wrong-model/);
     assert.match(error.message, /gemini-2.5-flash/);
     assert.doesNotMatch(error.message, /private-key/);
     return true;
   });
 });
 
-test('an unavailable default model retries a listed Flash-Lite model once', async () => {
+test('an unavailable default model retries a listed Flash-Lite model', async () => {
   const requests = [];
   const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url) => {
     requests.push(url);
@@ -51,4 +51,32 @@ test('an unavailable default model retries a listed Flash-Lite model once', asyn
   const result = await interpret({ text: 'Explain cells' });
   assert.equal(requests.length, 3);
   assert.equal(result.provenance[0].detail, 'gemini-2.5-flash-lite');
+});
+
+test('tries advertised text models in order, stopping at the first success', async () => {
+  const attempted = [];
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url) => {
+    if (url.includes('/models?')) return { ok: true, json: async () => ({ models: [
+      { name: 'models/gemini-3-pro', supportedGenerationMethods: ['generateContent'] },
+      { name: 'models/gemini-3.1-flash-lite', supportedGenerationMethods: ['generateContent'] },
+      { name: 'models/gemini-2.5-flash-lite', supportedGenerationMethods: ['generateContent'] },
+      { name: 'models/gemini-image', supportedGenerationMethods: ['generateContent'] }
+    ] }) };
+    attempted.push(url.match(/models\/([^/:]+):generateContent/)[1]);
+    return attempted.length < 3 ? { ok: false, status: 404 } : { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ intent: 'explain', domain: 'science', concepts: ['cell'], relationships: [], explanation: 'A cell is a living unit.' }) }] } }] }) };
+  } });
+  const result = await interpret({ text: 'Explain cells' });
+  assert.deepEqual(attempted, ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-3.1-flash-lite']);
+  assert.equal(result.provenance[0].detail, 'gemini-3.1-flash-lite');
+});
+
+test('quota errors stop model retries', async () => {
+  let calls = 0;
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url) => {
+    calls++;
+    if (url.includes('/models?')) return { ok: true, json: async () => ({ models: [{ name: 'models/gemini-2.5-flash-lite', supportedGenerationMethods: ['generateContent'] }] }) };
+    return { ok: false, status: calls === 1 ? 404 : 429 };
+  } });
+  await assert.rejects(interpret({ text: 'Explain cells' }), /429/);
+  assert.equal(calls, 3);
 });

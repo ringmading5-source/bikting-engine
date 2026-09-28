@@ -29,28 +29,20 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         body
       });
     let response = await generate(selectedModel);
-    if (!response.ok) {
-      if (response.status === 404) {
-        let available = [];
-        try {
-          const modelsResponse = await fetchImpl('https://generativelanguage.googleapis.com/v1beta/models?pageSize=100', {
-            headers: { 'x-goog-api-key': apiKey }, signal: AbortSignal.timeout(5000)
-          });
-          if (modelsResponse.ok) {
-            const data = await modelsResponse.json();
-            available = (data.models ?? []).filter((item) => item.supportedGenerationMethods?.includes('generateContent'))
-              .map((item) => item.name?.replace(/^models\//, '')).filter((name) => /^[a-zA-Z0-9._-]+$/.test(name)).slice(0, 8);
-          }
-        } catch { /* Model discovery is diagnostic only. */ }
-        const fallback = ['gemini-2.5-flash-lite', 'gemini-3.1-flash-lite'].find((candidate) => candidate !== selectedModel && available.includes(candidate));
-        if (fallback) {
-          response = await generate(fallback);
-          if (response.ok) selectedModel = fallback;
-        }
-        if (response.status === 404) throw new Error(`Gemini model "${selectedModel}" was not found for this API key. ${available.length ? `Available generateContent models: ${available.join(', ')}. ` : ''}Check GEMINI_MODEL in Render; use an exact model ID shown in Google AI Studio.`);
+    if (response.status === 404) {
+      const available = await listTextModels(fetchImpl, apiKey);
+      const tried = [selectedModel];
+      for (const candidate of available) {
+        if (candidate === selectedModel) continue;
+        tried.push(candidate);
+        response = await generate(candidate);
+        if (response.ok) { selectedModel = candidate; break; }
+        // A bad key, quota, or invalid request cannot be fixed by trying another model.
+        if (response.status !== 404) break;
       }
-      if (!response.ok) throw new Error(`Gemini request failed (${response.status}). Check API key, quota, and model access.`);
+      if (response.status === 404) throw new Error(`No available Gemini text model accepted generateContent. Tried: ${tried.join(', ')}. Check model access in Google AI Studio.`);
     }
+    if (!response.ok) throw new Error(`Gemini request failed (${response.status}). Check API key, quota, and model access.`);
     const payload = await response.json();
     const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
     if (!text) throw new Error('Gemini returned no interpretation.');
@@ -76,3 +68,27 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
 
 function cleanStrings(value, limit) { return (Array.isArray(value) ? value : []).filter((item) => typeof item === 'string').map((item) => item.slice(0, 80).trim()).filter(Boolean).slice(0, limit); }
 function slug(value) { return value.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '').slice(0, 80); }
+
+async function listTextModels(fetchImpl, apiKey) {
+  const names = new Set();
+  let pageToken;
+  for (let page = 0; page < 10; page++) {
+    const query = new URLSearchParams({ pageSize: '100', ...(pageToken ? { pageToken } : {}) });
+    let response;
+    try { response = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models?${query}`, { headers: { 'x-goog-api-key': apiKey }, signal: AbortSignal.timeout(5000) }); }
+    catch { break; }
+    if (!response.ok) break;
+    const data = await response.json();
+    for (const item of data.models ?? []) {
+      const name = item.name?.replace(/^models\//, '');
+      if (item.supportedGenerationMethods?.includes('generateContent') && /^gemini-[a-zA-Z0-9._-]+$/.test(name) && !/(image|audio|live|tts|embed|transcribe|computer-use)/i.test(name)) names.add(name);
+    }
+    pageToken = data.nextPageToken;
+    if (!pageToken) break;
+  }
+  const preferred = ['gemini-2.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
+  return [...names].sort((a, b) => {
+    const rank = (name) => preferred.includes(name) ? preferred.indexOf(name) : /flash-lite/.test(name) ? 10 : /flash/.test(name) ? 20 : 30;
+    return rank(a) - rank(b) || a.localeCompare(b);
+  });
+}
