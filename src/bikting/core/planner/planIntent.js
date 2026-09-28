@@ -19,7 +19,8 @@ export function planIntent(semantic, registries = {}) {
     const tools = selectedProvider && availableTools.includes(selectedProvider) ? [selectedProvider] : [];
     const models = selectedProvider && availableModels.includes(selectedProvider) ? [selectedProvider] : [];
     const providers = [...tools.map((tool) => ({ id: tool.id, kind: 'tool', domain: tool.domain })), ...models.map((model) => ({ id: model.id, kind: 'model', domain: model.domain }))];
-    return { ...definition, requiredCapability: id, providers, status: providers.length ? 'available' : 'unavailable' };
+    const access = accessFor(id);
+    return { ...definition, requiredCapability: id, providers, status: providers.length ? 'available' : 'unavailable', access };
   });
   const reqById = new Map(requirements.map((item) => [item.requiredCapability, item]));
   const steps = [];
@@ -40,7 +41,7 @@ export function planIntent(semantic, registries = {}) {
       if (requirement.requiredCapability === 'physics.calculate_force') step.inputMapping = { operation: 'calculate_force', variables: '$semantic.variables' };
       if (requirement.requiredCapability === 'statistics.analyze') step.inputMapping = { data: '$semantic.variables.data', otherData: '$semantic.variables.otherData', statistic: '$semantic.variables.statistic' };
       if (requirement.requiredCapability === 'units.convert') step.inputMapping = { value: '$semantic.variables.value', fromUnit: '$semantic.variables.fromUnit', toUnit: '$semantic.variables.toUnit' };
-      if (requirement.requiredCapability === 'website.build') step.inputMapping = { title: '$semantic.variables.siteTitle', kind: '$semantic.variables.siteKind' };
+      if (requirement.requiredCapability === 'website.build') step.inputMapping = { title: '$semantic.variables.siteTitle', kind: '$semantic.variables.siteKind', html: '$semantic.variables.generatedHtml', generationStatus: '$semantic.variables.generationStatus' };
       if (requirement.requiredCapability === 'visual.scene' && semantic.intent === 'plot') step.inputMapping = { plotData: `$results.${stepId('math.calculate')}.structuredVisualScenes` };
       if (requirement.requiredCapability === 'visual.scene' && semantic.intent === 'plot') step.dependsOn = [stepId('math.calculate')];
       steps.push(step);
@@ -53,6 +54,11 @@ export function planIntent(semantic, registries = {}) {
     requiredCapabilities: requirements, capabilities: requirements.map(({ requiredCapability }) => requiredCapability), steps,
     visualPolicy: 'deterministic_or_domain_renderer_by_default', createdAt: new Date().toISOString(),
   };
+}
+function accessFor(capability) {
+  if (capability === 'website.deploy') return { status: 'authorization_required', authorizationType: 'account', provider: 'Render or GitHub', nextAction: 'Connect a Render or GitHub account before deployment.' };
+  if (capability === 'artifact.build') return { status: 'authorization_required', authorizationType: 'account', provider: 'connected build provider', nextAction: 'Connect an account for a provider that can build this artifact.' };
+  return { status: 'none', authorizationType: 'none' };
 }
 
 /** Planner decisions are based on semantic data, never raw request text. */

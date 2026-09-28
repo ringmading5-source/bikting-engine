@@ -1,6 +1,6 @@
 export function renderGraph(container, visual, stepIndex = 0) {
   if (!visual) return renderEmpty(container);
-  if (visual.type === 'website' && typeof visual.html === 'string') return renderWebsite(container, visual);
+  if (visual.type === 'website') return renderWebsite(container, visual, stepIndex);
   if (visual.type === 'graph' && Array.isArray(visual.series)) {
     if (visual.toolSelection?.selected?.id === 'plotly' && globalThis.window?.Plotly) return renderPlotly(container, visual, stepIndex);
     return renderPlot(container, visual, stepIndex);
@@ -12,8 +12,12 @@ export function renderGraph(container, visual, stepIndex = 0) {
   return renderRelationshipGraph(container, normalized, stepIndex);
 }
 
-function renderWebsite(container, visual) {
+function renderWebsite(container, visual, stepIndex) {
   container.classList.remove('empty-state');
+  if (stepIndex === 0 || typeof visual.html !== 'string') {
+    container.innerHTML = `<div class="website-sketch"><svg viewBox="0 0 640 300" role="img" aria-label="Sketch of ${escapeHtml(visual.title ?? 'website')}"><rect x="30" y="20" width="580" height="260" rx="10"/><rect x="50" y="42" width="540" height="38" rx="5"/><text x="68" y="67">${escapeHtml(visual.title ?? 'Website')}</text><rect x="50" y="94" width="540" height="86" rx="6"/><text x="68" y="123">Main content</text><path d="M68 140 H388 M68 154 H318"/><rect x="50" y="194" width="255" height="60" rx="6"/><rect x="320" y="194" width="270" height="60" rx="6"/><text x="68" y="226">About</text><text x="338" y="226">Contact</text></svg><p>Intent → layout sketch → website preview</p></div>`;
+    return;
+  }
   container.innerHTML = `<div class="website-preview"><a class="website-download" download="website.html" href="#">Download website.html</a><iframe title="Website preview" sandbox="" referrerpolicy="no-referrer" srcdoc="${escapeHtml(visual.html)}"></iframe></div>`;
   const download = container.querySelector?.('.website-download');
   if (download) {

@@ -80,7 +80,7 @@ export async function mockSemanticInterpreter(request) {
     intent = 'explain'; requestedOutputs = ['explanation'];
   }
   if (!labels.length) labels = concepts.map((concept) => concept.replaceAll('_', ' '));
-  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
+  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, sketch: request.sketch ?? null, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
 }
 
 function statisticFromText(text) { if (text.includes('standard deviation')) return 'standard_deviation'; if (text.includes('median')) return 'median'; if (text.includes('variance')) return 'variance'; if (text.includes('correlation')) return 'correlation'; if (text.includes('minimum')) return 'min'; if (text.includes('maximum')) return 'max'; return 'mean'; }

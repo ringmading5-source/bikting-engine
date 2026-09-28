@@ -24,6 +24,8 @@
         <label for="prompt">What would you like to understand or create?</label>
         <form id="request-form">
           <textarea id="prompt" rows="2" placeholder="Explain how an electric motor works." required></textarea>
+          <div class="sketch-controls"><span>OPTIONAL SKETCH</span><button type="button" id="clear-sketch">Clear</button></div>
+          <canvas id="intent-sketch" width="720" height="180" aria-label="Draw your desired layout or animation"></canvas>
           <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
         </form>
       </section>

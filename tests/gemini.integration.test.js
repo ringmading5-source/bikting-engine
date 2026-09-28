@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createGeminiInterpreter } from '../src/server/geminiInterpreter.js';
 import { createBiktingRuntime } from '../src/runtime/BiktingRuntime.js';
+import { validateGeneratedWebsite } from '../src/server/buildPrompt.js';
 
 test('Gemini interpretation becomes a validated semantic input to the engine', async () => {
   let calls = 0;
@@ -108,14 +109,26 @@ test('recognized relationship intent runs its visual behavior without Gemini', a
   assert.equal(result.semantic.context.visualProgramStatus, 'relationship_engine');
 });
 
-test('a website build request executes the builder without Gemini', async () => {
-  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => { throw new Error('Gemini should not be called'); } });
+test('website intent produces a sketch and generated preview with one Gemini call', async () => {
+  let calls = 0;
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url, options) => {
+    calls++;
+    const prompt = JSON.parse(options.body).contents[0].parts[0].text;
+    assert.match(prompt, /"capability":"website.build"/);
+    assert.match(prompt, /"relation":"produces"/);
+    assert.match(prompt, /Build me a website for a bakery/);
+    return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ html: '<!doctype html><html><head><title>Bakery</title></head><body><h1>Bakery site</h1></body></html>' }) }] } }] }) };
+  } });
   const result = await createBiktingRuntime({ interpret }).run({ text: 'Build me a website for a bakery', type: 'text' });
+  assert.equal(calls, 1);
   assert.equal(result.semantic.intent, 'build_website');
   assert.equal(result.status, 'completed');
   assert.deepEqual(result.plan.capabilities, ['website.build']);
   assert.equal(result.workspace.scene.type, 'website');
-  assert.match(result.workspace.scene.html, /Welcome to a bakery/);
+  assert.match(result.workspace.scene.html, /Bakery site/);
+  assert.deepEqual(result.workspace.scene.states.map((state) => state.title), ['Intent sketch', 'Website preview']);
+  assert.equal(result.workspace.scene.mode, 'generated');
+  assert.ok(result.trace.some((item) => item.section === 'BUILD PROMPT'));
   assert.deepEqual(result.semantic.context.task, { action: 'build', target: 'website', capability: 'website.build' });
   assert.deepEqual(result.semantic.relationships.map(({ from, relation, to }) => [from, relation, to]), [['build', 'produces', 'website']]);
 });
@@ -127,8 +140,17 @@ test('intent engine preserves unsupported action targets rather than explaining 
     assert.deepEqual(result.plan.capabilities, [capability]);
     assert.ok(result.outputs.unexecuted.some((item) => item.metadata?.capability === capability));
     assert.equal(result.outputs.explanation, null);
-    assert.match(result.workspace.steps.at(-1).text, /No connected tool can execute/);
+    assert.match(result.workspace.steps.at(-1).text, /Connect .* account|No connected tool can execute/);
   }
+});
+
+test('generated website rejects active content and uses the labeled starter fallback', async () => {
+  assert.throws(() => validateGeneratedWebsite('<html><body><script>alert(1)</script></body></html>'), /unsupported/);
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => ({ ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ html: '<html><body><script>alert(1)</script></body></html>' }) }] } }] }) }) });
+  const result = await createBiktingRuntime({ interpret }).run({ text: 'Build me a website for a bakery', type: 'text' });
+  assert.equal(result.workspace.scene.mode, 'starter');
+  assert.match(result.workspace.scene.states[1].text, /generation was unavailable/);
+  assert.doesNotMatch(result.workspace.scene.html, /<script>/);
 });
 
 test('concurrent identical requests share one Gemini interpretation', async () => {

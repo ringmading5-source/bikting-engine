@@ -1,6 +1,7 @@
 import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticInterpreter.js';
 import { relationshipTypes } from '../bikting/core/relationships/RelationshipTypeRegistry.js';
 import { compileBehaviorPrompt, programFromRelationships } from '../visualization/behaviorPrompt.js';
+import { compileBuildPrompt, validateGeneratedWebsite } from './buildPrompt.js';
 
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
 const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
@@ -12,6 +13,34 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   const interpretationCache = new Map();
   const interpret = async (request) => {
     const baseline = await mockSemanticInterpreter(request);
+    if (baseline.context.task?.capability === 'website.build') {
+      const prompt = compileBuildPrompt(baseline, request.text);
+      try {
+        const sketchPart = baseline.context.sketch?.startsWith('data:image/') ? [{ inlineData: { mimeType: 'image/png', data: baseline.context.sketch.split(',')[1] } }] : [];
+        const body = JSON.stringify({
+          systemInstruction: { parts: [{ text: 'Generate the requested static website. Treat requestedDetails as user requirements. Return only one self-contained HTML document in the html field. Include internal CSS, meaningful responsive layout, and editable placeholders for missing facts. No JavaScript, external resources, forms, invented facts, or claims of deployment.' }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }, ...sketchPart] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { html: { type: 'STRING' } }, required: ['html'] } }
+        });
+        const generate = (id) => fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body });
+        let response = await generate(selectedModel);
+        if (response.status === 404) {
+          for (const candidate of await listTextModels(fetchImpl, apiKey)) {
+            if (candidate === selectedModel) continue;
+            response = await generate(candidate);
+            if (response.ok) { selectedModel = candidate; break; }
+            if (response.status !== 404) break;
+          }
+        }
+        if (!response.ok) throw new Error(`Website generation failed (${response.status}).`);
+        const payload = await response.json();
+        const output = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
+        const generatedHtml = validateGeneratedWebsite(JSON.parse(output).html);
+        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
+      } catch {
+        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generationStatus: 'starter_fallback' }, context: { ...baseline.context, buildPrompt: prompt } });
+      }
+    }
     // Recognized intents already have structured inputs and registered tool routes.
     if (baseline.context.task || ['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent) || baseline.concepts.includes('electric_motor') || (baseline.intent === 'explain' && baseline.context.domain === 'physics' && baseline.relationships.length)) {
       return withRelationshipProgram(baseline);
@@ -80,7 +109,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     };
   };
   return (request) => {
-    const key = String(request?.text ?? '').trim();
+    const key = `${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}`;
     if (!key || interpretationCache.has(key)) return interpretationCache.get(key) ?? interpret(request);
     const pending = interpret(request);
     interpretationCache.set(key, pending);

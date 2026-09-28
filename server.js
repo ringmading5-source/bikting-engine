@@ -9,6 +9,7 @@ import { createDefaultRegistries } from './src/bikting/core/registry/createDefau
 import { ModelRegistry } from './src/bikting/core/models/ModelRegistry.js';
 import { createModelAdapter } from './src/bikting/core/models/adapters/ModelAdapter.js';
 import { listVisualTools } from './src/visualization/visualToolCatalog.js';
+import { mockSemanticInterpreter } from './src/bikting/core/adapters/mockSemanticInterpreter.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const plotlyBundle = resolve(root, 'node_modules/plotly.js-dist-min/plotly.min.js');
@@ -29,7 +30,7 @@ const runtime = createBiktingRuntime({ interpret: geminiEnabled ? createGeminiIn
 const server = createServer(async (request, response) => {
   try {
     const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    if (pathname === '/api/run') {
+    if (pathname === '/api/run' || pathname === '/api/intent') {
       if (request.method !== 'POST') { response.writeHead(405); response.end(); return; }
       if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) { response.writeHead(401); response.end(); return; }
       if (request.headers['content-type']?.split(';')[0] !== 'application/json') { response.writeHead(415); response.end(); return; }
@@ -40,8 +41,14 @@ const server = createServer(async (request, response) => {
       }
       let input;
       try { input = JSON.parse(body); } catch { response.writeHead(400); response.end(); return; }
-      if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000) { response.writeHead(400); response.end(); return; }
-      const result = await runtime.run({ type: 'text', text: input.text.trim(), source: 'browser', modality: 'text' });
+      if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000 || (input.sketch !== undefined && input.sketch !== null && (typeof input.sketch !== 'string' || input.sketch.length > 500000))) { response.writeHead(400); response.end(); return; }
+      if (pathname === '/api/intent') {
+        const semantic = await mockSemanticInterpreter({ text: input.text.trim(), sketch: input.sketch ?? null, modality: 'text' });
+        response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        response.end(JSON.stringify({ task: semantic.context.task ?? null, relationships: semantic.relationships, scene: semantic.context.task?.capability === 'website.build' ? { type: 'website', title: semantic.variables.siteTitle, states: [{ title: 'Intent sketch' }] } : null }));
+        return;
+      }
+      const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, source: 'browser', modality: 'text' });
       response.writeHead(result.status === 'error' ? 502 : 200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

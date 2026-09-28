@@ -118,7 +118,9 @@ test('website builder escapes supplied titles in its downloadable HTML', async (
   assert.doesNotMatch(result.workspace.scene.html, /<script>/);
   assert.match(result.workspace.scene.html, /&lt;script&gt;/);
   const container = { classList: { remove() {} }, innerHTML: '' };
-  renderGraph(container, result.workspace.scene);
+  renderGraph(container, result.workspace.scene, 0);
+  assert.match(container.innerHTML, /website-sketch/);
+  renderGraph(container, result.workspace.scene, 1);
   assert.match(container.innerHTML, /sandbox=""/);
   assert.match(container.innerHTML, /Download website.html/);
 });

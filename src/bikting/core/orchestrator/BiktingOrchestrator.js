@@ -35,6 +35,7 @@ export class BiktingOrchestrator {
     record('INTENT', semantic.intent);
     record('CONCEPTS', semantic.concepts.join(', ') || '(none)');
     record('RELATIONSHIPS', semantic.relationships.map(({ from, relation, to }) => `${from} → ${relation} → ${to}`).join('\n') || '(none)');
+    if (semantic.context.buildPrompt) record('BUILD PROMPT', semantic.context.buildPrompt);
     if (semantic.context.visualPrompt) record('VISUAL PROMPT', semantic.context.visualPrompt);
     if (semantic.context.visualProgramStatus) record('VISUAL PROGRAM', semantic.context.visualProgramStatus);
     record('VARIABLES', JSON.stringify(semantic.variables));
@@ -58,7 +59,14 @@ export class BiktingOrchestrator {
       }
       const provider = step.providers?.[0];
       if (!provider) {
+        const requirement = plan.requiredCapabilities.find(({ requiredCapability }) => requiredCapability === step.capability);
+        const access = requirement?.access;
         const result = createExecutionResult({ semantic, capability: step.capability, adapterId: 'registry', kind: 'capability', payload: { status: 'unavailable', requiredCapability: step.capability, reason: 'No registered capability can perform this operation.' } });
+        if (access?.status === 'authorization_required') {
+          result.reason = access.nextAction;
+          result.access = access;
+          result.nextAction = access.nextAction;
+        }
         context.intermediateResults[step.id] = result;
         record('TOOL', `${step.capability} → unavailable`);
         return result;

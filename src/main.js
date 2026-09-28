@@ -4,28 +4,50 @@ import { PlaybackController } from './workspace/playback.js';
 import { presentResult, renderStep } from './output/presentResult.js';
 
 const byId = (id) => document.getElementById(id);
-const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization') };
+const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization'), sketch: byId('intent-sketch') };
 let playback;
 let testToken = '';
+let latestRun = 0;
 
-readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request));
+setupSketch(elements.sketch, byId('clear-sketch'));
+readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request), elements.sketch);
 
 async function runPipeline(request) {
+  const run = ++latestRun;
+  let completed = false;
+  const showIntent = async () => {
+    try {
+      const response = await sendRequest(request, '/api/intent');
+      if (!response.ok) return;
+      const intent = await response.json();
+      if (run !== latestRun || completed || !intent.scene) return;
+      playback?.stop();
+      renderGraph(elements.visual, intent.scene, 0);
+      elements.title.textContent = 'Website build sketch';
+      elements.explanation.textContent = `Intent: ${intent.task.action} ${intent.task.target}. Building from ${intent.relationships.map(({ from, relation, to }) => `${from} ${relation.replaceAll('_', ' ')} ${to}`).join(', ')}.`;
+      elements.stage.textContent = 'GENERATING';
+    } catch { /* The primary request still supplies the final result. */ }
+  };
+  void showIntent();
   let result;
   try {
-    let response = await sendRequest(request.text);
+    let response = await sendRequest(request);
     if (response.status === 401) {
       testToken = window.prompt('Enter your Bikting test access token:') ?? '';
       if (!testToken) return;
-      response = await sendRequest(request.text);
+      void showIntent();
+      response = await sendRequest(request);
     }
     if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Unexpected server response');
     result = await response.json();
   } catch {
+    if (run !== latestRun) return;
     elements.stage.textContent = 'ERROR';
     elements.explanation.textContent = 'The server did not respond. Please try again.';
     return;
   }
+  if (run !== latestRun) return;
+  completed = true;
   renderTrace(result.trace);
   elements.stage.textContent = result.workspace.status.toUpperCase();
   renderGraph(elements.visual, result.workspace.scene, 0);
@@ -45,8 +67,20 @@ async function runPipeline(request) {
   playback.show(0);
 }
 
-function sendRequest(text) {
-  return fetch('/api/run', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify({ text }) });
+function sendRequest(request, path = '/api/run') {
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, sketch: request.sketch };
+  return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
+}
+
+function setupSketch(canvas, clear) {
+  if (!canvas) return;
+  const context = canvas.getContext('2d'); context.strokeStyle = '#c3f36b'; context.lineWidth = 3; context.lineCap = 'round';
+  let drawing = false;
+  const point = (event) => { const rect = canvas.getBoundingClientRect(); return [(event.clientX - rect.left) * canvas.width / rect.width, (event.clientY - rect.top) * canvas.height / rect.height]; };
+  canvas.addEventListener('pointerdown', (event) => { drawing = true; canvas.setPointerCapture(event.pointerId); const [x, y] = point(event); context.beginPath(); context.moveTo(x, y); });
+  canvas.addEventListener('pointermove', (event) => { if (!drawing) return; const [x, y] = point(event); context.lineTo(x, y); context.stroke(); });
+  canvas.addEventListener('pointerup', () => { drawing = false; });
+  clear?.addEventListener('click', () => context.clearRect(0, 0, canvas.width, canvas.height));
 }
 
 function renderTrace(trace = []) {
