@@ -5,6 +5,7 @@ const byId = (id) => document.getElementById(id);
 const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization') };
 const calculationButton = byId('calculate-button');
 const scaffoldButton = byId('scaffold-button');
+const agentButton = byId('agent-button');
 let voiceEnabled = false;
 elements.play.disabled = !('speechSynthesis' in window);
 elements.play.onclick = () => {
@@ -44,14 +45,38 @@ readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(r
 async function runPipeline(request) {
   calculationButton.hidden = true;
   scaffoldButton.hidden = true;
-  let route;
+  agentButton.hidden = true;
+  let route; let workerAvailable = false;
   try {
     const response = await fetch('/api/route', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: request.text }) });
     const payload = await response.json();
     if (!response.ok) throw new Error(payload.error ?? 'The router could not process this request.');
     route = payload.route;
+    workerAvailable = payload.workerAvailable === true;
   } catch (error) {
     elements.stage.textContent = 'ROUTING FAILED'; elements.explanation.textContent = error.message; return;
+  }
+  if (route && route.id !== 'public-knowledge' && workerAvailable) {
+    agentButton.hidden = false;
+    agentButton.onclick = async () => {
+      agentButton.disabled = true;
+      elements.stage.textContent = 'LLM WORKING';
+      const trace = [{ section: 'GOAL', detail: request.text }];
+      try {
+        const result = await readLiveRun('/api/agent/live', { goal: request.text }, (entry) => {
+          if (entry.kind !== 'event') return;
+          trace.push({ section: 'WORKER', detail: `${entry.event.type}: ${entry.event.detail}` });
+          renderTrace(trace);
+          if (entry.event.type === 'tool_started' || entry.event.type === 'tool_completed') speak(entry.event.detail);
+        });
+        elements.stage.textContent = 'VERIFIED';
+        elements.explanation.textContent = `${result.summary} · ${result.observations.length} verified tool result.`;
+        const observation = result.observations[0];
+        if (observation.capabilityId === 'math.calculate') renderMathResult(elements.visual, route.inputs.expression, observation.output.numericResult);
+        else elements.visual.textContent = `Generated and verified: ${observation.output.fileNames.join(', ')}`;
+      } catch (error) { elements.stage.textContent = 'WORKER FAILED'; elements.explanation.textContent = error.message; }
+      finally { agentButton.disabled = false; }
+    };
   }
   const expression = route?.id === 'arithmetic' ? route.inputs.expression : null;
   if (expression) {
