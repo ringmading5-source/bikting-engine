@@ -5,6 +5,7 @@ import { planIntent } from '../planner/planIntent.js';
 import { createExecutionContext } from '../execution/ExecutionContext.js';
 import { ToolExecutor } from '../execution/ToolExecutor.js';
 import { executeDependencies } from '../execution/DependencyExecutor.js';
+import { approvalFor, verifyResult, summarizeUsage } from '../execution/runControls.js';
 
 export class BiktingOrchestrator {
   constructor({ interpret, tools, models, relationshipEngine = new RelationshipEngine(), logger = null }) {
@@ -71,6 +72,13 @@ export class BiktingOrchestrator {
         record('TOOL', `${step.capability} → unavailable`);
         return result;
       }
+      const approval = approvalFor(step, request);
+      if (approval) {
+        const result = createExecutionResult({ semantic, capability: step.capability, adapterId: 'bikting.approval', kind: 'engine', payload: { status: 'blocked', nextAction: approval.reason, approval } });
+        context.intermediateResults[step.id] = result;
+        record('APPROVAL', approval.reason);
+        return result;
+      }
       try {
         if (provider.kind === 'model') {
           const model = this.models.get(provider.id);
@@ -83,7 +91,9 @@ export class BiktingOrchestrator {
         record('TOOL', `${provider.id} (${step.capability})`);
         record('TOOL INPUT', `${provider.id}\n${JSON.stringify(input)}`);
         const result = await this.toolExecutor.execute(provider.id, input, context, { capability: step.capability });
+        result.verification = verifyResult(step, result);
         context.toolResults.push(result); context.intermediateResults[step.id] = result;
+        record('VERIFY', `${provider.id}: ${result.verification.status}${result.verification.reason ? ` (${result.verification.reason})` : ''}`);
         record('RESULT', `${provider.id}\n${summarizeResult(result)}`);
         return result;
       } catch (error) {
@@ -110,17 +120,20 @@ export class BiktingOrchestrator {
       audioReferences: execution.flatMap((result) => result.audioReferences === undefined ? [] : [result.audioReferences]),
       images: execution.flatMap((result) => result.images === undefined ? [] : [result.images]),
       toolResults: context.toolResults,
-      errors: execution.flatMap((result) => result.errors ?? []),
+      errors: execution.flatMap((result) => [...(result.errors ?? []), ...(result.verification?.status === 'failed' ? [{ message: result.verification.reason, capability: result.metadata?.capability }] : [])]),
       unexecuted: execution.filter((result) => unexecutedStatuses.has(result.status)),
     };
     context.metadata.completedAt = new Date().toISOString();
     const hasFailures = execution.some((result) => ['error', 'unavailable', 'blocked'].includes(result.status));
     const hasPlannedWork = execution.some((result) => result.status === 'planned');
     const hasCompletedWork = execution.some((result) => result.status === 'completed');
-    const status = hasFailures ? 'partial' : hasPlannedWork ? (hasCompletedWork ? 'partial' : 'planned') : 'completed';
+    const verificationFailures = execution.some((result) => result.verification?.status === 'failed');
+    const status = hasFailures || verificationFailures ? 'partial' : hasPlannedWork ? (hasCompletedWork ? 'partial' : 'planned') : 'completed';
+    const usage = summarizeUsage(semantic, execution, request);
+    record('USAGE', `modelCalls=${usage.modelCalls}; inputTokens=${usage.inputTokens}; outputTokens=${usage.outputTokens}; deterministicToolCalls=${usage.deterministicToolCalls}`);
     record('OUTPUT', `${outputs.numericData.length ? `numeric=${JSON.stringify(outputs.numericData)}` : 'structured execution result'}\nvisual=${visual?.status ?? 'not requested'}\nprovenance=${execution.map((result) => `${result.source?.type}:${result.source?.id}`).join(', ')}`);
     record('OUTPUTS', `structured result; status=${status}; numeric=${outputs.numericData.length}; scenes=${outputs.structuredVisualScenes.length}; errors=${outputs.errors.length}; unexecuted=${outputs.unexecuted.length}`);
-    return { semantic, relationships: this.relationshipEngine.graph(semantic), plan, selectedCapabilities: plan.requiredCapabilities.filter(({ providers }) => providers.length).map(({ requiredCapability }) => requiredCapability), context, execution, outputs, trace, traceText: formatTrace(trace), status };
+    return { semantic, relationships: this.relationshipEngine.graph(semantic), plan, selectedCapabilities: plan.requiredCapabilities.filter(({ providers }) => providers.length).map(({ requiredCapability }) => requiredCapability), context, execution, outputs, usage, trace, traceText: formatTrace(trace), status };
   }
 }
 

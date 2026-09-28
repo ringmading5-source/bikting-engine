@@ -16,30 +16,57 @@ readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(r
 async function runPipeline(request) {
   const run = ++latestRun;
   let completed = false;
+  const checkpoint = byId('intent-checkpoint');
+  checkpoint.hidden = true;
+  byId('run-usage').textContent = '';
   const stages = ['ZOOMING INTO INTENT', 'FILLING RELATIONSHIPS', 'WRITING BUILD DIRECTIONS', 'EXECUTING TOOL'];
   let stageIndex = 0;
   const stageTimer = setInterval(() => { if (!completed && run === latestRun) elements.stage.textContent = stages[Math.min(stageIndex++, stages.length - 1)]; }, 700);
-  const showIntent = async () => {
-    try {
-      const response = await sendRequest(request, '/api/intent');
-      if (!response.ok) return;
-      const intent = await response.json();
-      if (run !== latestRun || completed || !intent.scene) return;
+  try {
+    let intentResponse = await sendRequest(request, '/api/intent');
+    if (intentResponse.status === 401) {
+      testToken = window.prompt('Enter your Bikting test access token:') ?? '';
+      if (!testToken) return;
+      intentResponse = await sendRequest(request, '/api/intent');
+    }
+    if (!intentResponse.ok) throw new Error(`Intent preview failed (${intentResponse.status})`);
+    const intent = await intentResponse.json();
+    if (run !== latestRun) return;
+    if (intent.scene) {
       playback?.stop();
       renderGraph(elements.visual, intent.scene, 0);
       elements.title.textContent = intent.task ? 'Build intent sketch' : 'Relationship intent sketch';
       elements.explanation.textContent = intent.task ? `Intent: ${intent.task.action} ${intent.task.target}. Building from ${intent.relationships.map(({ from, relation, to }) => `${from} ${relation.replaceAll('_', ' ')} ${to}`).join(', ')}.` : `The engine found ${intent.relationships.length} relationships and is preparing the visual or build tool.`;
-      elements.stage.textContent = 'GENERATING';
-    } catch { /* The primary request still supplies the final result. */ }
-  };
-  void showIntent();
+    }
+    byId('intent-summary').textContent = intent.task ? `${intent.task.action} ${intent.task.target} — ${request.text}` : request.text;
+    byId('intent-relationships').textContent = intent.relationships.length ? `Relationships: ${intent.relationships.map(({ from, relation, to }) => `${from} → ${relation.replaceAll('_', ' ')} → ${to}`).join('; ')}` : 'No explicit relationships found yet.';
+    byId('intent-limitations').textContent = 'This is a preliminary sketch; edit your request if it does not match your goal. The final execution can still require more information or a connected provider.';
+    checkpoint.hidden = false;
+    elements.stage.textContent = 'CHECK INTENT';
+    completed = true;
+    clearInterval(stageTimer);
+    const confirmed = await new Promise((resolve) => {
+      byId('confirm-intent').onclick = () => { checkpoint.hidden = true; resolve(true); };
+      byId('edit-intent').onclick = () => { checkpoint.hidden = true; byId('prompt').focus(); resolve(false); };
+    });
+    if (!confirmed || run !== latestRun) return;
+    if (byId('prompt').value.trim() !== request.text) {
+      elements.stage.textContent = 'REVIEW REVISED INTENT';
+      elements.explanation.textContent = 'Your request changed after this preview. Run request again to review the new intent.';
+      byId('prompt').focus();
+      return;
+    }
+    elements.stage.textContent = 'EXECUTING TOOL';
+  } catch (error) {
+    if (run === latestRun) { elements.stage.textContent = 'ERROR'; elements.explanation.textContent = `Intent preview unavailable: ${error.message}`; }
+    return;
+  } finally { clearInterval(stageTimer); }
   let result;
   try {
     let response = await sendRequest(request);
     if (response.status === 401) {
       testToken = window.prompt('Enter your Bikting test access token:') ?? '';
       if (!testToken) return;
-      void showIntent();
       response = await sendRequest(request);
     }
     if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Unexpected server response');
@@ -54,6 +81,8 @@ async function runPipeline(request) {
   completed = true;
   clearInterval(stageTimer);
   renderTrace(result.trace);
+  const usage = result.usage;
+  if (usage) byId('run-usage').textContent = `${usage.modelCalls} model call${usage.modelCalls === 1 ? '' : 's'} · ${usage.inputTokens + usage.outputTokens} reported tokens · ${usage.deterministicToolCalls} deterministic tool call${usage.deterministicToolCalls === 1 ? '' : 's'}${usage.cacheHit ? ' · cache hit' : ''}. Exact cost unavailable.`;
   elements.stage.textContent = result.workspace.status.toUpperCase();
   renderGraph(elements.visual, result.workspace.scene, 0);
   playback?.stop();

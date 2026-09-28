@@ -12,6 +12,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   let selectedModel = model;
   const interpretationCache = new Map();
   const interpret = async (request) => {
+    let modelCalls = 0;
     const baseline = await mockSemanticInterpreter(request);
     if (baseline.context.task?.capability === 'website.build') {
       const prompt = compileBuildPrompt(baseline, request.text);
@@ -22,7 +23,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
           contents: [{ role: 'user', parts: [{ text: prompt }, ...sketchPart] }],
           generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { html: { type: 'STRING' }, buildPlan: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['html', 'buildPlan'] } }
         });
-        const generate = (id) => fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body });
+        const generate = (id) => { modelCalls += 1; return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body }); };
         let response = await generate(selectedModel);
         if (response.status === 404) {
           for (const candidate of await listTextModels(fetchImpl, apiKey)) {
@@ -38,9 +39,9 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         const generated = JSON.parse(output);
         const generatedHtml = validateGeneratedWebsite(generated.html);
         const buildPlan = Array.isArray(generated.buildPlan) ? generated.buildPlan.filter((item) => typeof item === 'string').slice(0, 12) : [];
-        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt, buildPlan }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
+        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt, buildPlan, modelUsage: usageFrom(payload, modelCalls) }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
       } catch {
-        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generationStatus: 'starter_fallback' }, context: { ...baseline.context, buildPrompt: prompt } });
+        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generationStatus: 'starter_fallback' }, context: { ...baseline.context, buildPrompt: prompt, modelUsage: { calls: modelCalls, inputTokens: 0, outputTokens: 0 } } });
       }
     }
     // Recognized intents already have structured inputs and registered tool routes.
@@ -59,11 +60,11 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         }, required: ['intent', 'domain', 'concepts', 'relationships', 'explanation']
       } }
     });
-    const generate = (id) => fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
+    const generate = (id) => { modelCalls += 1; return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
         method: 'POST', signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
         body
-      });
+      }); };
     let response = await generate(selectedModel);
     if (response.status === 404) {
       const available = await listTextModels(fetchImpl, apiKey);
@@ -106,19 +107,23 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],
-      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus },
+      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus, modelUsage: usageFrom(payload, modelCalls) },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };
   return (request) => {
     const key = `${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}\0${JSON.stringify(request?.sketchLayout ?? null)}`;
-    if (!key || interpretationCache.has(key)) return interpretationCache.get(key) ?? interpret(request);
+    if (interpretationCache.has(key)) { request.modelCacheHit = true; return interpretationCache.get(key); }
     const pending = interpret(request);
     interpretationCache.set(key, pending);
     if (interpretationCache.size > 100) interpretationCache.delete(interpretationCache.keys().next().value);
     pending.catch(() => { if (interpretationCache.get(key) === pending) interpretationCache.delete(key); });
     return pending;
   };
+}
+
+function usageFrom(payload, calls) {
+  return { calls, inputTokens: payload.usageMetadata?.promptTokenCount ?? 0, outputTokens: payload.usageMetadata?.candidatesTokenCount ?? 0 };
 }
 
 function withRelationshipProgram(semantic) {

@@ -28,6 +28,13 @@
           <div class="sketch-controls"><span>CONCEPT PUZZLE SKETCH</span><label class="upload-sketch">Load picture<input id="concept-image" type="file" accept="image/*" /></label><button type="button" id="clear-sketch">Clear</button></div>
           <p class="sketch-help">Load a real concept picture, then arrange its pieces to show depth, order, or motion.</p>
           <canvas id="intent-sketch" width="720" height="180" aria-label="Assembled concept picture"></canvas><div id="puzzle-pieces" class="puzzle-pieces" aria-label="Draggable concept pieces"></div>
+          <div id="intent-checkpoint" class="intent-checkpoint" hidden aria-live="polite">
+            <strong>Check Bikting’s understanding</strong><p id="intent-summary"></p>
+            <p id="intent-relationships"></p><p id="intent-limitations"></p>
+            <button type="button" id="confirm-intent">Run this plan</button>
+            <button type="button" id="edit-intent">Edit my request</button>
+          </div>
+          <p id="run-usage" class="run-usage" aria-live="polite"></p>
           <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
         </form>
       </section>

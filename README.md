@@ -77,3 +77,18 @@ Supported structured operations include arithmetic expressions (`+ - * / % ^` an
 ## Current scope
 
 Text input and the electric motor science module form the working vertical slice. Other domain recognition currently routes to a structured capability placeholder until a module or execution tool for that domain is registered. Voice is output-only in this slice; voice input and external AI/API adapters remain extension points.
+# Intent checkpoint and execution evidence
+
+The workspace shows a preliminary, editable intent checkpoint before `/api/run`.
+Change the request or sketch and submit again if the preview is inaccurate; confirmation
+only applies to the exact text reviewed. `/api/intent` uses the local lightweight
+interpreter so previewing does not spend a Gemini generation call. The final run
+may use Gemini when a generated website or interpretation needs it.
+
+Each tool call checks its registered capability and required inputs, then records
+observable verification evidence where a domain-specific checker exists. A completed
+tool without such a checker is labeled **unverified**, not independently confirmed.
+Publishing/deploying and other side-effect capabilities require explicit approval;
+account integration and a real deployment provider are not supplied by this gate.
+The usage summary records observed Gemini calls, reported token usage when available,
+cache hits, and deterministic tool calls. It does not claim an exact dollar cost.
