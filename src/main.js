@@ -18,7 +18,56 @@ async function runPipeline(request) {
   let completed = false;
   const stages = ['ZOOMING INTO INTENT', 'FILLING RELATIONSHIPS', 'WRITING BUILD DIRECTIONS', 'EXECUTING TOOL'];
   let stageIndex = 0;
-  const sta…743 tokens truncated…ed.id === 'plotly' && !window.Plotly ? 'Bikting SVG Plot (fallback)' : selected.name;
+  const stageTimer = setInterval(() => { if (!completed && run === latestRun) elements.stage.textContent = stages[Math.min(stageIndex++, stages.length - 1)]; }, 700);
+  const showIntent = async () => {
+    try {
+      const response = await sendRequest(request, '/api/intent');
+      if (!response.ok) return;
+      const intent = await response.json();
+      if (run !== latestRun || completed || !intent.scene) return;
+      playback?.stop();
+      renderGraph(elements.visual, intent.scene, 0);
+      elements.title.textContent = intent.task ? 'Build intent sketch' : 'Relationship intent sketch';
+      elements.explanation.textContent = intent.task ? `Intent: ${intent.task.action} ${intent.task.target}. Building from ${intent.relationships.map(({ from, relation, to }) => `${from} ${relation.replaceAll('_', ' ')} ${to}`).join(', ')}.` : `The engine found ${intent.relationships.length} relationships and is preparing the visual or build tool.`;
+      elements.stage.textContent = 'GENERATING';
+    } catch { /* The primary request still supplies the final result. */ }
+  };
+  void showIntent();
+  let result;
+  try {
+    let response = await sendRequest(request);
+    if (response.status === 401) {
+      testToken = window.prompt('Enter your Bikting test access token:') ?? '';
+      if (!testToken) return;
+      void showIntent();
+      response = await sendRequest(request);
+    }
+    if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Unexpected server response');
+    result = await response.json();
+  } catch {
+    if (run !== latestRun) return;
+    elements.stage.textContent = 'ERROR';
+    elements.explanation.textContent = 'The server did not respond. Please try again.';
+    return;
+  }
+  if (run !== latestRun) return;
+  completed = true;
+  clearInterval(stageTimer);
+  renderTrace(result.trace);
+  elements.stage.textContent = result.workspace.status.toUpperCase();
+  renderGraph(elements.visual, result.workspace.scene, 0);
+  playback?.stop();
+  playback = new PlaybackController({ result, onStep: (index, step, state) => {
+    renderStep(step, index, result.workspace.steps.length, state, elements);
+    renderGraph(elements.visual, result.workspace.scene, typeof step.visualState === 'number' ? step.visualState : index);
+    elements.stage.textContent = result.workspace.status.toUpperCase();
+  } });
+  presentResult(result, elements, { onStep: (direction) => direction === 'next' ? playback.next() : playback.previous(), onPlay: () => playback.play() });
+  if (result.workspace.buildPlan?.length) elements.caption.textContent = `Build plan: ${result.workspace.buildPlan.join(' ')}`;
+  if (result.workspace.nextAction) elements.explanation.innerHTML += `<p class="connection-action">${escapeHtml(result.workspace.nextAction)}</p>`;
+  if (result.workspace.visualTool) {
+    const { selected, recommended } = result.workspace.visualTool;
+    const rendererName = selected.id === 'plotly' && !window.Plotly ? 'Bikting SVG Plot (fallback)' : selected.name;
     elements.caption.textContent = `Rendered with ${rendererName}.${recommended ? ` ${recommended.name} requires ${recommended.requirement}.` : ''}`;
   }
   if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
