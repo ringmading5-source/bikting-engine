@@ -123,6 +123,7 @@ async function runPipeline(request) {
     ...(preview.planningIssues ?? []).map((issue) => ({ section: 'VALIDATION', detail: issue })),
     ...(preview.plan?.steps ?? []).map((step) => ({ section: 'PLANNED', detail: `${step.action} · ${step.capabilityId ?? 'no capability'}` })),
     ...(preview.stepReadiness ?? []).map((step) => ({ section: 'ACCESS', detail: `${step.capabilityId}: ${step.state.replaceAll('_', ' ')}. ${step.reason}${step.accountSteps?.length ? ` Account: ${step.accountSteps.join(', ')}.` : ''}${step.permissions?.length ? ` Permissions: ${step.permissions.join(', ')}.` : ''}` })),
+    ...(preview.capabilityResolution?.actions ?? []).map((action) => ({ section: 'NEXT ACTION', detail: `${action.type.replaceAll('_', ' ')}: ${action.message}${action.candidateOffers?.length ? ` Catalog offers: ${action.candidateOffers.map(({ providerId }) => providerId).join(', ')}.` : ''}` })),
     { section: preview.plan ? 'STATUS' : 'REFUSAL', detail: preview.plan ? 'Planning complete; execution has not started.' : preview.refusal ?? 'No plan.' },
   ]);
 }
