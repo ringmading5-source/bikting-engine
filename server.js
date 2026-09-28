@@ -12,6 +12,7 @@ import { createModelAdapter } from './src/bikting/core/models/adapters/ModelAdap
 import { listVisualTools } from './src/visualization/visualToolCatalog.js';
 import { mockSemanticInterpreter } from './src/bikting/core/adapters/mockSemanticInterpreter.js';
 import { createKnowledgeStore } from './src/server/knowledgeStore.js';
+import { createPostgresKnowledgeStore } from './src/server/postgresKnowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
 import { createLiveCostBridge } from './src/server/liveCostBridge.js';
 
@@ -25,7 +26,8 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
   const testToken = env.BIKTING_TEST_TOKEN;
   if (geminiEnabled && (!testToken || testToken.length < 16)) throw new Error('BIKTING_TEST_TOKEN must have at least 16 characters when Gemini is enabled.');
   const defaults = createDefaultRegistries();
-  const knowledgeStore = createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs: Number(env.KNOWLEDGE_CACHE_TTL_MS ?? 86_400_000) });
+  const ttlMs = Number(env.KNOWLEDGE_CACHE_TTL_MS ?? 86_400_000);
+  const knowledgeStore = env.DATABASE_URL ? createPostgresKnowledgeStore({ connectionString: env.DATABASE_URL, ttlMs }) : createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs });
   const providers = createProviderConnections({ env });
   const costBridge = createLiveCostBridge({ knowledgeStore, tools: defaults.tools, env, fetchImpl });
   const models = new ModelRegistry();
@@ -36,9 +38,9 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
   for (const model of defaults.models.list()) models.register(model);
   const interpret = geminiEnabled ? createGeminiInterpreter({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', knowledgeStore, executeWebsite: costBridge.executeWebsite, onModelCall: costBridge.recordModelCall, fetchImpl }) : mockSemanticInterpreter;
   const runtime = createBiktingRuntime({ interpret, tools: defaults.tools, models });
-  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge });
+  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore });
   const server = createServer(handler);
-  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge };
+  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge, knowledgeStore };
 }
 
 export function startBiktingServer(options = {}) {
@@ -47,7 +49,7 @@ export function startBiktingServer(options = {}) {
   return composed;
 }
 
-function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge }) {
+function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore }) {
   return async (request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -66,10 +68,27 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         const result = await costBridge.run(runtime, { type: 'text', ...normalized, source: 'browser' });
         return send(response, result.status === 'error' ? 502 : 200, result);
       }
-      if (pathname === '/health') return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock', boundedWebsiteWorker: Boolean(costBridge.executeWebsite) });
+      if (pathname === '/health') {
+        try { await knowledgeStore.ready(); }
+        catch { return send(response, 503, { status: 'storage_unavailable' }); }
+        return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock', boundedWebsiteWorker: Boolean(costBridge.executeWebsite), storage: knowledgeStore.mode });
+      }
       if (pathname === '/api/usage' && request.method === 'GET') {
         if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
         return send(response, 200, costBridge.telemetry.summary());
+      }
+      if (pathname === '/api/pilot/summary' && request.method === 'GET') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        return send(response, 200, await knowledgeStore.pilotSummary());
+      }
+      if (pathname === '/api/pilot/feedback' && request.method === 'POST') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        const feedback = await readInput(request);
+        if (typeof feedback?.runId !== 'string' || !/^[0-9a-f-]{36}$/i.test(feedback.runId) || !Number.isInteger(feedback.rating) || feedback.rating < 1 || feedback.rating > 5 || typeof feedback.completed !== 'boolean' ||
+          ![undefined, 'unclear', 'incorrect', 'incomplete', 'slow', 'other'].includes(feedback.friction)) return send(response, 400, null);
+        const updated = await knowledgeStore.feedbackPilot(feedback.runId, { rating: feedback.rating, completedByUser: feedback.completed, friction: feedback.friction ?? null });
+        return send(response, updated ? 200 : 404, updated ? { status: 'recorded' } : { error: 'Run not found.' });
       }
       if (pathname === '/api/capabilities') return send(response, 200, defaults.tools.capabilityCatalog().map(({ id, domain, operation, acceptedInputs, producedOutputs }) => ({ id, domain, operation, acceptedInputs, producedOutputs })));
       if (pathname === '/api/visual-tools') return send(response, 200, listVisualTools());

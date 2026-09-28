@@ -32,6 +32,13 @@
           <p id="run-usage" class="run-usage" aria-live="polite"></p>
           <div class="composer-footer"><span>TEXT INPUT <span class="dot-sep">·</span> VOICE READY</span><button type="submit">Run request <span aria-hidden="true">↗</span></button></div>
         </form>
+        <form id="pilot-feedback" class="pilot-feedback" hidden>
+          <strong>Did Bikting help?</strong>
+          <label>Result quality <select name="rating" required><option value="">Choose</option><option value="5">5 — Excellent</option><option value="4">4 — Good</option><option value="3">3 — Partial</option><option value="2">2 — Poor</option><option value="1">1 — Unusable</option></select></label>
+          <label><input type="checkbox" name="completed" /> I completed what I came to do</label>
+          <label>Main issue <select name="friction"><option value="">None</option><option value="unclear">Unclear</option><option value="incorrect">Incorrect</option><option value="incomplete">Incomplete</option><option value="slow">Too slow</option><option value="other">Other</option></select></label>
+          <button type="submit">Send feedback</button><p id="pilot-feedback-status" role="status"></p>
+        </form>
       </section>
 
       <section class="workspace" aria-label="Bikting workspace">

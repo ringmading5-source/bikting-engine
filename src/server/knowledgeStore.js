@@ -1,10 +1,12 @@
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { createHash } from 'node:crypto';
+import { summarizePilot } from './pilotMetrics.js';
 
 /** Small bounded JSON store for reusable provider knowledge. Replace with a database adapter in production. */
 export function createKnowledgeStore({ filePath, ttlMs = 86_400_000, maxEntries = 100, now = Date.now } = {}) {
   const entries = new Map();
+  const pilotRuns = new Map();
   let loaded;
   const load = async () => {
     if (loaded) return loaded;
@@ -25,10 +27,15 @@ export function createKnowledgeStore({ filePath, ttlMs = 86_400_000, maxEntries 
     await rename(temporary, filePath);
   };
   return {
+    mode: 'ephemeral_file',
+    async ready() { await load(); },
     async get(rawKey) { await load(); const key = hashKey(rawKey); const item = entries.get(key); if (!item) return null; if (now() - item.savedAt >= ttlMs) { entries.delete(key); await persist(); return null; } return structuredClone(item.value); },
     async set(rawKey, value) { await load(); const key = hashKey(rawKey); entries.set(key, { key, savedAt: now(), value: structuredClone(value) }); while (entries.size > maxEntries) entries.delete(entries.keys().next().value); await persist(); },
     async clear() { await load(); entries.clear(); await persist(); },
     size() { return entries.size; },
+    async recordPilot(record) { pilotRuns.set(record.id, structuredClone(record)); },
+    async feedbackPilot(id, feedback) { const run = pilotRuns.get(id); if (!run) return false; Object.assign(run, feedback); return true; },
+    async pilotSummary() { return summarizePilot([...pilotRuns.values()]); },
   };
 }
 

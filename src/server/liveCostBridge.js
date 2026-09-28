@@ -6,6 +6,7 @@ import { WorkerModelRouter } from '../../.runtime-build/src/workers/worker-routi
 import { WorkerExecutor } from '../../.runtime-build/src/workers/worker-execution.js';
 import { refreshReady, transitionTask } from '../../.runtime-build/src/projects/task-graph.js';
 import { validateGeneratedWebsite } from './buildPrompt.js';
+import { pilotRecord } from './pilotMetrics.js';
 
 const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const stableRequest = request => ({ text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout });
@@ -32,13 +33,19 @@ export function createLiveCostBridge({ knowledgeStore, tools, env, fetchImpl = f
   } });
 
   const run = async (runtime, request) => {
+    const started = Date.now();
+    const finish = async result => {
+      const record = pilotRecord(result, Date.now() - started);
+      await knowledgeStore.recordPilot(record);
+      return { ...result, pilotRunId: record.id };
+    };
     const key = digest(stableRequest(request));
     if (request.knowledgeMode !== 'web') {
       const found = await search.search({ query: key, projectId: 'workspace', sources: ['validated_experience'] });
       if (found.status === 'resolved') {
         telemetry.recordResolution('cache');
         const result = structuredClone(found.results[0].content);
-        return { ...result, usage: { ...result.usage, modelCalls: 0, inputTokens: 0, outputTokens: 0, cacheHit: true } };
+        return finish({ ...result, usage: { ...result.usage, modelCalls: 0, inputTokens: 0, outputTokens: 0, cacheHit: true, estimatedCostUsd: 0 } });
       }
     }
     const result = await runtime.run(request);
@@ -47,7 +54,7 @@ export function createLiveCostBridge({ knowledgeStore, tools, env, fetchImpl = f
       await memory.store({ id: key, projectId: 'workspace', taskId: key, intent: key, relationships: result.semantic?.relationships?.map(({ from, relation, to }) => `${from}:${relation}:${to}`) ?? [],
         capabilityIds: result.selectedCapabilities ?? [], evidenceIds: [], result, validation: { valid: true, issues: [], method: 'runtime_verification' }, repairHistory: [], recordedAt: new Date().toISOString() });
     }
-    return result;
+    return finish(result);
   };
 
   const inputRate = Number(env.GEMINI_INPUT_COST_PER_MILLION);

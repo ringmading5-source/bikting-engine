@@ -20,6 +20,7 @@ test('HTTP website request uses bounded worker, validates output, and reuses it 
     const post = async () => fetch(`${base}/api/run`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-bikting-test-token': env.BIKTING_TEST_TOKEN }, body: JSON.stringify({ text: 'Build my personal study website' }) });
     const first = await (await post()).json();
     assert.equal(first.status, 'completed'); assert.equal(first.usage.modelCalls, 1);
+    assert.match(first.pilotRunId, /^[0-9a-f-]{36}$/i);
     assert.ok(first.usage.estimatedCostUsd > 0);
     assert.equal(calls.length, 1);
     assert.ok(calls[0].body.generationConfig.maxOutputTokens <= 700);
@@ -28,6 +29,10 @@ test('HTTP website request uses bounded worker, validates output, and reuses it 
     const second = await (await post()).json();
     assert.equal(second.status, 'completed'); assert.equal(second.usage.modelCalls, 0); assert.equal(second.usage.cacheHit, true);
     assert.equal(calls.length, 1);
+    const feedback = await fetch(`${base}/api/pilot/feedback`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-bikting-test-token': env.BIKTING_TEST_TOKEN }, body: JSON.stringify({ runId: first.pilotRunId, rating: 4, completed: true }) });
+    assert.equal(feedback.status, 200);
+    const summary = await (await fetch(`${base}/api/pilot/summary`, { headers: { 'x-bikting-test-token': env.BIKTING_TEST_TOKEN } })).json();
+    assert.equal(summary.byTask.website.runs, 2); assert.equal(summary.byTask.website.modelCalls, 1); assert.equal(summary.byTask.website.feedbackCount, 1);
     const usage = await (await fetch(`${base}/api/usage`, { headers: { 'x-bikting-test-token': env.BIKTING_TEST_TOKEN } })).json();
     assert.equal(usage.totalModelCalls, 1); assert.ok(usage.cacheHits >= 1);
   } finally {
