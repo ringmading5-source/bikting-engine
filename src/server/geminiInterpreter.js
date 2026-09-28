@@ -18,9 +18,9 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       try {
         const sketchPart = baseline.context.sketch?.startsWith('data:image/') ? [{ inlineData: { mimeType: 'image/png', data: baseline.context.sketch.split(',')[1] } }] : [];
         const body = JSON.stringify({
-          systemInstruction: { parts: [{ text: 'Generate the requested static website. Treat requestedDetails as user requirements. Return only one self-contained HTML document in the html field. Include internal CSS, meaningful responsive layout, and editable placeholders for missing facts. No JavaScript, external resources, forms, invented facts, or claims of deployment.' }] },
+          systemInstruction: { parts: [{ text: 'Act as the build executor after Bikting has resolved intent and relationships. Return one self-contained HTML document plus a buildPlan that follows the supplied action, target, relationships, sketch, and directions exactly. Include internal CSS, meaningful responsive layout, and editable placeholders for missing facts. No JavaScript, external resources, forms, invented facts, or claims of deployment.' }] },
           contents: [{ role: 'user', parts: [{ text: prompt }, ...sketchPart] }],
-          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { html: { type: 'STRING' } }, required: ['html'] } }
+          generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { html: { type: 'STRING' }, buildPlan: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['html', 'buildPlan'] } }
         });
         const generate = (id) => fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body });
         let response = await generate(selectedModel);
@@ -35,8 +35,10 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         if (!response.ok) throw new Error(`Website generation failed (${response.status}).`);
         const payload = await response.json();
         const output = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
-        const generatedHtml = validateGeneratedWebsite(JSON.parse(output).html);
-        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
+        const generated = JSON.parse(output);
+        const generatedHtml = validateGeneratedWebsite(generated.html);
+        const buildPlan = Array.isArray(generated.buildPlan) ? generated.buildPlan.filter((item) => typeof item === 'string').slice(0, 12) : [];
+        return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt, buildPlan }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
       } catch {
         return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generationStatus: 'starter_fallback' }, context: { ...baseline.context, buildPrompt: prompt } });
       }

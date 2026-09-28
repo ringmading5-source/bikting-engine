@@ -15,6 +15,9 @@ readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(r
 async function runPipeline(request) {
   const run = ++latestRun;
   let completed = false;
+  const stages = ['ZOOMING INTO INTENT', 'FILLING RELATIONSHIPS', 'WRITING BUILD DIRECTIONS', 'EXECUTING TOOL'];
+  let stageIndex = 0;
+  const stageTimer = setInterval(() => { if (!completed && run === latestRun) elements.stage.textContent = stages[Math.min(stageIndex++, stages.length - 1)]; }, 700);
   const showIntent = async () => {
     try {
       const response = await sendRequest(request, '/api/intent');
@@ -48,6 +51,7 @@ async function runPipeline(request) {
   }
   if (run !== latestRun) return;
   completed = true;
+  clearInterval(stageTimer);
   renderTrace(result.trace);
   elements.stage.textContent = result.workspace.status.toUpperCase();
   renderGraph(elements.visual, result.workspace.scene, 0);

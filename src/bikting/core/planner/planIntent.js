@@ -41,7 +41,7 @@ export function planIntent(semantic, registries = {}) {
       if (requirement.requiredCapability === 'physics.calculate_force') step.inputMapping = { operation: 'calculate_force', variables: '$semantic.variables' };
       if (requirement.requiredCapability === 'statistics.analyze') step.inputMapping = { data: '$semantic.variables.data', otherData: '$semantic.variables.otherData', statistic: '$semantic.variables.statistic' };
       if (requirement.requiredCapability === 'units.convert') step.inputMapping = { value: '$semantic.variables.value', fromUnit: '$semantic.variables.fromUnit', toUnit: '$semantic.variables.toUnit' };
-      if (requirement.requiredCapability === 'website.build') step.inputMapping = { title: '$semantic.variables.siteTitle', kind: '$semantic.variables.siteKind', html: '$semantic.variables.generatedHtml', generationStatus: '$semantic.variables.generationStatus' };
+      if (requirement.requiredCapability === 'website.build') step.inputMapping = { title: '$semantic.variables.siteTitle', kind: '$semantic.variables.siteKind', html: '$semantic.variables.generatedHtml', generationStatus: '$semantic.variables.generationStatus', buildPlan: '$semantic.context.buildPlan' };
       if (requirement.requiredCapability === 'visual.scene' && semantic.intent === 'plot') step.inputMapping = { plotData: `$results.${stepId('math.calculate')}.structuredVisualScenes` };
       if (requirement.requiredCapability === 'visual.scene' && semantic.intent === 'plot') step.dependsOn = [stepId('math.calculate')];
       steps.push(step);

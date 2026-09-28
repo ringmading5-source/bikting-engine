@@ -4,6 +4,7 @@ export function compileBuildPrompt(semantic, requestText) {
   return JSON.stringify({
     action: task.action, target: task.target, capability: task.capability,
     relationships: semantic.relationships.map(({ from, relation, to }) => ({ from, relation, to })),
+    directions: semantic.relationships.map(({ from, relation, to }) => `Use ${from} ${relation} ${to}.`),
     requestedDetails: requestText,
     userSketch: semantic.context.sketch ? 'Attached PNG sketch supplied by the user. Preserve its layout intent.' : null,
     sketch: ['header with site name', 'main section reflecting requested details', 'about section', 'contact section with editable placeholder'],

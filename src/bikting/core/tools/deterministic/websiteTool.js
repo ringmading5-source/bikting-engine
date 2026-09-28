@@ -3,7 +3,7 @@ export const websiteTool = {
   id: 'website.starter-builder', name: 'Starter website builder', domain: 'web',
   capabilities: [{ id: 'website.build', operation: 'build_website', acceptedInputs: ['title', 'kind'], producedOutputs: ['website'], executionMode: 'deterministic', visual: true }],
   operations: ['build_website'], deterministic: true,
-  async execute({ title, kind, html: generatedHtml, generationStatus }) {
+  async execute({ title, kind, html: generatedHtml, generationStatus, buildPlan = [] }) {
     const name = escapeHtml(String(title || 'Your Website').slice(0, 80));
     const category = kind === 'portfolio' ? 'portfolio' : kind === 'restaurant' ? 'restaurant' : 'general';
     const intro = category === 'portfolio' ? 'A place to show your work and introduce yourself.' : category === 'restaurant' ? 'A place to introduce your restaurant and share your menu.' : 'A space to introduce what you do and share your story.';
@@ -15,6 +15,7 @@ export const websiteTool = {
     const mode = generationStatus === 'generated' && generatedHtml ? 'generated' : 'starter';
     return { type: 'website', html, structuredVisualScenes: { type: 'website', html, title: String(title || 'Your Website'), mode, states: [
       { title: 'Intent sketch', text: `Build a website for ${title || 'you'}: header, main content, and contact section.` },
+      ...(buildPlan.length ? [{ title: 'Resolved build directions', text: buildPlan.join(' ') }] : []),
       { title: 'Website preview', text: mode === 'generated' ? 'Generated website ready to preview and download.' : generationStatus === 'starter_fallback' ? 'Starter website ready. Custom generation was unavailable.' : 'Starter website ready to preview and download.' }
     ], toolSelection: { selected: { id: this.id, name: this.name, status: 'available' } }, source: { type: 'tool', id: this.id, deterministic: mode !== 'generated' } }, deterministic: mode !== 'generated' };
   },
