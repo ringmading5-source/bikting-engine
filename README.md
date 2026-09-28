@@ -18,6 +18,8 @@ Connect this repository to Render and choose **New → Blueprint** to use `rende
 
 The browser submits text to `POST /api/run`. Recognized calculations, plots, conversions, dataset operations, and supported physics relationship explanations run through the intent and relationship engines without Gemini. Requests the built-in parser cannot interpret use one Gemini call for structured interpretation and a brief explanation; the planner then routes execution to registered capabilities. Repeating an identical request on the same server instance reuses its interpretation. Other output providers such as narration remain mock adapters. External accounts and production authentication are not connected. A public Render URL can be opened by anyone who has it; only requests with the test token can reach the model. This shared token is a prototype access gate, not user accounts or a production authentication system.
 
+Requests such as “Build me a website for a bakery” route to `website.build` without Gemini. The deterministic builder returns a single HTML file, displays it in a sandboxed preview, and offers a download. It creates a starter page with editable About and Contact placeholders; it does not publish the website or produce a custom app from arbitrary requirements.
+
 ## Calculations and animation
 
 `GET /api/capabilities` lists available tool properties. Current deterministic calculations include arithmetic, equation plots, statistics, unit conversion, force and force series, numeric ranges, and vector magnitude/dot product. For example: `Calculate dot product of [1,2] and [3,4]` and `Calculate magnitude of [3,4]`.

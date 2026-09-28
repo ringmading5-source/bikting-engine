@@ -1,5 +1,6 @@
 export function renderGraph(container, visual, stepIndex = 0) {
   if (!visual) return renderEmpty(container);
+  if (visual.type === 'website' && typeof visual.html === 'string') return renderWebsite(container, visual);
   if (visual.type === 'graph' && Array.isArray(visual.series)) {
     if (visual.toolSelection?.selected?.id === 'plotly' && globalThis.window?.Plotly) return renderPlotly(container, visual, stepIndex);
     return renderPlot(container, visual, stepIndex);
@@ -9,6 +10,19 @@ export function renderGraph(container, visual, stepIndex = 0) {
     : visual;
   if (!Array.isArray(normalized.nodes)) return renderEmpty(container);
   return renderRelationshipGraph(container, normalized, stepIndex);
+}
+
+function renderWebsite(container, visual) {
+  container.classList.remove('empty-state');
+  container.innerHTML = `<div class="website-preview"><a class="website-download" download="website.html" href="#">Download website.html</a><iframe title="Website preview" sandbox="" referrerpolicy="no-referrer" srcdoc="${escapeHtml(visual.html)}"></iframe></div>`;
+  const download = container.querySelector?.('.website-download');
+  if (download) {
+    download.addEventListener('click', () => {
+      const url = URL.createObjectURL(new Blob([visual.html], { type: 'text/html' }));
+      download.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+    });
+  }
 }
 
 function renderRelationshipGraph(container, visual, stepIndex) {

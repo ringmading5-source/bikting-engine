@@ -9,11 +9,12 @@ import { physicsCalculatorTool } from '../tools/deterministic/physicsTool.js';
 import { rangeTool } from '../tools/deterministic/rangeTool.js';
 import { structuredVisualizationTool } from '../tools/deterministic/visualizationTool.js';
 import { vectorTool } from '../tools/deterministic/vectorTool.js';
+import { websiteTool } from '../tools/deterministic/websiteTool.js';
 
 export function createDefaultRegistries() {
   const tools = new ToolRegistry();
   const models = new ModelRegistry();
-  [calculatorTool, equationEvaluatorTool, statisticsTool, unitConversionTool, physicsCalculatorTool, rangeTool, vectorTool, structuredVisualizationTool].forEach((tool) => tools.register(tool));
+  [calculatorTool, equationEvaluatorTool, statisticsTool, unitConversionTool, physicsCalculatorTool, rangeTool, vectorTool, structuredVisualizationTool, websiteTool].forEach((tool) => tools.register(tool));
   placeholderTools.forEach((tool) => tools.register(tool));
   mockModels.forEach((model) => models.register(model));
   return { tools, models, catalog: [...tools.capabilityCatalog(), ...models.capabilityCatalog()] };

@@ -108,6 +108,16 @@ test('recognized relationship intent runs its visual behavior without Gemini', a
   assert.equal(result.semantic.context.visualProgramStatus, 'relationship_engine');
 });
 
+test('a website build request executes the builder without Gemini', async () => {
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => { throw new Error('Gemini should not be called'); } });
+  const result = await createBiktingRuntime({ interpret }).run({ text: 'Build me a website for a bakery', type: 'text' });
+  assert.equal(result.semantic.intent, 'build_website');
+  assert.equal(result.status, 'completed');
+  assert.deepEqual(result.plan.capabilities, ['website.build']);
+  assert.equal(result.workspace.scene.type, 'website');
+  assert.match(result.workspace.scene.html, /Welcome to a bakery/);
+});
+
 test('concurrent identical requests share one Gemini interpretation', async () => {
   let calls = 0;
   const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async () => {

@@ -111,3 +111,14 @@ test('tool execution produces an honest visual input-tool-result sequence', asyn
   assert.match(converted.workspace.scene.states[2].text, /5000 m/);
   assert.ok(planned.workspace.scene.states.some((state) => state.title === 'Execution status' && /planned: Capability registered/.test(state.text)));
 });
+
+test('website builder escapes supplied titles in its downloadable HTML', async () => {
+  const result = await createBiktingRuntime().run({ text: 'Build me a website for <script>alert(1)</script>', type: 'text' });
+  assert.equal(result.workspace.scene.type, 'website');
+  assert.doesNotMatch(result.workspace.scene.html, /<script>/);
+  assert.match(result.workspace.scene.html, /&lt;script&gt;/);
+  const container = { classList: { remove() {} }, innerHTML: '' };
+  renderGraph(container, result.workspace.scene);
+  assert.match(container.innerHTML, /sandbox=""/);
+  assert.match(container.innerHTML, /Download website.html/);
+});

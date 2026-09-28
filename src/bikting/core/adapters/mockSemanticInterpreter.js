@@ -18,6 +18,10 @@ export async function mockSemanticInterpreter(request) {
     intent = 'vector_calculate'; domain = 'mathematics'; concepts = ['vector']; requestedOutputs = ['numeric_result'];
     const lists = [...text.matchAll(/\[([^\]]+)\]/g)].map((match) => match[1].split(',').map((item) => Number(item.trim())));
     variables = { vectorOperation: /dot product/i.test(text) ? 'dot_product' : 'magnitude', vectorA: lists[0], vectorB: lists[1] };
+  } else if (/\b(build|create|make|design)\b[\s\S]{0,80}\b(website|web\s*site|landing page|homepage)\b/i.test(text)) {
+    intent = 'build_website'; domain = 'web'; requestedOutputs = ['website'];
+    const subject = /\b(?:website|web\s*site|landing page|homepage)\s+for\s+([^,.!?]+)/i.exec(text)?.[1]?.trim();
+    variables = { siteTitle: subject?.slice(0, 80) || 'Your Website', siteKind: /\bportfolio\b/i.test(text) ? 'portfolio' : /\brestaurant\b/i.test(text) ? 'restaurant' : 'general' };
   } else if (forceRange) {
     intent = 'plot'; domain = 'physics'; concepts = ['force', 'mass', 'acceleration'];
     requestedOutputs = ['graph', 'numeric_data', 'structured_scene'];
