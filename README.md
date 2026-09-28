@@ -91,6 +91,6 @@ The present pilot has two owned executable tools and read-only public search. Ca
 
 ### Live execution pilot
 
-The calculator's **Run local calculation** action streams actual canonical execution events to the browser. The trace updates as events arrive; verified output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions and the answer. Browser speech depends on the user's device and browser. Website generation and public knowledge search still display their results after each request; game/animation tools and general-purpose live narration are not yet installed.
+Calculator and website scaffold runs stream actual canonical execution events to the browser. A public knowledge search reports when retrieval starts and finishes; results retain source links and are not presented as a verified lesson. The trace updates as events arrive; verified arithmetic output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions. Browser speech depends on the user's device and browser. Game and animation tools and true live voice input are not yet installed.
 
 Text input and the electric motor science module form the working vertical slice. Other domain recognition currently routes to a structured capability placeholder until a module or execution tool for that domain is registered. Voice is output-only in this slice; voice input and external AI/API adapters remain extension points.
