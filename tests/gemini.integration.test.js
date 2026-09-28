@@ -27,3 +27,15 @@ test('explicit arithmetic stays deterministic and does not spend a Gemini call',
   const result = await createBiktingRuntime({ interpret }).run({ text: 'Calculate 2 + 3', type: 'text' });
   assert.equal(result.outputs.numericData[0], 5);
 });
+
+test('a missing model reports available IDs without exposing the API key', async () => {
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', model: 'wrong-model', fetchImpl: async (url) => url.includes(':generateContent')
+    ? { ok: false, status: 404 }
+    : { ok: true, json: async () => ({ models: [{ name: 'models/gemini-2.5-flash', supportedGenerationMethods: ['generateContent'] }] }) } });
+  await assert.rejects(interpret({ text: 'Explain cells' }), (error) => {
+    assert.match(error.message, /wrong-model.*not found/);
+    assert.match(error.message, /gemini-2.5-flash/);
+    assert.doesNotMatch(error.message, /private-key/);
+    return true;
+  });
+});
