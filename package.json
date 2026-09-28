@@ -2,9 +2,11 @@
   "name": "bikting-engine",
   "private": true,
   "type": "module",
+  "engines": { "node": ">=20" },
   "scripts": {
     "test": "node --test tests/bikting.test.js tests/phase2.test.js tests/phase3.test.js tests/runtime.integration.test.js",
     "test:architecture": "node scripts/run-architecture-tests.mjs",
+    "test:pilot": "npm run build:runtime && node --test tests/pilot-server.test.js",
     "typecheck": "tsc --noEmit",
     "build:runtime": "tsc -p tsconfig.runtime.json",
     "start": "npm run build:runtime && node --experimental-loader ./scripts/extensionless-loader.mjs server.js"
