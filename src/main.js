@@ -1,9 +1,43 @@
 import { readTextRequest } from './input/textInput.js';
+import { renderMathResult } from './workspace/mathVisual.js';
 
 const byId = (id) => document.getElementById(id);
 const elements = { title: byId('workspace-title'), caption: byId('visual-caption'), explanation: byId('explanation'), count: byId('step-count'), play: byId('narrate-button'), previous: byId('previous-step'), next: byId('next-step'), progress: byId('progress-fill'), stage: byId('stage-label'), visual: byId('visualization') };
 const calculationButton = byId('calculate-button');
 const scaffoldButton = byId('scaffold-button');
+let voiceEnabled = false;
+elements.play.disabled = !('speechSynthesis' in window);
+elements.play.onclick = () => {
+  voiceEnabled = !voiceEnabled;
+  if (!voiceEnabled) speechSynthesis.cancel();
+  elements.play.querySelector('span').textContent = voiceEnabled ? 'Mute live voice' : 'Enable live voice';
+};
+function speak(message) {
+  if (!voiceEnabled || !('speechSynthesis' in window)) return;
+  speechSynthesis.speak(new SpeechSynthesisUtterance(message));
+}
+async function readLiveCalculation(expression, onEntry) {
+  const response = await fetch('/api/calculate/live', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ expression }) });
+  if (!response.ok) { const payload = await response.json(); throw new Error(payload.error ?? 'Calculation failed.'); }
+  const reader = response.body.getReader(); const decoder = new TextDecoder();
+  let buffer = '', result;
+  while (true) {
+    const { done, value } = await reader.read();
+    buffer += decoder.decode(value ?? new Uint8Array(), { stream: !done });
+    let newline;
+    while ((newline = buffer.indexOf('\n')) >= 0) {
+      const line = buffer.slice(0, newline); buffer = buffer.slice(newline + 1);
+      if (!line) continue;
+      const entry = JSON.parse(line);
+      onEntry(entry);
+      if (entry.kind === 'error') throw new Error(entry.error);
+      if (entry.kind === 'result') result = entry.result;
+    }
+    if (done) break;
+  }
+  if (!result) throw new Error('The execution stream ended without a verified result.');
+  return result;
+}
 
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request));
 
@@ -31,12 +65,23 @@ async function runPipeline(request) {
     calculationButton.onclick = async () => {
       calculationButton.disabled = true;
       try {
-        const response = await fetch('/api/calculate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ expression }) });
-        const output = await response.json();
-        if (!response.ok) throw new Error(output.error ?? 'Calculation failed.');
+        const trace = [{ section: 'PLAN', detail: 'math.calculate · math.calculator' }];
+        const narration = { execution_started: 'Starting the approved calculation.', provider_invoked: 'The local calculator is working.', verification_started: 'Checking the result.', step_succeeded: 'The result passed verification.' };
+        elements.stage.textContent = 'RUNNING';
+        const output = await readLiveCalculation(expression, (entry) => {
+          if (entry.kind !== 'event') return;
+          trace.push({ section: 'LIVE', detail: `${entry.event.sequence}. ${entry.event.type.replaceAll('_', ' ')}${entry.event.providerId ? ` · ${entry.event.providerId}` : ''}` });
+          renderTrace(trace);
+          const line = narration[entry.event.type];
+          if (line) { elements.explanation.textContent = line; speak(line); }
+        });
         elements.explanation.textContent = `${output.expression} = ${output.value}. Verified by the local calculator.`;
         elements.stage.textContent = 'VERIFIED';
-        renderTrace([{ section: 'PROVIDER', detail: output.providerId }, { section: 'VERIFICATION', detail: `Expression check passed. Result: ${output.value}` }]);
+        renderMathResult(elements.visual, output.expression, output.value);
+        elements.caption.textContent = 'Verified result · signed number line';
+        trace.push({ section: 'VERIFICATION', detail: `Expression check passed. Result: ${output.value}` });
+        renderTrace(trace);
+        speak(`The verified answer is ${output.value}.`);
       } catch (error) { elements.explanation.textContent = error.message; elements.stage.textContent = 'FAILED'; }
       finally { calculationButton.disabled = false; }
     };
@@ -112,7 +157,6 @@ async function runPipeline(request) {
     };
   }
   elements.count.textContent = preview.plan ? `${preview.plan.steps.length} planned steps` : '—';
-  elements.play.disabled = true;
   elements.previous.disabled = true;
   elements.next.disabled = true;
   renderTrace([
