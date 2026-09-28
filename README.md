@@ -12,6 +12,18 @@ node server.js
 
 Open <http://127.0.0.1:8000>. The electric motor walkthrough works without an AI service or network connection. Browser speech synthesis is used for optional narration.
 
+## Deploy on Render
+
+Connect this repository to Render and choose **New → Blueprint** to use `render.yaml`. It creates a Node web service with `npm ci`, `npm start`, and the `/health` check. Render supplies `PORT`; the server listens on all network interfaces. Enter `GEMINI_API_KEY` and a separate, randomly generated `BIKTING_TEST_TOKEN` (at least 16 characters) as secrets when deploying the Blueprint. You can also create a Web Service manually with the same build and start commands, then add both secrets in its Environment settings. Optionally set `GEMINI_MODEL` (default: `gemini-2.5-flash`). Never put either secret in GitHub. The UI asks for the test token when you first submit a request; it keeps the token in memory for that browser tab. Without a Gemini key, the server uses the mock interpreter for local testing; `/health` reports which interpreter is active.
+
+The browser submits text to `POST /api/run`; the server calls Gemini for structured interpretation and a brief explanation, then runs Bikting's existing planner and registered capabilities. Explicit calculations, plots, conversions, and dataset operations retain the deterministic request parser. Other output providers such as narration remain mock adapters. External accounts and production authentication are not connected. A public Render URL can be opened by anyone who has it; only requests with the test token can reach the model. This shared token is a prototype access gate, not user accounts or a production authentication system.
+
+## Calculations and animation
+
+`GET /api/capabilities` lists available tool properties. Current deterministic calculations include arithmetic, equation plots, statistics, unit conversion, force and force series, numeric ranges, and vector magnitude/dot product. For example: `Calculate dot product of [1,2] and [3,4]` and `Calculate magnitude of [3,4]`.
+
+The visualization tool builds progressive graph frames and relationship-focused states. The workspace can play states automatically, or synchronize them with browser speech when narration is present. This generic renderer can show relationships for different fields, but it is not a detailed anatomical, chemical, mechanical, or historical animation engine. Concept-specific assets and validated field modules must be added for faithful depictions; the renderer never claims that a generic diagram is a complete model of a concept.
+
 ## Pipeline
 
 `src/main.js` sends browser requests to `src/runtime/BiktingRuntime.js`, the production composition root. The runtime owns semantic interpretation, relationship processing, capability-driven planning, execution, and normalized results; the browser only presents its workspace projection.

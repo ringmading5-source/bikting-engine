@@ -6,18 +6,29 @@ export class PlaybackController {
     this.onStep = onStep;
     this.index = 0;
     this.speaking = false;
+    this.timer = null;
   }
   show(index) {
     this.index = Math.max(0, Math.min(index, this.steps.length - 1));
-    this.onStep(this.index, this.steps[this.index], this.scene?.states?.[this.index]);
+    const visualIndex = typeof this.steps[this.index]?.visualState === 'number' ? this.steps[this.index].visualState : this.index;
+    this.onStep(this.index, this.steps[this.index], this.scene?.states?.[visualIndex]);
     return this.index;
   }
   next() { if (this.index < this.steps.length - 1) this.show(this.index + 1); else this.stop(); }
   previous() { this.stop(); this.show(this.index - 1); }
   play() {
-    if (!('speechSynthesis' in window)) return;
     const narrationSteps = this.steps.map((step, index) => ({ step, index })).filter(({ step }) => step.narration);
-    if (!narrationSteps.length) return;
+    if (!narrationSteps.length || !('speechSynthesis' in window)) {
+      if (!this.scene?.states?.length) return;
+      this.stop();
+      const firstFrame = this.steps.findIndex((step) => typeof step.visualState === 'number');
+      this.show(firstFrame < 0 ? 0 : firstFrame);
+      this.timer = setInterval(() => {
+        if (this.index >= this.steps.length - 1) this.stop();
+        else this.next();
+      }, 1400);
+      return;
+    }
     this.stop(); this.speaking = true;
     let position = narrationSteps.findIndex(({ index }) => index >= this.index);
     if (position < 0) position = 0;
@@ -33,5 +44,5 @@ export class PlaybackController {
     };
     speakNext(position);
   }
-  stop() { this.speaking = false; if ('speechSynthesis' in window) speechSynthesis.cancel(); }
+  stop() { this.speaking = false; if (this.timer) clearInterval(this.timer); this.timer = null; if ('speechSynthesis' in window) speechSynthesis.cancel(); }
 }

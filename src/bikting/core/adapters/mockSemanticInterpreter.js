@@ -14,7 +14,11 @@ export async function mockSemanticInterpreter(request) {
   const forceRange = /\bplot\s+force\b/i.test(text);
   const mass = /\bmass\s*(?:is|=|of)?\s*([\d.]+)\s*kg\b/i.exec(text);
   const acceleration = /\bacceleration\s*(?:is|=|of)?\s*([\d.]+)\s*m\s*\/\s*s(?:\^?2|²)/i.exec(text);
-  if (forceRange) {
+  if (/\b(dot product|magnitude)\b/i.test(text) && /\[[^\]]+\]/.test(text)) {
+    intent = 'vector_calculate'; domain = 'mathematics'; concepts = ['vector']; requestedOutputs = ['numeric_result'];
+    const lists = [...text.matchAll(/\[([^\]]+)\]/g)].map((match) => match[1].split(',').map((item) => Number(item.trim())));
+    variables = { vectorOperation: /dot product/i.test(text) ? 'dot_product' : 'magnitude', vectorA: lists[0], vectorB: lists[1] };
+  } else if (forceRange) {
     intent = 'plot'; domain = 'physics'; concepts = ['force', 'mass', 'acceleration'];
     requestedOutputs = ['graph', 'numeric_data', 'structured_scene'];
     const bounds = /mass\s+(?:ranges|varies|changes)\s+from\s+([\d.]+)\s+to\s+([\d.]+)/i.exec(text);

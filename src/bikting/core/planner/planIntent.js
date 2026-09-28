@@ -1,6 +1,6 @@
 import { normalizeCapability } from '../types/capability.js';
 
-const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
+const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
 /** Build an ordered, capability-backed plan from structured semantic fields. */
 export function planIntent(semantic, registries = {}) {
@@ -36,6 +36,7 @@ export function planIntent(semantic, registries = {}) {
       const operation = operationFor(requirement, semantic);
       const step = { id: `step-${requirement.requiredCapability.replaceAll('.', '-')}`, operation, capability: requirement.requiredCapability, expectedOutputs: requirement.producedOutputs, providers: requirement.providers, status: requirement.status };
       if (requirement.requiredCapability === 'math.calculate') step.inputMapping = mathInput(semantic);
+      if (requirement.requiredCapability === 'vector.calculate') step.inputMapping = { operation: '$semantic.variables.vectorOperation', vectorA: '$semantic.variables.vectorA', vectorB: '$semantic.variables.vectorB' };
       if (requirement.requiredCapability === 'physics.calculate_force') step.inputMapping = { operation: 'calculate_force', variables: '$semantic.variables' };
       if (requirement.requiredCapability === 'statistics.analyze') step.inputMapping = { data: '$semantic.variables.data', otherData: '$semantic.variables.otherData', statistic: '$semantic.variables.statistic' };
       if (requirement.requiredCapability === 'units.convert') step.inputMapping = { value: '$semantic.variables.value', fromUnit: '$semantic.variables.fromUnit', toUnit: '$semantic.variables.toUnit' };
@@ -65,11 +66,12 @@ export function deriveRequiredCapabilities(semantic) {
   const numericRequest = intent === 'calculate' || intent === 'plot' || intent === 'solve' || outputs.has('numeric_result') || outputs.has('equation') || outputs.has('graph');
 
   if (intent === 'convert_units' || outputs.has('unit_conversion')) required.add('units.convert');
+  if (intent === 'vector_calculate') required.add('vector.calculate');
   else if (isForceRangeRequest(semantic)) {
     required.add('data.generate_range'); required.add('physics.calculate_force_series'); required.add('math.calculate'); required.add('visual.scene');
   } else if (concepts.has('force') && Number.isFinite(Number(variables.mass)) && Number.isFinite(Number(variables.acceleration)) && numericRequest) {
     required.add('physics.calculate_force');
-  } else if (numericRequest && !['statistics', 'data'].includes(domain)) required.add('math.calculate');
+  } else if (numericRequest && !['statistics', 'data'].includes(domain) && intent !== 'vector_calculate') required.add('math.calculate');
 
   const structuredForceCalculation = concepts.has('force') && Number.isFinite(Number(variables.mass)) && Number.isFinite(Number(variables.acceleration)) && numericRequest;
   if ((domain === 'physics' && !structuredForceCalculation && !isForceRangeRequest(semantic)) || outputs.has('physical_state') || outputs.has('vectors') || outputs.has('fields') || concepts.has('electric_motor')) required.add('physics.represent');
