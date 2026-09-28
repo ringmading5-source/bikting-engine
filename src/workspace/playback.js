@@ -17,8 +17,8 @@ export class PlaybackController {
   next() { if (this.index < this.steps.length - 1) this.show(this.index + 1); else this.stop(); }
   previous() { this.stop(); this.show(this.index - 1); }
   play() {
-    const narrationSteps = this.steps.map((step, index) => ({ step, index })).filter(({ step }) => step.narration);
-    if (!narrationSteps.length || !('speechSynthesis' in window)) {
+    const spokenSteps = this.steps.map((step, index) => ({ step, index, speech: step.narration || step.text })).filter(({ speech }) => typeof speech === 'string' && speech.trim());
+    if (!spokenSteps.length || !('speechSynthesis' in window)) {
       if (!this.scene?.states?.length) return;
       this.stop();
       const firstFrame = this.steps.findIndex((step) => typeof step.visualState === 'number');
@@ -30,13 +30,13 @@ export class PlaybackController {
       return;
     }
     this.stop(); this.speaking = true;
-    let position = narrationSteps.findIndex(({ index }) => index >= this.index);
+    let position = spokenSteps.findIndex(({ index }) => index >= this.index);
     if (position < 0) position = 0;
     const speakNext = (nextPosition) => {
-      if (!this.speaking || nextPosition >= narrationSteps.length) { this.speaking = false; return; }
-      const { step, index } = narrationSteps[nextPosition];
+      if (!this.speaking || nextPosition >= spokenSteps.length) { this.speaking = false; return; }
+      const { speech, index } = spokenSteps[nextPosition];
       this.show(index);
-      const utterance = new SpeechSynthesisUtterance(step.narration);
+      const utterance = new SpeechSynthesisUtterance(speech);
       utterance.rate = 0.95;
       utterance.onend = () => speakNext(nextPosition + 1);
       utterance.onerror = () => { this.speaking = false; };

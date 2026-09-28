@@ -25,7 +25,7 @@ export function createWorkspaceProjection(result) {
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
     scene,
     steps: steps.length ? steps : [{ title: 'Result', text: 'The request completed without a displayable output.' }],
-    hasNarration: narration.length > 0,
+    hasNarration: steps.some((step) => Boolean(step.narration || step.text)),
     status: result.status ?? 'unknown',
     confidence: result.semantic?.confidence ?? 0,
     errors,

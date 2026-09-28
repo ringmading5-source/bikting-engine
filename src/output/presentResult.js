@@ -5,7 +5,7 @@ export function presentResult(result, elements, { onStep, onPlay }) {
   elements.explanation.classList.remove('empty-explanation');
   elements.count.textContent = `01 / ${String(workspace.steps.length).padStart(2, '0')}`;
   elements.play.disabled = !workspace.hasNarration && !workspace.scene?.states?.length;
-  elements.play.querySelector('span').textContent = workspace.hasNarration ? 'Play explanation' : 'Play visualization';
+  elements.play.querySelector('span').textContent = workspace.hasNarration ? 'Play voice + visual' : 'Play visualization';
   elements.previous.disabled = workspace.steps.length < 2;
   elements.next.disabled = workspace.steps.length < 2;
   elements.play.onclick = onPlay;

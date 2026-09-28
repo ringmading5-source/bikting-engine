@@ -36,6 +36,7 @@ async function runPipeline(request) {
     elements.stage.textContent = result.workspace.status.toUpperCase();
   } });
   presentResult(result, elements, { onStep: (direction) => direction === 'next' ? playback.next() : playback.previous(), onPlay: () => playback.play() });
+  if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
   playback.show(0);
 }
 

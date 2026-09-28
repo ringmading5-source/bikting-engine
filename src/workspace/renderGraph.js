@@ -35,10 +35,19 @@ function renderPlot(container, graph, stepIndex) {
   const yRange = range(Math.min(...yValues), Math.max(...yValues));
   const coordinate = ({ x, y }) => `${padding + ((x - xRange.min) / (xRange.max - xRange.min)) * (width - padding * 2)},${height - padding - ((y - yRange.min) / (yRange.max - yRange.min)) * (height - padding * 2)}`;
   const visibleCount = graph.states?.[Math.min(stepIndex, graph.states.length - 1)]?.pointCount ?? Infinity;
-  const series = graph.series.map((item) => `<polyline class="edge active" fill="none" points="${item.points.filter(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)).slice(0, visibleCount).map(coordinate).join(' ')}"/>`).join('');
+  const series = graph.series.map((item) => {
+    const visible = item.points.filter(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)).slice(0, visibleCount);
+    const current = visible.at(-1);
+    const [cx, cy] = current ? coordinate(current).split(',') : [];
+    return `<polyline class="edge active" fill="none" points="${visible.map(coordinate).join(' ')}"/>${current ? `<circle class="plot-focus" cx="${cx}" cy="${cy}" r="5"/><text x="${Number(cx) + 9}" y="${Number(cy) - 8}" class="edge-label">(${format(current.x)}, ${format(current.y)})</text>` : ''}`;
+  }).join('');
+  const xLabel = escapeHtml(graph.axes?.x?.label ?? 'x');
+  const yLabel = escapeHtml(graph.axes?.y?.label ?? 'y');
   container.classList.remove('empty-state');
-  container.innerHTML = `<svg class="visual-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(graph.type)}"><path class="edge" d="M ${padding} ${height - padding} H ${width - padding} M ${padding} ${height - padding} V ${padding}"/>${series}<text x="${padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.min))}</text><text x="${width - padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.max))}</text><text x="${padding + 4}" y="${padding + 12}" class="edge-label">${escapeHtml(String(yRange.max))}</text></svg>`;
+  container.innerHTML = `<svg class="visual-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(graph.type)}"><path class="edge" d="M ${padding} ${height - padding} H ${width - padding} M ${padding} ${height - padding} V ${padding}"/>${series}<text x="${padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.min))}</text><text x="${width - padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.max))}</text><text x="${padding + 4}" y="${padding + 12}" class="edge-label">${escapeHtml(String(yRange.max))}</text><text x="${width - padding - 4}" y="${height - 8}" class="edge-label">${xLabel}</text><text x="${padding + 6}" y="${padding + 12}" class="edge-label">${yLabel}</text></svg>`;
 }
+
+function format(value) { return escapeHtml(Number(value.toPrecision(3)).toString()); }
 
 function renderEmpty(container) {
   container.classList.add('empty-state');
