@@ -1,16 +1,47 @@
 # Bikting Engine
 
-A small, dependency-free browser prototype of Bikting as a modular interaction and orchestration system. The current vertical slice accepts text, interprets a request, creates a plan, routes it to a domain module, and delivers structured explanation, visual state, and narration to a workspace.
+A browser prototype of Bikting as a modular interaction and orchestration system. The current browser path previews canonical intent interpretation and planning. It does not execute the plan.
 
 ## Run locally
 
-Requires Node.js 18 or newer. From this directory:
+Requires Node.js 20 or newer. From this directory:
 
 ```powershell
-node server.js
+npm ci
+npm start
 ```
 
-Open <http://127.0.0.1:8000>. The electric motor walkthrough works without an AI service or network connection. Browser speech synthesis is used for optional narration.
+Open <http://127.0.0.1:8000>. The deterministic website preview recognizes “Build for me my personal website”. Arithmetic and simple learning requests have separate local and public-search routes. Other requests return an explicit refusal. No model key is required or used in the running browser application.
+
+The experimental Gemini adapter remains in the codebase as an inactive module. The running browser application does not register or invoke it. Run `npm run typecheck`, `npm test`, and `npm run test:architecture` to check the implementation.
+
+## Public knowledge lookup
+
+Enter `Teach me cells in biology` or `Explain photosynthesis`. Bikting extracts the topic with a small deterministic rule and queries Wikipedia's public MediaWiki search API through `/api/knowledge`. It displays up to five source links and plain-text search snippets; it does not assemble a lesson or claim the snippets have been checked. The endpoint has a fixed public host, a topic limit, a response limit, and a timeout. If the source is unreachable, it reports the failure. A later knowledge module can evaluate sources and represent their relationships before generating a teaching sequence.
+
+The browser trace also inspects each planned step against the canonical provider registry. It identifies unavailable providers, mock adapters, account requirements, and requested permissions. This inspection itself is read-only.
+
+## Coding example
+
+Enter `Build for me my personal website`, inspect the `code.scaffold` plan, then click **Generate website files**. Bikting recomputes and checks the plan ID on the server, selects a local template provider through the canonical execution guard, and returns three source files: `index.html`, `styles.css`, and `script.js`. The browser shows their source and offers separate downloads. The files form a basic personal website starter with placeholder content to edit. No shell command, model-generated program, filesystem write, or deployment is performed. Arbitrary coding requests still need a real coding provider and a separate execution policy.
+
+## Built-in toolbox
+
+`src/runtime/bikting-owned-tools.ts` is the composition point for installed first-party tools. It registers executable implementations and capability metadata together. The current Bikting-owned tools are `math.calculate` and `code.scaffold`; both run locally without external accounts. Other legacy entries may be placeholders or mocks and are not counted as owned executable tools. Wikipedia is an external knowledge source accessed through Bikting's read-only search adapter, not knowledge that Bikting owns.
+
+## General request routing
+
+`src/runtime/intent-router.ts` registers small intent rules. The browser asks `/api/route` for an intent and capability instead of parsing each command in the UI. The same calculation capability handles “Calculate …” and “Compute …”; the website starter handles “Build for me …” and “Create …”; the learning lookup handles “Teach me …” and “What is …”. A new rule can be registered without modifying the browser dispatch. This is a bounded no-model router: requests outside the registered patterns remain unresolved. Broad semantic understanding and new execution domains require additional interpreters, tools, and evidence handling.
+
+## Private pilot preparation
+
+The server accepts `PORT` and `HOST`. Local development defaults to `127.0.0.1:8000`. A non-local `HOST` fails at startup unless `PILOT_MODE=true`, `PILOT_USERNAME` is set, and `PILOT_PASSWORD` has at least 16 characters. Pilot access uses HTTP Basic authentication, so deploy behind HTTPS and share the password with only invited testers. This is a shared pilot password, not per-user accounts. Rotate it in the host settings to revoke access. The server serves only the browser assets, limits each connecting address to 120 requests per minute, and exposes `/healthz` for the host's health check.
+
+`render.yaml` prepares a Render web service with non-secret settings and prompts for the two secret values on first creation. Do not put the password in the repository or a URL. Run `npm run test:pilot` after `npm ci` to check the access gate, static-file protection, and request limit. The 22-scenario agent-style matrix is part of `npm run test:architecture`. Hosting has not been activated by adding this file; the private pilot is ready to deploy only after the branch is reviewed and a hosting account is connected.
+
+## First guarded execution path
+
+Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. Teaching requests still preview plans only.
 
 ## Pipeline
 
@@ -51,5 +82,33 @@ The same tool registry now includes local deterministic tools for arithmetic/equ
 Supported structured operations include arithmetic expressions (`+ - * / % ^` and parentheses), `y = expression` plot data, mean/median/min/max/population variance/standard deviation/correlation, compatible length/time/mass unit conversion, and `F = m * a`. Input interpretation remains a replaceable mock adapter; tool implementations consume only its structured fields. The browser workspace renders the canonical orchestrator result, including structured scenes, narration when available, execution status, errors, confidence, provenance, and trace data.
 
 ## Current scope
+
+### Capability resolution before execution
+
+`CapabilityResolutionLoop` checks a fixed canonical plan against the installed capability registry, provider registry, user access grants, executable adapters, required inputs, and unresolved knowledge requirements. Each check returns concrete next actions and can be repeated after those dependencies change. A supplied catalog of offers can suggest providers for missing capabilities. The loop stops after a configurable number of checks; it never installs a tool, grants access, or invokes a provider. `ready_for_run` supplies a prepared plan, but execution still requires a separate guarded request. Browser previews show the current next actions under **NEXT ACTION**.
+
+The present pilot has two owned executable tools and read-only public search. Catalog offers, external tool installation, account connections, and interactive input collection require additional integrations before this can handle arbitrary tasks.
+
+Provider resolution also compares declared operations and required input/output names and types when a provider supplies `properties`. The owned calculator and website scaffold declare these properties. A provider's display name cannot make an incompatible declaration suitable. Older provider registrations without independent property declarations still use capability IDs for compatibility; migration and behavioral verification are required before this can be trusted for arbitrary third-party tools.
+
+At execution time, the kernel checks an observed provider result against its declared output properties before accepting it as a successful step or passing it to dependent steps. A missing or wrongly typed result is recorded as a failed observation. This currently handles primitive, numeric-array, and workspace-file output shapes; specialized outputs still need task-specific behavioral verification.
+
+### Live execution pilot
+
+Calculator and website scaffold runs stream actual canonical execution events to the browser. A public knowledge search reports when retrieval starts and finishes; results retain source links and are not presented as a verified lesson. The trace updates as events arrive; verified arithmetic output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions. Browser speech depends on the user's device and browser. Game and animation tools and true live voice input are not yet installed.
+
+### Unified goal engine and model budget
+
+The browser now enters through `/api/goal` and executes approved work through `/api/goal/live`. `GoalEngine` first tries local intent rules. Arithmetic and public source lookup need no model call. A personal website request asks whether the user wants a new starter or edits to an existing project; existing-project editing is reported unavailable until project access is implemented. Unknown wording calls the optional Gemini clarifier once, presents its suggested interpretation for user confirmation, and executes nothing from the suggestion directly. Without a configured model, unknown wording reports the missing capability. Each response reports its model call count; Gemini clarification also reports token usage when the API returns it. Monetary cost and token usage of the optional worker are not yet measured. An explicit **Try LLM worker (uses credits)** action remains available for supported work when configured.
+
+Local rules are intentionally narrow; interpretation cannot be assumed correct from keyword matching. The engine must confirm ambiguity and use observed tool results to assess delivery.
+
+### Optional LLM worker bridge
+
+Set `GEMINI_API_KEY` and `GEMINI_MODEL` on the server to enable the browser's **Run with LLM worker** action. The model receives only the approved goal, available tool contracts, and prior verified observations. It proposes JSON actions; Bikting checks the capability and exact task inputs, runs its own guarded calculator or website scaffold, and sends the observed result back for a final response. The bridge allows at most one tool call and three model turns. It rejects premature completion and requests outside the approved task. No model credentials or tool execution interfaces are sent to the browser or model. The pilot worker only supports the arithmetic and fixed personal website intents; it does not grant arbitrary project file access or free-form agent tool use.
+
+### Head-to-head pilot evaluation
+
+`npm run eval:live` runs four paired cases with the same configured Gemini model in both arms: a direct tool-use controller and Bikting's guarded worker. It prints JSON lines with goal success, unsafe tool calls, calls made, model turns, and elapsed time. Model sessions start fresh for each arm, and trial order alternates by case. Credentials stay in the process environment. The direct arm can call either pilot tool; the Bikting arm offers only the rule-approved tool. These cases are a harness smoke test, not evidence of general usefulness: they omit token costs, diverse coding tasks, human judgment, and real project edits. Do not publish a winner from mock responses or this small task set.
 
 Text input and the electric motor science module form the working vertical slice. Other domain recognition currently routes to a structured capability placeholder until a module or execution tool for that domain is registered. Voice is output-only in this slice; voice input and external AI/API adapters remain extension points.

@@ -33,7 +33,14 @@ export function resolvePlanProviders(plan: ExecutionPlan, capabilities: Capabili
   const steps = plan.steps.map((step): StepProviderResolution => {
     if (!step.capabilityId) return { stepId: step.id, status: "not_required", candidateProviderIds: [], availableProviderIds: [], candidates: [], unresolvedProvider: false, provenance: [...(step.provenance ?? [])] };
     if (!capabilities.has(step.capabilityId)) return { stepId: step.id, capabilityId: step.capabilityId, status: "no_provider", candidateProviderIds: [], availableProviderIds: [], candidates: [], unresolvedProvider: true, provenance: [...(step.provenance ?? [])] };
-    const providers = registry.findByCapability(step.capabilityId).sort((left, right) => left.id.localeCompare(right.id));
+    const providers = registry.findByCapability(step.capabilityId).filter((provider) => {
+      if (!provider.properties) return true; // Older registrations have no independent property declaration yet.
+      const requiredOperation = step.action.split('.').at(-1);
+      const accepts = (expected: { name: string; type: string }, actual: { name: string; type: string }) => expected.name === actual.name && (expected.type === 'unknown' || actual.type === 'unknown' || expected.type === actual.type);
+      return (!requiredOperation || provider.properties.operations.includes(requiredOperation))
+        && (step.expectedInputs ?? []).filter(({ required }) => required).every((expected) => provider.properties!.inputs.some((actual) => accepts(expected, actual)))
+        && (step.expectedOutputs ?? []).every((expected) => provider.properties!.outputs.some((actual) => accepts(expected, actual)));
+    }).sort((left, right) => left.id.localeCompare(right.id));
     const candidates = providers.map((provider) => ({ providerId: provider.id, availability: provider.availability, authorizationRequirements: structuredClone(provider.authorizationRequirements ?? []) }));
     const availableProviderIds = candidates.filter(({ availability }) => availability === "available").map(({ providerId }) => providerId);
     const status: StepProviderResolutionStatus = !candidates.length ? "no_provider" : availableProviderIds.length ? "resolved" : "unavailable";

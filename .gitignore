@@ -1,5 +1,6 @@
 node_modules/
 .architecture-test-build/
+.runtime-build/
 dist/
 build/
 coverage/
@@ -11,4 +12,3 @@ coverage/
 .DS_Store
 Thumbs.db
 *.log
-
