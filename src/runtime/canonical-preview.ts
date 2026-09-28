@@ -9,6 +9,7 @@ import { runPlannedWebsiteScaffold } from './website-scaffold';
 import { createBiktingOwnedTools } from './bikting-owned-tools';
 import { isPersonalWebsiteRequest } from './intent-router';
 import { CapabilityResolutionLoop } from './capability-resolution-loop';
+import type { ExecutionEvent } from '../execution/events';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
@@ -84,9 +85,9 @@ export async function previewIntent(text: string) {
   };
 }
 
-export async function runWebsiteFromIntent(text: unknown, expectedPlanId: unknown) {
+export async function runWebsiteFromIntent(text: unknown, expectedPlanId: unknown, onEvent?: (event: ExecutionEvent) => void) {
   if (typeof text !== 'string' || !isPersonalWebsiteRequest(text) || typeof expectedPlanId !== 'string') throw new TypeError('This local coding example supports the personal website request only.');
   const planned = await pipeline.run({ projectId: 'browser-preview', raw: { text: text.trim(), modality: 'text' }, capabilities, providerId: 'mock.deterministic' });
   if (!planned.plan || planned.plan.id !== expectedPlanId) throw new Error('The plan changed. Preview the request again before running it.');
-  return runPlannedWebsiteScaffold(planned.plan);
+  return runPlannedWebsiteScaffold(planned.plan, onEvent);
 }
