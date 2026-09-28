@@ -13,7 +13,7 @@ test('HTTP boundary exposes the tested Bikting pipeline', async () => {
 
   const health = await fetch(`${base}/health`);
   assert.equal(health.status, 200);
-  assert.deepEqual(await health.json(), { status: 'ok', interpreter: 'mock' });
+  assert.deepEqual(await health.json(), { status: 'ok', interpreter: 'mock', boundedWebsiteWorker: false });
 
   const cell = await post('/api/intent', { text: 'cell' });
   assert.equal(cell.status, 200);
