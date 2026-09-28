@@ -111,7 +111,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     };
   };
   return (request) => {
-    const key = `${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}`;
+    const key = `${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}\0${JSON.stringify(request?.sketchLayout ?? null)}`;
     if (!key || interpretationCache.has(key)) return interpretationCache.get(key) ?? interpret(request);
     const pending = interpret(request);
     interpretationCache.set(key, pending);

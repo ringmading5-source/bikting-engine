@@ -41,14 +41,14 @@ const server = createServer(async (request, response) => {
       }
       let input;
       try { input = JSON.parse(body); } catch { response.writeHead(400); response.end(); return; }
-      if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000 || (input.sketch !== undefined && input.sketch !== null && (typeof input.sketch !== 'string' || input.sketch.length > 500000))) { response.writeHead(400); response.end(); return; }
+      if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000 || (input.sketch !== undefined && input.sketch !== null && (typeof input.sketch !== 'string' || input.sketch.length > 500000)) || (input.sketchLayout !== undefined && input.sketchLayout !== null && (typeof input.sketchLayout !== 'object' || !Array.isArray(input.sketchLayout.pieces)))) { response.writeHead(400); response.end(); return; }
       if (pathname === '/api/intent') {
-        const semantic = await mockSemanticInterpreter({ text: input.text.trim(), sketch: input.sketch ?? null, modality: 'text' });
+        const semantic = await mockSemanticInterpreter({ text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' });
         response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
         response.end(JSON.stringify({ task: semantic.context.task ?? null, relationships: semantic.relationships, scene: semantic.context.task?.capability === 'website.build' ? { type: 'website', title: semantic.variables.siteTitle, states: [{ title: 'Intent sketch' }] } : null }));
         return;
       }
-      const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, source: 'browser', modality: 'text' });
+      const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, source: 'browser', modality: 'text' });
       response.writeHead(result.status === 'error' ? 502 : 200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

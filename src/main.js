@@ -9,7 +9,7 @@ let playback;
 let testToken = '';
 let latestRun = 0;
 
-setupSketch(elements.sketch, byId('clear-sketch'));
+setupSketch(elements.sketch, byId('clear-sketch'), byId('concept-image'), byId('puzzle-pieces'));
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request), elements.sketch);
 
 async function runPipeline(request) {
@@ -72,19 +72,19 @@ async function runPipeline(request) {
 }
 
 function sendRequest(request, path = '/api/run') {
-  const body = typeof request === 'string' ? { text: request } : { text: request.text, sketch: request.sketch };
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, sketch: request.sketch, sketchLayout: request.sketchLayout };
   return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
 }
 
-function setupSketch(canvas, clear) {
+function setupSketch(canvas, clear, upload, pieces) {
   if (!canvas) return;
   const context = canvas.getContext('2d'); context.strokeStyle = '#c3f36b'; context.lineWidth = 3; context.lineCap = 'round';
-  let drawing = false;
-  const point = (event) => { const rect = canvas.getBoundingClientRect(); return [(event.clientX - rect.left) * canvas.width / rect.width, (event.clientY - rect.top) * canvas.height / rect.height]; };
-  canvas.addEventListener('pointerdown', (event) => { drawing = true; canvas.setPointerCapture(event.pointerId); const [x, y] = point(event); context.beginPath(); context.moveTo(x, y); });
-  canvas.addEventListener('pointermove', (event) => { if (!drawing) return; const [x, y] = point(event); context.lineTo(x, y); context.stroke(); });
-  canvas.addEventListener('pointerup', () => { drawing = false; });
-  clear?.addEventListener('click', () => context.clearRect(0, 0, canvas.width, canvas.height));
+  let order = []; let image = null;
+  const draw = () => { context.clearRect(0, 0, canvas.width, canvas.height); if (image) { const cols = 3; const rows = 3; const tileW = canvas.width / cols; const tileH = canvas.height / rows; (order.length ? order : Array.from({ length: 9 }, (_, i) => i)).forEach((source, slot) => { const sx = source % cols * image.width / cols; const sy = Math.floor(source / cols) * image.height / rows; context.drawImage(image, sx, sy, image.width / cols, image.height / rows, slot % cols * tileW, Math.floor(slot / rows) * tileH, tileW, tileH); }); } };
+  const renderPieces = () => { if (!pieces || !image) return; pieces.innerHTML = ''; const cols = 3; const rows = 3; if (!order.length) order = Array.from({ length: 9 }, (_, i) => i); order.forEach((source, slot) => { const tile = document.createElement('canvas'); tile.width = 120; tile.height = 70; tile.draggable = true; tile.className = 'puzzle-piece'; const tc = tile.getContext('2d'); const sx = source % cols * image.width / cols; const sy = Math.floor(source / cols) * image.height / rows; tc.drawImage(image, sx, sy, image.width / cols, image.height / rows, 0, 0, tile.width, tile.height); tile.title = `Piece ${source + 1}; drag to reorder`; tile.addEventListener('dragstart', (event) => event.dataTransfer.setData('text/plain', String(slot))); tile.addEventListener('dragover', (event) => event.preventDefault()); tile.addEventListener('drop', (event) => { event.preventDefault(); const from = Number(event.dataTransfer.getData('text/plain')); [order[from], order[slot]] = [order[slot], order[from]]; renderPieces(); draw(); }); pieces.appendChild(tile); }); };
+  upload?.addEventListener('change', () => { const file = upload.files?.[0]; if (!file) return; const reader = new FileReader(); reader.onload = () => { image = new Image(); image.onload = () => { order = []; draw(); renderPieces(); }; image.src = reader.result; }; reader.readAsDataURL(file); });
+  clear?.addEventListener('click', () => { image = null; order = []; context.clearRect(0, 0, canvas.width, canvas.height); if (pieces) pieces.innerHTML = ''; if (upload) upload.value = ''; });
+  canvas.layout = () => image ? { type: 'image-puzzle', pieces: [...order], columns: 3, rows: 3 } : null;
 }
 
 function renderTrace(trace = []) {
