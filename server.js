@@ -13,30 +13,32 @@ import { listVisualTools } from './src/visualization/visualToolCatalog.js';
 import { mockSemanticInterpreter } from './src/bikting/core/adapters/mockSemanticInterpreter.js';
 import { createKnowledgeStore } from './src/server/knowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
+import { createLiveCostBridge } from './src/server/liveCostBridge.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const plotlyBundle = resolve(root, 'node_modules/plotly.js-dist-min/plotly.min.js');
 const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
 
 /** Compose the HTTP boundary without starting a process-level listener. */
-export function createBiktingServer({ env = process.env, rootDir = root, logger = console } = {}) {
+export function createBiktingServer({ env = process.env, rootDir = root, logger = console, fetchImpl = fetch } = {}) {
   const geminiEnabled = Boolean(env.GEMINI_API_KEY);
   const testToken = env.BIKTING_TEST_TOKEN;
   if (geminiEnabled && (!testToken || testToken.length < 16)) throw new Error('BIKTING_TEST_TOKEN must have at least 16 characters when Gemini is enabled.');
   const defaults = createDefaultRegistries();
   const knowledgeStore = createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs: Number(env.KNOWLEDGE_CACHE_TTL_MS ?? 86_400_000) });
   const providers = createProviderConnections({ env });
+  const costBridge = createLiveCostBridge({ knowledgeStore, tools: defaults.tools, env, fetchImpl });
   const models = new ModelRegistry();
   if (geminiEnabled) models.register(createModelAdapter({
     id: 'gemini.interpretation-text', name: 'Gemini interpretation text', domain: 'language', modalities: ['text'], capabilities: ['text.generate'],
     metadata: { provider: 'gemini' }, methods: { async generate(semantic) { return { type: 'explanation', text: semantic.context.geminiExplanation || 'The request was interpreted, but no explanation was returned.' }; } }
   }));
   for (const model of defaults.models.list()) models.register(model);
-  const interpret = geminiEnabled ? createGeminiInterpreter({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', knowledgeStore }) : mockSemanticInterpreter;
+  const interpret = geminiEnabled ? createGeminiInterpreter({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', knowledgeStore, executeWebsite: costBridge.executeWebsite, onModelCall: costBridge.recordModelCall, fetchImpl }) : mockSemanticInterpreter;
   const runtime = createBiktingRuntime({ interpret, tools: defaults.tools, models });
-  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers });
+  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge });
   const server = createServer(handler);
-  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock' };
+  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge };
 }
 
 export function startBiktingServer(options = {}) {
@@ -45,7 +47,7 @@ export function startBiktingServer(options = {}) {
   return composed;
 }
 
-function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers }) {
+function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge }) {
   return async (request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -56,15 +58,19 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         const input = await readInput(request);
         if (!validInput(input)) return send(response, 400, null);
         const normalized = { text: input.text.trim(), knowledgeMode: input.knowledgeMode === 'web' ? 'web' : 'model', sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' };
-        if (pathname === '/api/run/stream') return streamRun(response, normalized, runtime, interpret, geminiEnabled);
+        if (pathname === '/api/run/stream') return streamRun(response, normalized, runtime, interpret, geminiEnabled, costBridge);
         if (pathname === '/api/intent') {
           try { return send(response, 200, await previewIntent(normalized, interpret, geminiEnabled)); }
           catch (error) { return send(response, 503, { error: error instanceof Error ? error.message : String(error) }); }
         }
-        const result = await runtime.run({ type: 'text', ...normalized, source: 'browser' });
+        const result = await costBridge.run(runtime, { type: 'text', ...normalized, source: 'browser' });
         return send(response, result.status === 'error' ? 502 : 200, result);
       }
       if (pathname === '/health') return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock' });
+      if (pathname === '/api/usage' && request.method === 'GET') {
+        if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        return send(response, 200, costBridge.telemetry.summary());
+      }
       if (pathname === '/api/capabilities') return send(response, 200, defaults.tools.capabilityCatalog().map(({ id, domain, operation, acceptedInputs, producedOutputs }) => ({ id, domain, operation, acceptedInputs, producedOutputs })));
       if (pathname === '/api/visual-tools') return send(response, 200, listVisualTools());
       if (pathname === '/api/providers' && request.method === 'GET') return send(response, 200, providers.list());
@@ -98,7 +104,7 @@ function validInput(input) {
   return typeof input?.text === 'string' && Boolean(input.text.trim()) && input.text.length <= 2000 && (input.knowledgeMode === undefined || input.knowledgeMode === 'model' || input.knowledgeMode === 'web') && (input.sketch === undefined || input.sketch === null || typeof input.sketch === 'string' && input.sketch.length <= 500000) && (input.sketchLayout === undefined || input.sketchLayout === null || typeof input.sketchLayout === 'object' && !Array.isArray(input.sketchLayout) && Array.isArray(input.sketchLayout.pieces));
 }
 
-async function streamRun(response, request, runtime, interpret, geminiEnabled) {
+async function streamRun(response, request, runtime, interpret, geminiEnabled, costBridge) {
   response.writeHead(200, { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache', Connection: 'keep-alive' });
   const event = (type, data) => response.write(`event: ${type}\ndata: ${JSON.stringify(data)}\n\n`);
   try {
@@ -108,7 +114,7 @@ async function streamRun(response, request, runtime, interpret, geminiEnabled) {
     event('intent', preview);
     if (preview.status === 'clarification') { event('complete', { status: 'clarification', preview }); response.end(); return; }
     event('stage', { stage: 'execution', message: 'Routing tools and executing the plan.' });
-    const result = await runtime.run({ type: 'text', ...request, source: 'browser' });
+    const result = await costBridge.run(runtime, { type: 'text', ...request, source: 'browser' });
     event('result', result);
     event('complete', { status: result.status });
   } catch (error) { event('error', { message: error instanceof Error ? error.message : String(error) }); }

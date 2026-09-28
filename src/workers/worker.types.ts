@@ -43,7 +43,7 @@ export interface ExecutionTelemetry {
   inputTokensEstimated: number;
   inputTokensActual?: number;
   outputTokens: number;
-  estimatedCost: number;
+  estimatedCost: number | null;
   actualCost?: number;
   latencyMs: number;
   attempt: number;

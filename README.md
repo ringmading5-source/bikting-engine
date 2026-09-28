@@ -114,3 +114,11 @@ Biology and cell requests with validated relationships can use the deterministic
 `GET /api/providers` reports provider capabilities and authorization state. `POST /api/providers/:id/connect` records a requested connection and returns the required authorization method; real OAuth/API-key exchange is intentionally still an external account setup step.
 
 Gemini interpretations can use the bounded JSON knowledge store at `KNOWLEDGE_STORE_PATH` (default `data/knowledge-cache.json`). Entries are hashed, bounded, expire, and are written atomically. This is suitable for a single prototype instance; a shared production deployment should replace it with a database adapter.
+
+### Bounded website worker and usage
+
+The live server builds the TypeScript search and worker core before starting. Set both `GEMINI_INPUT_COST_PER_MILLION` and `GEMINI_OUTPUT_COST_PER_MILLION` to your provider's current USD rates to enable the bounded website preview worker. Optionally set `BIKTING_WORKER_MAX_COST_USD` (default `0.05` per task). Without both rates, the previous website generator remains active and its dollar cost is shown as unavailable. Requests with image sketches also use that existing path because the text token estimator cannot account for image tokens.
+
+The website worker receives a limited context and output budget, validates the generated HTML, and may run one small repair task if validation fails and budget remains. A request that exceeds its estimated cost limit returns the safe starter preview without making a model call. Validated results are reused for identical requests through the existing bounded knowledge store. `GET /api/usage` reports model calls, tokens, estimates when rates are configured, and cache hits; use the same test token header as `/api/run`. The workspace shows the request's model usage and estimate.
+
+This currently applies bounded worker selection to website previews. Other Gemini interpretations still use the existing model route, with call telemetry and cache reporting. Google Search grounding is a provider feature on that existing route; the generic search router reports external web search as unavailable unless a dedicated provider is configured. The persisted JSON store is suitable for a single prototype instance.

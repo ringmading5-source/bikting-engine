@@ -132,7 +132,7 @@ function displayResult(result) {
   renderKnowledge(byId('knowledge-sources'), result.workspace.knowledge);
   renderTrace(result.trace);
   const usage = result.usage;
-  if (usage) byId('run-usage').textContent = `${usage.modelCalls} model call${usage.modelCalls === 1 ? '' : 's'} · ${usage.inputTokens + usage.outputTokens} reported tokens · ${usage.deterministicToolCalls} deterministic tool call${usage.deterministicToolCalls === 1 ? '' : 's'}${usage.cacheHit ? ' · cache hit' : ''}. Exact cost unavailable.`;
+  if (usage) byId('run-usage').textContent = `${usage.modelCalls} model call${usage.modelCalls === 1 ? '' : 's'} · ${usage.inputTokens + usage.outputTokens} reported tokens · ${usage.deterministicToolCalls} deterministic tool call${usage.deterministicToolCalls === 1 ? '' : 's'}${usage.cacheHit ? ' · cache hit' : ''} · ${usage.estimatedCostUsd == null ? 'Cost estimate unavailable' : `Estimated $${usage.estimatedCostUsd.toFixed(5)}`}.`;
   elements.stage.textContent = result.workspace.status.toUpperCase();
   renderGraph(elements.visual, result.workspace.scene, 0);
   playback?.stop();

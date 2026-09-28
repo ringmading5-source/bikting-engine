@@ -47,7 +47,7 @@ export interface WorkerRunResult {
 export class WorkerExecutor {
   constructor(private readonly models: WorkerModelRouter, private readonly search: SearchRouter, private readonly contextBuilder = new ContextBuilder(), private readonly validator = new WorkerValidator(), private readonly promptBuilder = new WorkerPromptBuilder(), private readonly budgets = new TokenBudgetController(), private readonly telemetry?: CostTelemetry, private readonly memory?: ExecutionMemory) {}
 
-  async run(task: WorkerTask, options: { remainingCost: number; context?: readonly ContextCandidate[]; allowSearchResolution?: boolean; escalationReason?: string }): Promise<WorkerRunResult> {
+  async run(task: WorkerTask, options: { remainingCost: number; context?: readonly ContextCandidate[]; allowSearchResolution?: boolean; escalationReason?: string; validateOutput?: (output: unknown) => ValidationResult }): Promise<WorkerRunResult> {
     const budget = this.budgets.allocate(task, options.remainingCost);
     const search = await this.search.search({ query: task.objective, projectId: task.projectId, maxResults: 5 });
     if (options.allowSearchResolution !== false && search.status === "resolved") {
@@ -71,7 +71,9 @@ export class WorkerExecutor {
       this.telemetry?.record(failed);
       return { status: "blocked", telemetry: [failed], search, reason: error instanceof Error ? error.message : String(error) };
     }
-    const validation = this.validator.validate(enriched, response.output);
+    const structural = this.validator.validate(enriched, response.output);
+    const domain = structural.valid && options.validateOutput ? options.validateOutput(response.output) : undefined;
+    const validation = domain && !domain.valid ? domain : structural;
     const inputTokens = response.inputTokens ?? context.estimatedTokens;
     const outputTokens = response.outputTokens ?? estimateTokens(response.output);
     const call: ExecutionTelemetry = { provider: model.provider, model: model.model, taskId: task.id, inputTokensEstimated: context.estimatedTokens,
@@ -89,16 +91,16 @@ export class WorkerExecutor {
         result: response.output, validation, repairHistory: task.parentTaskId ? [task.parentTaskId] : [], recordedAt: new Date().toISOString() });
       return { status: "completed", output: response.output, validation, telemetry: [call], search };
     }
-    const repairTask = task.retryPolicy.allowTargetedRepair && budget.maxAttempts > 1 ? targetedRepair(enriched, validation) : undefined;
+    const repairTask = task.retryPolicy.allowTargetedRepair && budget.maxAttempts > 1 ? targetedRepair(enriched, validation, response.output) : undefined;
     return { status: repairTask ? "repair_required" : "blocked", output: response.output, validation, repairTask, telemetry: [call], search,
       reason: repairTask ? "Output failed deterministic validation; a targeted repair is available." : "Output failed validation; retry is disabled." };
   }
 }
 
-export function targetedRepair(task: WorkerTask, validation: ValidationResult): WorkerTask {
+export function targetedRepair(task: WorkerTask, validation: ValidationResult, invalidOutput?: unknown): WorkerTask {
   return { ...task, id: `${task.id}:repair`, parentTaskId: task.id,
     objective: `Repair the output for ${task.id}: ${validation.issues.map(({ code, path }) => `${code}${path ? `:${path}` : ""}`).join(", ")}`,
-    inputs: { originalTaskId: task.id, errors: validation.issues }, evidence: [],
+    inputs: { originalTaskId: task.id, errors: validation.issues, invalidOutputSnippet: JSON.stringify(invalidOutput)?.slice(0, 600) }, evidence: [],
     tokenBudget: { ...task.tokenBudget, maxInputTokens: Math.min(task.tokenBudget.maxInputTokens, 600), maxAttempts: task.tokenBudget.maxAttempts - 1 },
     retryPolicy: { ...task.retryPolicy, allowEscalation: false } };
 }

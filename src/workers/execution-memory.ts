@@ -41,14 +41,14 @@ export class ValidatedExperienceSearchProvider implements SearchProvider {
   }
 }
 
-export interface UsageSummary { totalModelCalls: number; totalInputTokens: number; totalOutputTokens: number; estimatedCost: number; actualCostKnown: number; cacheHits: number; searchResolutions: number; deterministicResolutions: number; escalations: number }
+export interface UsageSummary { totalModelCalls: number; totalInputTokens: number; totalOutputTokens: number; estimatedCost: number | null; actualCostKnown: number; cacheHits: number; searchResolutions: number; deterministicResolutions: number; escalations: number }
 export class CostTelemetry {
   private readonly calls: ExecutionTelemetry[] = [];
   private cacheHits = 0; private searchResolutions = 0; private deterministicResolutions = 0;
   record(call: ExecutionTelemetry): void { this.calls.push({ ...call }); }
   recordResolution(kind: "cache" | "search" | "deterministic"): void { if (kind === "cache") this.cacheHits++; else if (kind === "search") this.searchResolutions++; else this.deterministicResolutions++; }
   summary(): UsageSummary { return { totalModelCalls: this.calls.length, totalInputTokens: this.calls.reduce((n, call) => n + (call.inputTokensActual ?? call.inputTokensEstimated), 0),
-    totalOutputTokens: this.calls.reduce((n, call) => n + call.outputTokens, 0), estimatedCost: this.calls.reduce((n, call) => n + call.estimatedCost, 0),
+    totalOutputTokens: this.calls.reduce((n, call) => n + call.outputTokens, 0), estimatedCost: this.calls.some((call) => call.estimatedCost === null) ? null : this.calls.reduce((n, call) => n + (call.estimatedCost ?? 0), 0),
     actualCostKnown: this.calls.reduce((n, call) => n + (call.actualCost ?? 0), 0), cacheHits: this.cacheHits, searchResolutions: this.searchResolutions,
     deterministicResolutions: this.deterministicResolutions, escalations: this.calls.filter(({ escalationReason }) => Boolean(escalationReason)).length }; }
 }
