@@ -29,7 +29,26 @@ export interface IntelligenceCapabilities {
   /** False for providers that must not be used for tasks marked as requiring grounding. */
   supportsGrounding?: boolean;
   supportsStructuredOutput?: boolean;
+  /** Optional worker routing metadata. Legacy providers may omit it. */
+  model?: ModelCapability;
   metadata?: Record<string, unknown>;
+}
+
+export interface ModelCapability {
+  provider: string;
+  model: string;
+  coding?: "low" | "medium" | "high";
+  reasoning?: "low" | "medium" | "high";
+  extraction?: boolean;
+  classification?: boolean;
+  vision?: boolean;
+  structuredOutput?: boolean;
+  contextWindow: number;
+  maxOutputTokens: number;
+  latencyClass?: "fast" | "standard" | "slow";
+  inputCostPerMillion: number;
+  outputCostPerMillion: number;
+  reliability?: number;
 }
 
 /** Modality of the raw user input entering the intelligence boundary. */
@@ -309,6 +328,8 @@ export interface IntelligenceProvider {
   readonly capabilities: IntelligenceCapabilities;
   interpretIntent(request: IntelligenceRequest): Promise<StructuredIntent>;
   reason(request: IntelligenceRequest): Promise<ReasoningResult>;
+  /** Optional bounded worker adapter; legacy intent/reasoning adapters remain valid. */
+  executeWorker?(prompt: import("../workers/worker.types").WorkerPrompt): Promise<import("../workers/worker.types").WorkerResponse>;
 }
 
 /** An intelligence provider must never be handed Bikting's execution machinery. */
