@@ -39,6 +39,7 @@ export function createDefaultIntentRules(): IntentRuleRegistry {
   } });
   registry.register({ id: 'public-knowledge', resolve(text) {
     const topic = /^(?:teach me|explain|learn about|what is)\s+(.+?)\s*[.!?]?\s*$/i.exec(text)?.[1]?.trim();
+    if (topic && (/\b(?:plus|minus|times|divided by)\b/i.test(topic) || /\d\s*[+*/×÷]\s*\d/.test(topic))) return null;
     return topic ? { id: 'public-knowledge', intent: 'learn', capabilityId: 'knowledge.public_search', inputs: { topic }, needsExplicitRun: false } : null;
   } });
   return registry;
