@@ -66,7 +66,7 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         const result = await costBridge.run(runtime, { type: 'text', ...normalized, source: 'browser' });
         return send(response, result.status === 'error' ? 502 : 200, result);
       }
-      if (pathname === '/health') return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock' });
+      if (pathname === '/health') return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock', boundedWebsiteWorker: Boolean(costBridge.executeWebsite) });
       if (pathname === '/api/usage' && request.method === 'GET') {
         if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
         return send(response, 200, costBridge.telemetry.summary());
