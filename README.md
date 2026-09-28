@@ -97,6 +97,12 @@ At execution time, the kernel checks an observed provider result against its dec
 
 Calculator and website scaffold runs stream actual canonical execution events to the browser. A public knowledge search reports when retrieval starts and finishes; results retain source links and are not presented as a verified lesson. The trace updates as events arrive; verified arithmetic output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions. Browser speech depends on the user's device and browser. Game and animation tools and true live voice input are not yet installed.
 
+### Unified goal engine and model budget
+
+The browser now enters through `/api/goal` and executes approved work through `/api/goal/live`. `GoalEngine` first tries local intent rules. Arithmetic and public source lookup need no model call. A personal website request asks whether the user wants a new starter or edits to an existing project; existing-project editing is reported unavailable until project access is implemented. Unknown wording calls the optional Gemini clarifier once, presents its suggested interpretation for user confirmation, and executes nothing from the suggestion directly. Without a configured model, unknown wording reports the missing capability. Each response reports its model call count; token usage and monetary cost are not yet measured. An explicit **Try LLM worker (uses credits)** action remains available for supported work when configured.
+
+Local rules are intentionally narrow; interpretation cannot be assumed correct from keyword matching. The engine must confirm ambiguity and use observed tool results to assess delivery.
+
 ### Optional LLM worker bridge
 
 Set `GEMINI_API_KEY` and `GEMINI_MODEL` on the server to enable the browser's **Run with LLM worker** action. The model receives only the approved goal, available tool contracts, and prior verified observations. It proposes JSON actions; Bikting checks the capability and exact task inputs, runs its own guarded calculator or website scaffold, and sends the observed result back for a final response. The bridge allows at most one tool call and three model turns. It rejects premature completion and requests outside the approved task. No model credentials or tool execution interfaces are sent to the browser or model. The pilot worker only supports the arithmetic and fixed personal website intents; it does not grant arbitrary project file access or free-form agent tool use.
