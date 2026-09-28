@@ -38,10 +38,10 @@ test('Gemini clarification adapter makes one bounded interpretation request', as
   let requests = 0;
   const clarifier = createGeminiGoalClarifier({ apiKey: 'test-key', model: 'gemini-test', fetcher: async () => {
     requests++;
-    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: '{"inferredGoal":"Calculate 2 + 2","category":"calculate","question":"Calculate two plus two?"}' }] } }] }), { status: 200 });
+    return new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: '{"inferredGoal":"Calculate 2 + 2","category":"calculate","question":"Calculate two plus two?"}' }] } }], usageMetadata: { promptTokenCount: 25, candidatesTokenCount: 12, totalTokenCount: 37 } }), { status: 200 });
   } });
   const result = await new GoalEngine(clarifier).analyze('two plus two');
-  assert.equal(result.status, 'needs_confirmation'); assert.equal(requests, 1);
+  assert.equal(result.status, 'needs_confirmation'); assert.equal(result.usage?.totalTokens, 37); assert.equal(requests, 1);
   const mathQuestion = await new GoalEngine(clarifier).analyze('What is two plus two?');
   assert.equal(mathQuestion.status, 'needs_confirmation'); assert.equal(requests, 2);
 });
