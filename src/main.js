@@ -36,6 +36,11 @@ async function runPipeline(request) {
     elements.stage.textContent = result.workspace.status.toUpperCase();
   } });
   presentResult(result, elements, { onStep: (direction) => direction === 'next' ? playback.next() : playback.previous(), onPlay: () => playback.play() });
+  if (result.workspace.visualTool) {
+    const { selected, recommended } = result.workspace.visualTool;
+    const rendererName = selected.id === 'plotly' && !window.Plotly ? 'Bikting SVG Plot (fallback)' : selected.name;
+    elements.caption.textContent = `Rendered with ${rendererName}.${recommended ? ` ${recommended.name} requires ${recommended.requirement}.` : ''}`;
+  }
   if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
   playback.show(0);
 }

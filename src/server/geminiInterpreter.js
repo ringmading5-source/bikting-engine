@@ -2,6 +2,7 @@ import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticIn
 import { relationshipTypes } from '../bikting/core/relationships/RelationshipTypeRegistry.js';
 
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
+const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
 
 export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
@@ -17,7 +18,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       generationConfig: { responseMimeType: 'application/json', responseSchema: {
         type: 'OBJECT', properties: {
           intent: { type: 'STRING', enum: ['explain', 'write_code', 'unknown'] },
-          domain: { type: 'STRING' }, concepts: { type: 'ARRAY', items: { type: 'STRING' } },
+          domain: { type: 'STRING' }, visualArtifact: { type: 'STRING', enum: [...visualArtifacts] }, concepts: { type: 'ARRAY', items: { type: 'STRING' } },
           relationships: { type: 'ARRAY', items: { type: 'OBJECT', properties: { from: { type: 'STRING' }, relation: { type: 'STRING' }, to: { type: 'STRING' } }, required: ['from', 'relation', 'to'] } },
           explanation: { type: 'STRING' }
         }, required: ['intent', 'domain', 'concepts', 'relationships', 'explanation']
@@ -60,7 +61,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],
-      goals: [request.text], context: { requestText: request.text, domain: String(proposed.domain ?? 'general').slice(0, 40), geminiExplanation: explanation },
+      goals: [request.text], context: { requestText: request.text, domain: String(proposed.domain ?? 'general').slice(0, 40), visualArtifact: visualArtifacts.has(proposed.visualArtifact) ? proposed.visualArtifact : 'diagram', geminiExplanation: explanation },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };

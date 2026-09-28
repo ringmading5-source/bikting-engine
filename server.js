@@ -8,8 +8,10 @@ import { createGeminiInterpreter } from './src/server/geminiInterpreter.js';
 import { createDefaultRegistries } from './src/bikting/core/registry/createDefaultRegistries.js';
 import { ModelRegistry } from './src/bikting/core/models/ModelRegistry.js';
 import { createModelAdapter } from './src/bikting/core/models/adapters/ModelAdapter.js';
+import { listVisualTools } from './src/visualization/visualToolCatalog.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
+const plotlyBundle = resolve(root, 'node_modules/plotly.js-dist-min/plotly.min.js');
 const mimeTypes = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml' };
 const port = Number(process.env.PORT ?? 8000);
 const host = process.env.HOST ?? '0.0.0.0';
@@ -52,6 +54,16 @@ const server = createServer(async (request, response) => {
     if (pathname === '/api/capabilities') {
       response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
       response.end(JSON.stringify(defaults.tools.capabilityCatalog().map(({ id, domain, operation, acceptedInputs, producedOutputs }) => ({ id, domain, operation, acceptedInputs, producedOutputs }))));
+      return;
+    }
+    if (pathname === '/api/visual-tools') {
+      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      response.end(JSON.stringify(listVisualTools()));
+      return;
+    }
+    if (pathname === '/vendor/plotly.min.js') {
+      response.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8', 'Cache-Control': 'public, max-age=86400' });
+      response.end(await readFile(plotlyBundle));
       return;
     }
     const relativePath = pathname === '/' ? 'index.html' : pathname.slice(1);

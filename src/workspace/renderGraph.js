@@ -2,7 +2,10 @@ const positions = [[48, 95], [170, 95], [292, 95], [414, 95], [536, 95], [658, 9
 
 export function renderGraph(container, visual, stepIndex = 0) {
   if (!visual) return renderEmpty(container);
-  if (visual.type === 'graph' && Array.isArray(visual.series)) return renderPlot(container, visual, stepIndex);
+  if (visual.type === 'graph' && Array.isArray(visual.series)) {
+    if (visual.toolSelection?.selected?.id === 'plotly' && globalThis.window?.Plotly) return renderPlotly(container, visual, stepIndex);
+    return renderPlot(container, visual, stepIndex);
+  }
   const normalized = visual.type === 'diagram'
     ? { type: visual.type, nodes: visual.objects ?? [], edges: visual.relationships ?? [], states: visual.states ?? [] }
     : visual;
@@ -45,6 +48,22 @@ function renderPlot(container, graph, stepIndex) {
   const yLabel = escapeHtml(graph.axes?.y?.label ?? 'y');
   container.classList.remove('empty-state');
   container.innerHTML = `<svg class="visual-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(graph.type)}"><path class="edge" d="M ${padding} ${height - padding} H ${width - padding} M ${padding} ${height - padding} V ${padding}"/>${series}<text x="${padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.min))}</text><text x="${width - padding}" y="${height - 10}" class="edge-label">${escapeHtml(String(xRange.max))}</text><text x="${padding + 4}" y="${padding + 12}" class="edge-label">${escapeHtml(String(yRange.max))}</text><text x="${width - padding - 4}" y="${height - 8}" class="edge-label">${xLabel}</text><text x="${padding + 6}" y="${padding + 12}" class="edge-label">${yLabel}</text></svg>`;
+}
+
+function renderPlotly(container, graph, stepIndex) {
+  const visibleCount = graph.states?.[Math.min(stepIndex, graph.states.length - 1)]?.pointCount ?? Infinity;
+  const traces = graph.series.map((series) => {
+    const points = (series.points ?? []).filter(({ x, y }) => Number.isFinite(x) && Number.isFinite(y)).slice(0, visibleCount);
+    return { x: points.map((point) => point.x), y: points.map((point) => point.y), type: 'scatter', mode: 'lines+markers', name: String(series.expression ?? 'series'), line: { color: '#c3f36b', width: 3 }, marker: { color: '#c3f36b', size: 5 } };
+  });
+  container.classList.remove('empty-state');
+  globalThis.window.Plotly.react(container, traces, {
+    margin: { l: 44, r: 10, t: 10, b: 36 }, height: 190,
+    paper_bgcolor: '#111a20', plot_bgcolor: '#111a20', font: { color: '#aab8ae', size: 10 },
+    xaxis: { title: graph.axes?.x?.label ?? 'x', gridcolor: '#304046', zerolinecolor: '#718084' },
+    yaxis: { title: graph.axes?.y?.label ?? 'y', gridcolor: '#304046', zerolinecolor: '#718084' },
+    showlegend: graph.series.length > 1
+  }, { responsive: true, displayModeBar: false });
 }
 
 function format(value) { return escapeHtml(Number(value.toPrecision(3)).toString()); }

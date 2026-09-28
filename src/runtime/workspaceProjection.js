@@ -24,6 +24,7 @@ export function createWorkspaceProjection(result) {
     title: `${humanize(result.semantic?.intent ?? 'request')} request`,
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
     scene,
+    visualTool: scene?.toolSelection ?? null,
     steps: steps.length ? steps : [{ title: 'Result', text: 'The request completed without a displayable output.' }],
     hasNarration: steps.some((step) => Boolean(step.narration || step.text)),
     status: result.status ?? 'unknown',
