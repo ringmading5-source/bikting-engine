@@ -91,6 +91,8 @@ The present pilot has two owned executable tools and read-only public search. Ca
 
 Provider resolution also compares declared operations and required input/output names and types when a provider supplies `properties`. The owned calculator and website scaffold declare these properties. A provider's display name cannot make an incompatible declaration suitable. Older provider registrations without independent property declarations still use capability IDs for compatibility; migration and behavioral verification are required before this can be trusted for arbitrary third-party tools.
 
+At execution time, the kernel checks an observed provider result against its declared output properties before accepting it as a successful step or passing it to dependent steps. A missing or wrongly typed result is recorded as a failed observation. This currently handles primitive, numeric-array, and workspace-file output shapes; specialized outputs still need task-specific behavioral verification.
+
 ### Live execution pilot
 
 Calculator and website scaffold runs stream actual canonical execution events to the browser. A public knowledge search reports when retrieval starts and finishes; results retain source links and are not presented as a verified lesson. The trace updates as events arrive; verified arithmetic output is plotted on a signed number line. **Enable live voice** opts into browser speech that narrates selected recorded transitions. Browser speech depends on the user's device and browser. Game and animation tools and true live voice input are not yet installed.
