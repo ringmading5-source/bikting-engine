@@ -34,6 +34,8 @@ export function createWorkspaceProjection(result) {
     errors,
     unexecuted,
     provenance: result.execution?.map((item) => item.provenance ?? item.source).filter(Boolean) ?? [],
+    buildPlan: result.semantic?.context?.buildPlan ?? [],
+    nextAction: result.outputs?.unexecuted?.find((item) => item.nextAction)?.nextAction ?? null,
   };
 }
 
