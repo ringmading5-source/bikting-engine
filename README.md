@@ -104,3 +104,13 @@ This adds knowledge ingestion and provenance; it does not yet turn arbitrary con
 ## Verification workflow
 
 Run `npm run verify` before deploying. It executes the JavaScript unit/integration suite, the TypeScript architecture and parity suite, and the type checker. The HTTP integration test composes the server without binding a fixed port and verifies `/health`, `/api/intent`, `/api/run`, `/api/capabilities`, clarification for ambiguous `cell`, deterministic vector execution, and invalid-request rejection. This is the repeatable contract for the current vertical slice; new capabilities should add a focused test before being exposed in the UI.
+
+## Blueprint layers now implemented
+
+Biology and cell requests with validated relationships can use the deterministic concept-piece renderer. It creates connected container, core, organelle, flow, and part pieces with progressive active states; it does not invent a missing relationship or claim a scientific illustration is complete.
+
+`POST /api/run/stream` exposes server-sent execution events for input, intent, execution, result, and errors. The browser uses this stream after intent confirmation, so the workspace stage reflects the actual request lifecycle instead of a timer.
+
+`GET /api/providers` reports provider capabilities and authorization state. `POST /api/providers/:id/connect` records a requested connection and returns the required authorization method; real OAuth/API-key exchange is intentionally still an external account setup step.
+
+Gemini interpretations can use the bounded JSON knowledge store at `KNOWLEDGE_STORE_PATH` (default `data/knowledge-cache.json`). Entries are hashed, bounded, expire, and are written atomically. This is suitable for a single prototype instance; a shared production deployment should replace it with a database adapter.

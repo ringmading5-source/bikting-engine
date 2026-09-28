@@ -1,6 +1,7 @@
 export function renderGraph(container, visual, stepIndex = 0) {
   if (!visual) return renderEmpty(container);
   if (visual.type === 'website') return renderWebsite(container, visual, stepIndex);
+  if (visual.type === 'concept-pieces') return renderConceptPieces(container, visual, stepIndex);
   if (visual.type === 'graph' && Array.isArray(visual.series)) {
     if (visual.toolSelection?.selected?.id === 'plotly' && globalThis.window?.Plotly) return renderPlotly(container, visual, stepIndex);
     return renderPlot(container, visual, stepIndex);
@@ -27,6 +28,28 @@ function renderWebsite(container, visual, stepIndex) {
       setTimeout(() => URL.revokeObjectURL(url), 30000);
     });
   }
+}
+
+function renderConceptPieces(container, visual, stepIndex) {
+  const state = visual.states?.[Math.min(stepIndex, Math.max(0, visual.states.length - 1))] ?? { activeNodes: [] };
+  const width = 700; const height = 300;
+  const position = new Map((visual.pieces ?? []).map((piece) => [piece.id, piece]));
+  const edges = (visual.relationships ?? []).map((edge, index) => {
+    const source = position.get(edge.from); const target = position.get(edge.to);
+    if (!source || !target || source.id === target.id) return '';
+    const active = state.activeEdge === index || state.activeNodes?.includes(source.id) || state.activeNodes?.includes(target.id);
+    return `<path class="concept-edge ${active ? 'active' : ''}" d="M ${source.x} ${source.y} L ${target.x} ${target.y}" marker-end="url(#concept-arrow)"/><text class="edge-label" x="${(source.x + target.x) / 2}" y="${(source.y + target.y) / 2 - 6}">${escapeHtml(String(edge.relation).replaceAll('_', ' '))}</text>`;
+  }).join('');
+  const pieces = (visual.pieces ?? []).map((piece) => {
+    const active = state.activeNodes?.includes(piece.id);
+    const cls = `concept-piece ${piece.role} ${active ? 'active' : ''}`;
+    const x = piece.x - piece.width / 2; const y = piece.y - piece.height / 2;
+    const shape = piece.role === 'container' ? `<ellipse cx="${piece.x}" cy="${piece.y}" rx="${piece.width / 2}" ry="${piece.height / 2}"/>` : piece.role === 'core' ? `<circle cx="${piece.x}" cy="${piece.y}" r="${Math.min(piece.width, piece.height) / 2}"/>` : `<rect x="${x}" y="${y}" width="${piece.width}" height="${piece.height}" rx="${piece.role === 'flow' ? 20 : 12}"/>`;
+    return `<g class="${cls}" aria-label="${escapeHtml(piece.label)}">${shape}<text x="${piece.x}" y="${piece.y + 4}">${escapeHtml(piece.label)}</text></g>`;
+  }).join('');
+  container.classList.remove('empty-state');
+  container.innerHTML = `<div class="concept-heading">${escapeHtml(visual.topic)} · connected concept pieces</div><svg class="visual-svg concept-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(visual.topic)} concept pieces"><defs><marker id="concept-arrow" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#84978a" stroke-width="1.2"/></marker></defs>${edges}${pieces}</svg>`;
+  container.querySelector?.('.concept-piece.active')?.scrollIntoView?.({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
 }
 
 function renderRelationshipGraph(container, visual, stepIndex) {

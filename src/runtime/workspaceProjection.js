@@ -3,6 +3,7 @@
  * This is presentation-only: all content comes from semantic/execution outputs.
  */
 import { createExecutionScene } from '../visualization/executionScene.js';
+import { createConceptPieceScene } from '../visualization/conceptScene.js';
 
 export function createWorkspaceProjection(result) {
   const outputs = result.outputs ?? {};
@@ -12,7 +13,8 @@ export function createWorkspaceProjection(result) {
     : [];
   const errors = outputs.errors ?? [];
   const unexecuted = outputs.unexecuted ?? [];
-  const scene = outputs.visual?.structuredVisualScenes ?? outputs.structuredVisualScenes?.[0] ?? createExecutionScene(result);
+  const conceptScene = createConceptPieceScene(result);
+  const scene = conceptScene ?? outputs.visual?.structuredVisualScenes ?? outputs.structuredVisualScenes?.[0] ?? createExecutionScene(result);
   const steps = narration.length
     ? narration.map((segment, index) => ({
       title: `Narration ${String(index + 1).padStart(2, '0')}`,

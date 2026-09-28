@@ -50,14 +50,16 @@ export function setupHome({ onResume, onNew, onOpen, onPreferences }) {
   async function loadTools() {
     const target = document.getElementById('home-tools'); target.textContent = 'Checking available tools…';
     try {
-      const [health, capabilities] = await Promise.all([fetch('/health'), fetch('/api/capabilities')]);
-      if (!health.ok || !capabilities.ok) throw new Error();
-      const [status, tools] = await Promise.all([health.json(), capabilities.json()]);
+      const [health, capabilities, providers] = await Promise.all([fetch('/health'), fetch('/api/capabilities'), fetch('/api/providers')]);
+      if (!health.ok || !capabilities.ok || !providers.ok) throw new Error();
+      const [status, tools, providerList] = await Promise.all([health.json(), capabilities.json(), providers.json()]);
       target.replaceChildren();
-      const description = document.createElement('p'); description.textContent = `Interpreter: ${status.interpreter === 'gemini' ? 'Gemini configured on server' : 'Local mock interpreter'}. External account sign-in is not implemented.`; target.append(description);
+      const description = document.createElement('p'); description.textContent = `Interpreter: ${status.interpreter === 'gemini' ? 'Gemini configured on server' : 'Local mock interpreter'}. Provider access is explicit and requires your authorization.`; target.append(description);
       const list = document.createElement('ul');
       for (const tool of tools) { const item = document.createElement('li'); item.textContent = `${tool.id} · ${tool.domain}`; list.append(item); }
       target.append(list);
+      const providersHeading = document.createElement('p'); providersHeading.textContent = 'Connected accounts'; target.append(providersHeading);
+      for (const provider of providerList) { const button = document.createElement('button'); button.type = 'button'; button.textContent = `${provider.name}: ${provider.status === 'connected' ? 'Connected' : 'Connect'}`; button.disabled = provider.status === 'connected'; button.onclick = async () => { const response = await fetch(`/api/providers/${encodeURIComponent(provider.id)}/connect`, { method: 'POST' }); const connection = await response.json(); button.textContent = connection.status === 'connected' ? `${provider.name}: Connected` : `${provider.name}: Authorization required`; }; target.append(button); }
     } catch { target.textContent = 'Could not load tool status. Check that the Bikting server is running.'; }
   }
   return {

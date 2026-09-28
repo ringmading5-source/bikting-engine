@@ -111,18 +111,14 @@ async function runPipeline(request) {
   } finally { clearInterval(stageTimer); }
   let result;
   try {
-    let response = await sendRequest(request);
-    if (response.status === 401) {
-      testToken = window.prompt('Enter your Bikting test access token:') ?? '';
-      if (!testToken) return;
-      response = await sendRequest(request);
-    }
-    if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Unexpected server response');
-    result = await response.json();
-  } catch {
+    result = await sendStreamRequest(request, (event, data) => {
+      if (event === 'stage') elements.stage.textContent = String(data.stage ?? 'working').toUpperCase();
+      if (event === 'error') elements.explanation.textContent = data.message;
+    });
+  } catch (error) {
     if (run !== latestRun) return;
     elements.stage.textContent = 'ERROR';
-    elements.explanation.textContent = 'The server did not respond. Please try again.';
+    elements.explanation.textContent = error instanceof Error ? error.message : 'The server did not respond. Please try again.';
     return;
   }
   if (run !== latestRun) return;
@@ -155,6 +151,30 @@ function displayResult(result) {
   }
   if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
   playback.show(0);
+}
+
+
+async function sendStreamRequest(request, onEvent) {
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout };
+  let response = await fetch('/api/run/stream', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
+  if (response.status === 401) {
+    testToken = window.prompt('Enter your Bikting test access token:') ?? '';
+    if (!testToken) throw new Error('A test access token is required.');
+    response = await fetch('/api/run/stream', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-bikting-test-token': testToken }, body: JSON.stringify(body) });
+  }
+  if (!response.ok || !response.body) throw new Error(`Live execution failed (${response.status}).`);
+  const reader = response.body.getReader(); const decoder = new TextDecoder(); let buffer = ''; let result = null;
+  const consume = (chunk) => {
+    buffer += decoder.decode(chunk, { stream: true });
+    const blocks = buffer.split('\n\n'); buffer = blocks.pop() ?? '';
+    for (const block of blocks) {
+      const event = block.match(/^event: (.+)$/m)?.[1]; const raw = block.match(/^data: (.+)$/m)?.[1]; if (!event || !raw) continue;
+      const data = JSON.parse(raw); onEvent?.(event, data); if (event === 'result') result = data; if (event === 'error') throw new Error(data.message);
+    }
+  };
+  while (true) { const { value, done } = await reader.read(); if (done) break; consume(value); }
+  if (!result) throw new Error('The live execution stream ended without a result.');
+  return result;
 }
 
 function sendRequest(request, path = '/api/run') {

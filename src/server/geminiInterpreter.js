@@ -7,7 +7,7 @@ import { compileBuildPrompt, validateGeneratedWebsite } from './buildPrompt.js';
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
 const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
 
-export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch, cacheTtlMs = 300000, now = Date.now, sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) }) {
+export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch, cacheTtlMs = 300000, knowledgeStore = null, now = Date.now, sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
   const originalFetch = fetchImpl;
@@ -142,7 +142,13 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
     const cached = interpretationCache.get(key);
     if (cached && now() - cached.createdAt < cacheTtlMs) { request.modelCacheHit = true; return cached.promise; }
     interpretationCache.delete(key);
-    const pending = interpret(request);
+    const pending = (async () => {
+      const persisted = await knowledgeStore?.get?.(key);
+      if (persisted) { request.modelCacheHit = true; return persisted; }
+      const value = await interpret(request);
+      await knowledgeStore?.set?.(key, value);
+      return value;
+    })();
     interpretationCache.set(key, { promise: pending, createdAt: now() });
     if (interpretationCache.size > 100) interpretationCache.delete(interpretationCache.keys().next().value);
     pending.catch(() => { if (interpretationCache.get(key)?.promise === pending) interpretationCache.delete(key); });
