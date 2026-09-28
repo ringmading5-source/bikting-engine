@@ -66,7 +66,7 @@ async function runPipeline(request, answers = {}) {
         button.onclick = () => runPipeline({ text: decision.suggestion.inferredGoal });
         elements.visual.append(button);
       }
-      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'QUESTION', detail: decision.question }, { section: 'MODEL CALLS', detail: String(decision.modelCalls) }]);
+      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'QUESTION', detail: decision.question }, { section: 'MODEL CALLS', detail: String(decision.modelCalls) }, ...(decision.usage ? [{ section: 'MODEL TOKENS', detail: String(decision.usage.totalTokens) }] : [])]);
       return;
     }
     if (decision.status === 'unavailable') {
