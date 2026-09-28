@@ -33,6 +33,12 @@ Enter `Build for me my personal website`, inspect the `code.scaffold` plan, then
 
 `src/runtime/intent-router.ts` registers small intent rules. The browser asks `/api/route` for an intent and capability instead of parsing each command in the UI. The same calculation capability handles “Calculate …” and “Compute …”; the website starter handles “Build for me …” and “Create …”; the learning lookup handles “Teach me …” and “What is …”. A new rule can be registered without modifying the browser dispatch. This is a bounded no-model router: requests outside the registered patterns remain unresolved. Broad semantic understanding and new execution domains require additional interpreters, tools, and evidence handling.
 
+## Private pilot preparation
+
+The server accepts `PORT` and `HOST`. Local development defaults to `127.0.0.1:8000`. A non-local `HOST` fails at startup unless `PILOT_MODE=true`, `PILOT_USERNAME` is set, and `PILOT_PASSWORD` has at least 16 characters. Pilot access uses HTTP Basic authentication, so deploy behind HTTPS and share the password with only invited testers. This is a shared pilot password, not per-user accounts. Rotate it in the host settings to revoke access. The server serves only the browser assets, limits each connecting address to 120 requests per minute, and exposes `/healthz` for the host's health check.
+
+`render.yaml` prepares a Render web service with non-secret settings and prompts for the two secret values on first creation. Do not put the password in the repository or a URL. Run `npm run test:pilot` after `npm ci` to check the access gate, static-file protection, and request limit. The 22-scenario agent-style matrix is part of `npm run test:architecture`. Hosting has not been activated by adding this file; the private pilot is ready to deploy only after the branch is reviewed and a hosting account is connected.
+
 ## First guarded execution path
 
 Enter `Calculate 125 * 48` in the browser, then click **Run local calculation**. The explicit button sends the numeric expression to `/api/calculate`, which builds a one-step canonical plan, resolves the local `math.calculator` provider, checks authorization and inputs through the execution guard, invokes the safe expression evaluator, and verifies the observed result. This path accepts numeric arithmetic only (up to 200 characters) and uses no model key, network provider, shell, or filesystem action. Teaching requests still preview plans only.
