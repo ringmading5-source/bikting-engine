@@ -13,12 +13,13 @@ export interface AppendExecutionEvent {
 /** Deterministic, append-only event collector for shadow orchestration. */
 export class InMemoryExecutionEventLog {
   private readonly events: ExecutionEvent[] = [];
-  constructor(readonly runId: string, private readonly clock: (sequence: number) => string = () => "1970-01-01T00:00:00.000Z") {}
+  constructor(readonly runId: string, private readonly clock: (sequence: number) => string = () => "1970-01-01T00:00:00.000Z", private readonly onAppend?: (event: ExecutionEvent) => void) {}
 
   append(input: AppendExecutionEvent): ExecutionEvent {
     const sequence = this.events.length + 1;
     const event = deepFreeze({ ...structuredClone(input), id: `${this.runId}:${sequence}`, runId: this.runId, correlationId: this.runId, sequence, occurredAt: this.clock(sequence) });
     this.events.push(event);
+    this.onAppend?.(event);
     return event;
   }
 
