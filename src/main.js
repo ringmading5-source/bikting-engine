@@ -1,3 +1,4 @@
+import { renderKnowledge } from './workspace/knowledgeSources.js';
 import { setupHome } from './home/home.js';
 import { readTextRequest } from './input/textInput.js';
 import { renderGraph } from './workspace/renderGraph.js';
@@ -15,7 +16,7 @@ const home = setupHome({
   onOpen: () => playback?.stop(),
   onPreferences: (preferences) => { voicePreferences = preferences; },
   onNew: () => {
-    latestRun++; activeProject = null; playback?.stop(); playback = null;
+    latestRun++; activeProject = null; playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
     byId('prompt').value = ''; byId('clear-sketch').click();
     byId('intent-checkpoint').hidden = true; byId('run-usage').textContent = '';
     renderGraph(elements.visual, null); elements.title.textContent = 'Your workspace is ready';
@@ -26,7 +27,7 @@ const home = setupHome({
   },
   onResume: (project) => {
     latestRun++; activeProject = project.id; playback?.stop();
-    byId('prompt').value = project.text; byId('intent-checkpoint').hidden = true;
+    byId('prompt').value = project.text; byId('knowledge-mode').value = project.knowledgeMode ?? 'model'; byId('intent-checkpoint').hidden = true;
     elements.sketch.restore?.(project.sketch, project.sketchLayout);
     if (project.result) displayResult(project.result);
     else { renderGraph(elements.visual, null); elements.stage.textContent = 'DRAFT'; elements.explanation.textContent = 'Draft restored. Run request to review its intent.'; elements.play.disabled = elements.next.disabled = elements.previous.disabled = true; }
@@ -48,6 +49,7 @@ async function runPipeline(request) {
   byId('run-usage').textContent = '';
   playback?.stop();
   renderGraph(elements.visual, null);
+  renderKnowledge(byId('knowledge-sources'), null);
   elements.stage.textContent = 'UNDERSTANDING REQUEST';
   const stageTimer = null;
   try {
@@ -60,6 +62,7 @@ async function runPipeline(request) {
     const intent = await intentResponse.json().catch(() => ({}));
     if (!intentResponse.ok) throw new Error(intent.error || `Intent preview failed (${intentResponse.status})`);
     if (run !== latestRun) return;
+    renderKnowledge(byId('knowledge-sources'), intent.knowledge);
     byId('intent-choices').replaceChildren();
     byId('confirm-intent').hidden = intent.status === 'clarification';
     if (intent.status === 'clarification') {
@@ -95,7 +98,7 @@ async function runPipeline(request) {
       byId('edit-intent').onclick = () => { checkpoint.hidden = true; byId('prompt').focus(); resolve(false); };
     });
     if (!confirmed || run !== latestRun) return;
-    if (byId('prompt').value.trim() !== request.text) {
+    if (byId('prompt').value.trim() !== request.text || byId('knowledge-mode').value !== (request.knowledgeMode ?? 'model')) {
       elements.stage.textContent = 'REVIEW REVISED INTENT';
       elements.explanation.textContent = 'Your request changed after this preview. Run request again to review the new intent.';
       byId('prompt').focus();
@@ -130,6 +133,7 @@ async function runPipeline(request) {
 }
 
 function displayResult(result) {
+  renderKnowledge(byId('knowledge-sources'), result.workspace.knowledge);
   renderTrace(result.trace);
   const usage = result.usage;
   if (usage) byId('run-usage').textContent = `${usage.modelCalls} model call${usage.modelCalls === 1 ? '' : 's'} · ${usage.inputTokens + usage.outputTokens} reported tokens · ${usage.deterministicToolCalls} deterministic tool call${usage.deterministicToolCalls === 1 ? '' : 's'}${usage.cacheHit ? ' · cache hit' : ''}. Exact cost unavailable.`;
@@ -154,7 +158,7 @@ function displayResult(result) {
 }
 
 function sendRequest(request, path = '/api/run') {
-  const body = typeof request === 'string' ? { text: request } : { text: request.text, sketch: request.sketch, sketchLayout: request.sketchLayout };
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout };
   return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
 }
 

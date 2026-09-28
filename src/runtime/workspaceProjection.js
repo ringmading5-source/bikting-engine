@@ -23,6 +23,7 @@ export function createWorkspaceProjection(result) {
     : fallbackSteps({ explanation, outputs, errors, unexecuted, scene });
 
   return {
+    knowledge: result.semantic?.context?.knowledge ?? null,
     title: `${humanize(result.semantic?.intent ?? 'request')} request`,
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
     scene,
