@@ -46,4 +46,6 @@ export interface ProjectState {
   updatedAt: string;
   completedAt?: string;
   metadata?: Record<string, unknown>;
+  /** Opt-in persistent graph; existing project snapshots remain valid. */
+  taskGraph?: import("./task-graph").TaskGraph;
 }

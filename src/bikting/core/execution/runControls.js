@@ -39,6 +39,6 @@ export function summarizeUsage(semantic, execution, request = {}) {
     cacheHit,
     deterministicToolCalls: execution.filter((result) => result.metadata?.kind === 'tool' && result.source?.deterministic && result.status === 'completed').length,
     // Prices depend on model and billing plan; do not invent a dollar amount.
-    estimatedCostUsd: null,
+    estimatedCostUsd: cacheHit ? 0 : gemini?.estimatedCostUsd ?? null,
   };
 }
