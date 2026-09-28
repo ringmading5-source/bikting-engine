@@ -8,6 +8,7 @@ import { inspectPlanReadiness } from './plan-readiness';
 import { runPlannedWebsiteScaffold } from './website-scaffold';
 import { createBiktingOwnedTools } from './bikting-owned-tools';
 import { isPersonalWebsiteRequest } from './intent-router';
+import { CapabilityResolutionLoop } from './capability-resolution-loop';
 // The existing JavaScript adapter catalogue has no TypeScript declaration yet.
 // @ts-expect-error Existing JavaScript composition root.
 import { createDefaultRegistries } from '../bikting/core/registry/createDefaultRegistries.js';
@@ -67,6 +68,7 @@ export async function previewIntent(text: string) {
     ...result.reasoningRun.knowledgeRequirements.map(({ topic }) => topic),
   ])];
   const plan = result.plan?.steps.length ? result.plan : null;
+  const resolution = plan ? new CapabilityResolutionLoop(plan).check({ capabilities, providers: executionProviders, invoker: owned.invoker }) : null;
   return {
     mode: 'deterministic-preview',
     interpretation: result.intent,
@@ -75,6 +77,7 @@ export async function previewIntent(text: string) {
     planningIssues: result.reasoningRun.issues.map(({ message }) => message),
     plan,
     stepReadiness: inspectPlanReadiness(plan, capabilities, executionProviders),
+    capabilityResolution: resolution ? { status: resolution.status, checks: resolution.checks, actions: resolution.actions } : null,
     installedTools: owned.installed,
     refusal: result.planningRefusal ?? (!plan ? missingKnowledge.length ? `Knowledge needed: ${missingKnowledge.join(', ')}. No source is configured yet.` : 'No executable plan was proposed.' : null),
     executed: false,
