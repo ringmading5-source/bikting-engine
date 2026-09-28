@@ -5,6 +5,7 @@ import { SingleAuthorizedProviderPolicy, selectPreparedPlanProviders } from '../
 import { CanonicalExecutionKernel } from '../execution/canonical-execution-kernel';
 import type { ExecutionPlan } from '../planning/plan.types';
 import { createBiktingOwnedTools } from './bikting-owned-tools';
+import type { ExecutionEvent } from '../execution/events';
 
 export interface ScaffoldFiles { 'index.html': string; 'styles.css': string; 'script.js': string }
 
@@ -17,14 +18,14 @@ export function createWebsiteScaffold(): ScaffoldFiles {
   };
 }
 
-export async function runPlannedWebsiteScaffold(plan: ExecutionPlan) {
+export async function runPlannedWebsiteScaffold(plan: ExecutionPlan, onEvent?: (event: ExecutionEvent) => void) {
   if (plan.status !== 'ready' || plan.steps.length !== 1 || plan.steps[0].capabilityId !== 'code.scaffold' || plan.requiredCapabilityIds?.length !== 1 || plan.requiredCapabilityIds[0] !== 'code.scaffold') throw new Error('Only a validated one-step website scaffold plan can run locally.');
   const { capabilities, providers, invoker } = createBiktingOwnedTools();
   const resolution = resolvePlanProviders(plan, capabilities, providers);
   const authorization = evaluatePlanAuthorization(resolution, []);
   let prepared = prepareExecutionPlan(plan, resolution, authorization);
   prepared = withProviderSelections(prepared, selectPreparedPlanProviders(prepared, new SingleAuthorizedProviderPolicy()));
-  const result = await new CanonicalExecutionKernel(capabilities, providers, invoker).execute({ preparedPlan: prepared, projectId: 'browser-website-scaffold' });
+  const result = await new CanonicalExecutionKernel(capabilities, providers, invoker).execute({ preparedPlan: prepared, projectId: 'browser-website-scaffold', onEvent });
   const output = result.outputs[plan.steps[0].id] as { files?: ScaffoldFiles } | undefined;
   if (result.status !== 'completed' || !output?.files || !validateFiles(output.files)) throw new Error('Website scaffold did not pass structural checks.');
   return { planId: result.planId, providerId: 'local.website-scaffold', files: output.files, validated: true };
