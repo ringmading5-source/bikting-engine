@@ -6,9 +6,19 @@ import { compileBuildPrompt, validateGeneratedWebsite } from './buildPrompt.js';
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
 const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
 
-export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch }) {
+export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch, sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms)) }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
+  const originalFetch = fetchImpl;
+  fetchImpl = async (url, options) => {
+    const { onAttempt, ...fetchOptions } = options;
+    for (let attempt = 0; ; attempt++) {
+      onAttempt?.();
+      const response = await originalFetch(url, fetchOptions);
+      if (![502, 503, 504].includes(response.status) || attempt === 2) return response;
+      await sleep(500 * (2 ** attempt));
+    }
+  };
   let selectedModel = model;
   const interpretationCache = new Map();
   const interpret = async (request) => {
@@ -23,7 +33,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
           contents: [{ role: 'user', parts: [{ text: prompt }, ...sketchPart] }],
           generationConfig: { responseMimeType: 'application/json', responseSchema: { type: 'OBJECT', properties: { html: { type: 'STRING' }, buildPlan: { type: 'ARRAY', items: { type: 'STRING' } } }, required: ['html', 'buildPlan'] } }
         });
-        const generate = (id) => { modelCalls += 1; return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body }); };
+        const generate = (id) => { return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, { onAttempt: () => { modelCalls += 1; }, method: 'POST', signal: AbortSignal.timeout(20000), headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body }); };
         let response = await generate(selectedModel);
         if (response.status === 404) {
           for (const candidate of await listTextModels(fetchImpl, apiKey)) {
@@ -40,7 +50,8 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         const generatedHtml = validateGeneratedWebsite(generated.html);
         const buildPlan = Array.isArray(generated.buildPlan) ? generated.buildPlan.filter((item) => typeof item === 'string').slice(0, 12) : [];
         return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generatedHtml, generationStatus: 'generated' }, context: { ...baseline.context, buildPrompt: prompt, buildPlan, modelUsage: usageFrom(payload, modelCalls) }, provenance: [{ source: 'gemini', method: 'website_generation', detail: selectedModel }] });
-      } catch {
+      } catch (error) {
+        if (/\((502|503|504)\)/.test(error.message)) throw new Error('Gemini is temporarily unavailable after three attempts. Please retry shortly.');
         return withRelationshipProgram({ ...baseline, variables: { ...baseline.variables, generationStatus: 'starter_fallback' }, context: { ...baseline.context, buildPrompt: prompt, modelUsage: { calls: modelCalls, inputTokens: 0, outputTokens: 0 } } });
       }
     }
@@ -49,7 +60,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       return withRelationshipProgram(baseline);
     }
     const body = JSON.stringify({
-      systemInstruction: { parts: [{ text: 'Interpret the user request for Bikting. Return a short factual explanation and semantic labels. Never claim to have executed tools, built a website, accessed accounts, or verified facts. Only include relationships clearly supported by the request. Do not include executable code or numeric tool inputs.' }] },
+      systemInstruction: { parts: [{ text: 'Interpret the user request for Bikting. Return a short factual explanation and semantic labels. Never claim to have executed tools, built a website, accessed accounts, or verified facts. For an unambiguous topic, supply well-established background relationships even when the input is only a topic name. Use only these relationship types: contains, part_of, depends_on, causes, produces, flows_to, interacts_with, transforms_into. Do not invent personal facts. If the meaning is ambiguous, return unknown and ask a short clarifying question in explanation. Do not include executable code or numeric tool inputs.' }] },
       contents: [{ role: 'user', parts: [{ text: request.text }] }],
       generationConfig: { responseMimeType: 'application/json', responseSchema: {
         type: 'OBJECT', properties: {
@@ -60,8 +71,8 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
         }, required: ['intent', 'domain', 'concepts', 'relationships', 'explanation']
       } }
     });
-    const generate = (id) => { modelCalls += 1; return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
-        method: 'POST', signal: AbortSignal.timeout(15000),
+    const generate = (id) => { return fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
+        onAttempt: () => { modelCalls += 1; }, method: 'POST', signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
         body
       }); };
@@ -79,6 +90,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       }
       if (response.status === 404) throw new Error(`No available Gemini text model accepted generateContent. Tried: ${tried.join(', ')}. Check model access in Google AI Studio.`);
     }
+    if ([502, 503, 504].includes(response.status)) throw new Error('Gemini is temporarily unavailable after three attempts. Please retry shortly.');
     if (!response.ok) throw new Error(`Gemini request failed (${response.status}). Check API key, quota, and model access.`);
     const payload = await response.json();
     const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');

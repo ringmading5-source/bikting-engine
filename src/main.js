@@ -46,9 +46,10 @@ async function runPipeline(request) {
   const checkpoint = byId('intent-checkpoint');
   checkpoint.hidden = true;
   byId('run-usage').textContent = '';
-  const stages = ['ZOOMING INTO INTENT', 'FILLING RELATIONSHIPS', 'WRITING BUILD DIRECTIONS', 'EXECUTING TOOL'];
-  let stageIndex = 0;
-  const stageTimer = setInterval(() => { if (!completed && run === latestRun) elements.stage.textContent = stages[Math.min(stageIndex++, stages.length - 1)]; }, 700);
+  playback?.stop();
+  renderGraph(elements.visual, null);
+  elements.stage.textContent = 'UNDERSTANDING REQUEST';
+  const stageTimer = null;
   try {
     let intentResponse = await sendRequest(request, '/api/intent');
     if (intentResponse.status === 401) {
@@ -56,9 +57,26 @@ async function runPipeline(request) {
       if (!testToken) return;
       intentResponse = await sendRequest(request, '/api/intent');
     }
-    if (!intentResponse.ok) throw new Error(`Intent preview failed (${intentResponse.status})`);
-    const intent = await intentResponse.json();
+    const intent = await intentResponse.json().catch(() => ({}));
+    if (!intentResponse.ok) throw new Error(intent.error || `Intent preview failed (${intentResponse.status})`);
     if (run !== latestRun) return;
+    byId('intent-choices').replaceChildren();
+    byId('confirm-intent').hidden = intent.status === 'clarification';
+    if (intent.status === 'clarification') {
+      checkpoint.hidden = false;
+      elements.stage.textContent = 'CLARIFY REQUEST';
+      elements.explanation.textContent = intent.question;
+      byId('intent-summary').textContent = intent.question;
+      byId('intent-relationships').textContent = '';
+      byId('intent-limitations').textContent = 'Choose a meaning or edit your question.';
+      for (const choice of intent.choices || []) {
+        const button = document.createElement('button'); button.type = 'button'; button.textContent = choice;
+        button.onclick = () => { byId('prompt').value = choice; runPipeline({ ...request, text: choice }); };
+        byId('intent-choices').append(button);
+      }
+      byId('edit-intent').onclick = () => { checkpoint.hidden = true; byId('prompt').focus(); };
+      return;
+    }
     if (intent.scene) {
       playback?.stop();
       renderGraph(elements.visual, intent.scene, 0);
@@ -66,8 +84,8 @@ async function runPipeline(request) {
       elements.explanation.textContent = intent.task ? `Intent: ${intent.task.action} ${intent.task.target}. Building from ${intent.relationships.map(({ from, relation, to }) => `${from} ${relation.replaceAll('_', ' ')} ${to}`).join(', ')}.` : `The engine found ${intent.relationships.length} relationships and is preparing the visual or build tool.`;
     }
     byId('intent-summary').textContent = intent.task ? `${intent.task.action} ${intent.task.target} — ${request.text}` : request.text;
-    byId('intent-relationships').textContent = intent.relationships.length ? `Relationships: ${intent.relationships.map(({ from, relation, to }) => `${from} → ${relation.replaceAll('_', ' ')} → ${to}`).join('; ')}` : 'No explicit relationships found yet.';
-    byId('intent-limitations').textContent = 'This is a preliminary sketch; edit your request if it does not match your goal. The final execution can still require more information or a connected provider.';
+    byId('intent-relationships').textContent = intent.relationships.length ? `Relationships: ${intent.relationships.map(({ from, relation, to }) => `${from} → ${relation.replaceAll('_', ' ')} → ${to}`).join('; ')}` : 'No relationship diagram is needed for this preview.';
+    byId('intent-limitations').textContent = intent.message;
     checkpoint.hidden = false;
     elements.stage.textContent = 'CHECK INTENT';
     completed = true;
