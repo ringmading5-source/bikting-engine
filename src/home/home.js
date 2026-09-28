@@ -62,7 +62,7 @@ export function setupHome({ onResume, onNew, onOpen, onPreferences }) {
   }
   return {
     record(request, result = null, id = crypto.randomUUID()) {
-      const project = { id, text: request.text, sketch: request.sketch, sketchLayout: request.sketchLayout, result: result ? { workspace: result.workspace, trace: result.trace, usage: result.usage } : null, updatedAt: new Date().toISOString() };
+      const project = { id, text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout, result: result ? { workspace: result.workspace, trace: result.trace, usage: result.usage } : null, updatedAt: new Date().toISOString() };
       state.projects = [project, ...state.projects.filter(p => p.id !== id)].slice(0, 20); save(); return id;
     }
   };

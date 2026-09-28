@@ -48,7 +48,7 @@ const server = createServer(async (request, response) => {
       if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000 || (input.sketch !== undefined && input.sketch !== null && (typeof input.sketch !== 'string' || input.sketch.length > 500000)) || (input.sketchLayout !== undefined && input.sketchLayout !== null && (typeof input.sketchLayout !== 'object' || !Array.isArray(input.sketchLayout.pieces)))) { response.writeHead(400); response.end(); return; }
       if (pathname === '/api/intent') {
         try {
-          const preview = await previewIntent({ text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' }, interpret, geminiEnabled);
+          const preview = await previewIntent({ text: input.text.trim(), knowledgeMode: input.knowledgeMode === 'web' ? 'web' : 'model', sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' }, interpret, geminiEnabled);
           response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
           response.end(JSON.stringify(preview));
         } catch (error) {
@@ -57,7 +57,7 @@ const server = createServer(async (request, response) => {
         }
         return;
       }
-      const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, source: 'browser', modality: 'text' });
+      const result = await runtime.run({ type: 'text', text: input.text.trim(), knowledgeMode: input.knowledgeMode === 'web' ? 'web' : 'model', sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, source: 'browser', modality: 'text' });
       response.writeHead(result.status === 'error' ? 502 : 200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
       response.end(JSON.stringify(result));
       return;

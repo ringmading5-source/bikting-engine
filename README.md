@@ -92,3 +92,11 @@ Publishing/deploying and other side-effect capabilities require explicit approva
 account integration and a real deployment provider are not supplied by this gate.
 The usage summary records observed Gemini calls, reported token usage when available,
 cache hits, and deterministic tool calls. It does not claim an exact dollar cost.
+
+### Knowledge feed
+
+The request composer offers **Gemini knowledge** and **Gemini + web sources**. General-topic requests use Gemini to propose structured concepts and relationships. Web mode first calls Gemini with Google Search grounding, then extracts structured relationships from the research notes. It uses the existing server `GEMINI_API_KEY` and `GEMINI_MODEL`; no separate search key is required. Search depends on model/account support and can incur additional API usage. Deterministic calculations and website builds keep their existing routes.
+
+The workspace shows provider-returned source URLs and evidence excerpts separately from proposed relationships. These relationships are not independently fact-checked. If Google returns no sources, the result is labeled model-generated. Identical interpretation requests share a bounded in-memory cache for five minutes; entries expire and server restarts clear them. Saved project results retain their historical evidence in this browser, not a shared knowledge database. Source links and search suggestions are displayed with the result. Retrieved text is treated as untrusted data.
+
+This adds knowledge ingestion and provenance; it does not yet turn arbitrary concepts into realistic illustrated puzzle pieces. Existing relationship diagrams remain the renderer.
