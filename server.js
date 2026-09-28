@@ -52,7 +52,7 @@ const server = createServer(async (request, response) => {
       response.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Bikting private pilot", charset="UTF-8"' });
       response.end('Private pilot access required.'); return;
     }
-    if (pathname === '/api/route' || pathname === '/api/preview' || pathname === '/api/calculate' || pathname === '/api/calculate/live' || pathname === '/api/scaffold' || pathname === '/api/knowledge') {
+    if (pathname === '/api/route' || pathname === '/api/preview' || pathname === '/api/calculate' || pathname === '/api/calculate/live' || pathname === '/api/scaffold' || pathname === '/api/scaffold/live' || pathname === '/api/knowledge' || pathname === '/api/knowledge/live') {
       if (request.method !== 'POST') { response.writeHead(405); response.end(); return; }
       let body = '';
       for await (const chunk of request) {
@@ -70,6 +70,23 @@ const server = createServer(async (request, response) => {
           try {
             const result = await runLocalCalculation(input.expression, (event) => send({ kind: 'event', event: { type: event.type, sequence: event.sequence, providerId: event.providerId, data: event.data } }));
             send({ kind: 'result', result });
+          } catch (error) { send({ kind: 'error', error: error.message }); }
+          response.end(); return;
+        }
+        if (pathname === '/api/scaffold/live' || pathname === '/api/knowledge/live') {
+          if (pathname === '/api/knowledge/live' && (typeof input.topic !== 'string' || !input.topic.trim() || input.topic.length > 120)) throw new TypeError('Enter a topic between 1 and 120 characters.');
+          response.writeHead(200, { 'Content-Type': 'application/x-ndjson; charset=utf-8', 'X-Accel-Buffering': 'no' });
+          const send = (entry) => { if (!response.destroyed) response.write(`${JSON.stringify(entry)}\n`); };
+          try {
+            if (pathname === '/api/scaffold/live') {
+              const result = await runWebsiteFromIntent(input.text, input.planId, (event) => send({ kind: 'event', event: { type: event.type, sequence: event.sequence, providerId: event.providerId, data: event.data } }));
+              send({ kind: 'result', result });
+            } else {
+              send({ kind: 'event', event: { type: 'knowledge_retrieval_started', providerId: 'wikipedia.public_search' } });
+              const result = await searchPublicKnowledge(input.topic);
+              send({ kind: 'event', event: { type: 'knowledge_retrieval_completed', providerId: 'wikipedia.public_search', data: { count: result.results.length } } });
+              send({ kind: 'result', result });
+            }
           } catch (error) { send({ kind: 'error', error: error.message }); }
           response.end(); return;
         }
