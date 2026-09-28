@@ -100,3 +100,7 @@ The request composer offers **Gemini knowledge** and **Gemini + web sources**. G
 The workspace shows provider-returned source URLs and evidence excerpts separately from proposed relationships. These relationships are not independently fact-checked. If Google returns no sources, the result is labeled model-generated. Identical interpretation requests share a bounded in-memory cache for five minutes; entries expire and server restarts clear them. Saved project results retain their historical evidence in this browser, not a shared knowledge database. Source links and search suggestions are displayed with the result. Retrieved text is treated as untrusted data.
 
 This adds knowledge ingestion and provenance; it does not yet turn arbitrary concepts into realistic illustrated puzzle pieces. Existing relationship diagrams remain the renderer.
+
+## Verification workflow
+
+Run `npm run verify` before deploying. It executes the JavaScript unit/integration suite, the TypeScript architecture and parity suite, and the type checker. The HTTP integration test composes the server without binding a fixed port and verifies `/health`, `/api/intent`, `/api/run`, `/api/capabilities`, clarification for ambiguous `cell`, deterministic vector execution, and invalid-request rejection. This is the repeatable contract for the current vertical slice; new capabilities should add a focused test before being exposed in the UI.
