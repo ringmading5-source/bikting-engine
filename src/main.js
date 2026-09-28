@@ -19,6 +19,7 @@ const home = setupHome({
     latestRun++; activeProject = null; playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
     byId('prompt').value = ''; byId('clear-sketch').click();
     byId('intent-checkpoint').hidden = true; byId('run-usage').textContent = '';
+    byId('pilot-feedback').hidden = true;
     renderGraph(elements.visual, null); elements.title.textContent = 'Your workspace is ready';
     elements.explanation.textContent = 'Enter a question or an idea to start.';
     elements.caption.textContent = ''; elements.count.textContent = '—'; elements.progress.style.width = '0%'; elements.stage.textContent = 'WAITING';
@@ -37,6 +38,19 @@ const home = setupHome({
 
 setupSketch(elements.sketch, byId('clear-sketch'), byId('concept-image'), byId('puzzle-pieces'));
 setupVoice(byId('voice-input'), byId('prompt'));
+byId('pilot-feedback').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const status = byId('pilot-feedback-status');
+  const button = form.querySelector('button[type="submit"]');
+  button.disabled = true; status.textContent = 'Saving feedback…';
+  try {
+    const response = await fetch('/api/pilot/feedback', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-bikting-test-token': testToken },
+      body: JSON.stringify({ runId: form.dataset.runId, rating: Number(form.elements.rating.value), completed: form.elements.completed.checked, friction: form.elements.friction.value || undefined }) });
+    if (!response.ok) throw new Error(`Feedback could not be saved (${response.status}).`);
+    status.textContent = 'Thanks. Your feedback was saved.';
+  } catch (error) { status.textContent = error.message; button.disabled = false; }
+});
 readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request), elements.sketch);
 
 async function runPipeline(request) {
@@ -47,6 +61,7 @@ async function runPipeline(request) {
   const checkpoint = byId('intent-checkpoint');
   checkpoint.hidden = true;
   byId('run-usage').textContent = '';
+  byId('pilot-feedback').hidden = true;
   playback?.stop();
   renderGraph(elements.visual, null);
   renderKnowledge(byId('knowledge-sources'), null);
@@ -129,6 +144,9 @@ async function runPipeline(request) {
 }
 
 function displayResult(result) {
+  const feedback = byId('pilot-feedback');
+  feedback.hidden = !result.pilotRunId;
+  if (result.pilotRunId) { feedback.reset(); feedback.dataset.runId = result.pilotRunId; feedback.querySelector('button[type="submit"]').disabled = false; byId('pilot-feedback-status').textContent = ''; }
   renderKnowledge(byId('knowledge-sources'), result.workspace.knowledge);
   renderTrace(result.trace);
   const usage = result.usage;

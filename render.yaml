@@ -22,3 +22,5 @@ services:
         value: "0.05"
       - key: KNOWLEDGE_STORE_PATH
         value: data/knowledge-cache.json
+      - key: DATABASE_URL
+        sync: false
