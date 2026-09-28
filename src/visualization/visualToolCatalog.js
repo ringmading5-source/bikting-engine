@@ -3,6 +3,7 @@ const catalog = [
   { id: 'plotly', name: 'Plotly.js', status: 'available', domains: ['mathematics', 'statistics', 'physics', 'business', 'data'], artifacts: ['graph', 'interactive_chart'], runtime: 'browser', requirement: null },
   { id: 'bikting.svg-plot', name: 'Bikting SVG Plot', status: 'available', domains: ['mathematics', 'statistics', 'physics', 'data'], artifacts: ['graph'], runtime: 'browser', requirement: null },
   { id: 'bikting.relationship-diagram', name: 'Bikting Relationship Diagram', status: 'available', domains: ['general'], artifacts: ['diagram'], runtime: 'browser', requirement: null },
+  { id: 'bikting.execution-flow', name: 'Bikting Execution Flow', status: 'available', domains: ['general'], artifacts: ['execution_trace'], runtime: 'browser', requirement: null },
   { id: 'matplotlib', name: 'Matplotlib', status: 'integration_needed', domains: ['mathematics', 'statistics', 'physics', 'data'], artifacts: ['graph', 'scientific_figure'], runtime: 'python', requirement: 'Python renderer with Matplotlib installed' },
   { id: 'threejs', name: 'Three.js', status: 'integration_needed', domains: ['physics', 'engineering', 'biology', 'astronomy', 'geometry'], artifacts: ['3d_scene'], runtime: 'browser', requirement: 'Three.js adapter and validated 3D assets' },
   { id: 'molstar', name: 'Mol*', status: 'integration_needed', domains: ['biology', 'chemistry'], artifacts: ['molecular_structure'], runtime: 'browser', requirement: 'Mol* adapter and a source structure file' },

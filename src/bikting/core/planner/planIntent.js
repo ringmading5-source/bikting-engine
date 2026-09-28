@@ -66,7 +66,7 @@ export function deriveRequiredCapabilities(semantic) {
   const numericRequest = intent === 'calculate' || intent === 'plot' || intent === 'solve' || outputs.has('numeric_result') || outputs.has('equation') || outputs.has('graph');
 
   if (intent === 'convert_units' || outputs.has('unit_conversion')) required.add('units.convert');
-  if (intent === 'vector_calculate') required.add('vector.calculate');
+  else if (intent === 'vector_calculate') required.add('vector.calculate');
   else if (isForceRangeRequest(semantic)) {
     required.add('data.generate_range'); required.add('physics.calculate_force_series'); required.add('math.calculate'); required.add('visual.scene');
   } else if (concepts.has('force') && Number.isFinite(Number(variables.mass)) && Number.isFinite(Number(variables.acceleration)) && numericRequest) {

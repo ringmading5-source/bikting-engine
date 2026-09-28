@@ -88,3 +88,16 @@ test('Plotly adapter receives the visible graph points for each frame', () => {
     assert.equal(calls[0][2].xaxis.title, 'time');
   } finally { globalThis.window = oldWindow; }
 });
+
+test('tool execution produces an honest visual input-tool-result sequence', async () => {
+  const runtime = createBiktingRuntime();
+  const arithmetic = await runtime.run({ text: 'Calculate 2 + 3', type: 'text' });
+  const converted = await runtime.run({ text: 'Convert 5 km to m', type: 'text' });
+  const planned = await runtime.run({ text: 'Write Python code for interest', type: 'text' });
+  assert.equal(arithmetic.workspace.scene.toolSelection.selected.id, 'bikting.execution-flow');
+  assert.deepEqual(arithmetic.workspace.scene.states.map((state) => state.title), ['Input', 'Selected tool', 'Observed result']);
+  assert.match(arithmetic.workspace.scene.states[2].text, /completed: 5/);
+  assert.equal(converted.status, 'completed');
+  assert.match(converted.workspace.scene.states[2].text, /5000 m/);
+  assert.ok(planned.workspace.scene.states.some((state) => state.title === 'Execution status' && /planned: Capability registered/.test(state.text)));
+});

@@ -28,6 +28,8 @@ The browser now reads the displayed Gemini explanation and each visual step alou
 
 `GET /api/visual-tools` lists the visual tool catalog, including each tool's supported artifact forms, domains, runtime, and availability. Plotly.js is bundled for working interactive math and data graphs, with the SVG plot as an offline fallback. Requests needing molecules, maps, 3D scenes, network graphs, volumetric views, or Python figures get an explicit integration requirement; Bikting currently displays a general relationship diagram for those requests and does not claim to have rendered the specialized artifact. Adding a real renderer requires an adapter, appropriate data/assets, and validation before its status changes to `available`.
 
+Tool calls without a subject scene now produce an execution view: the request, selected provider, and observed result appear as visual playback steps. Planned or unavailable operations are labeled as such; they are never presented as completed work. For example, arithmetic and unit conversions show their numeric result, while a code execution placeholder shows that it did not run.
+
 ## Pipeline
 
 `src/main.js` sends browser requests to `src/runtime/BiktingRuntime.js`, the production composition root. The runtime owns semantic interpretation, relationship processing, capability-driven planning, execution, and normalized results; the browser only presents its workspace projection.

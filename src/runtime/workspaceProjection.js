@@ -2,6 +2,8 @@
  * Convert a canonical orchestration result into a renderer-friendly view model.
  * This is presentation-only: all content comes from semantic/execution outputs.
  */
+import { createExecutionScene } from '../visualization/executionScene.js';
+
 export function createWorkspaceProjection(result) {
   const outputs = result.outputs ?? {};
   const explanation = textFrom(outputs.explanation);
@@ -10,7 +12,7 @@ export function createWorkspaceProjection(result) {
     : [];
   const errors = outputs.errors ?? [];
   const unexecuted = outputs.unexecuted ?? [];
-  const scene = outputs.visual?.structuredVisualScenes ?? outputs.structuredVisualScenes?.[0] ?? null;
+  const scene = outputs.visual?.structuredVisualScenes ?? outputs.structuredVisualScenes?.[0] ?? createExecutionScene(result);
   const steps = narration.length
     ? narration.map((segment, index) => ({
       title: `Narration ${String(index + 1).padStart(2, '0')}`,
@@ -40,7 +42,7 @@ function fallbackSteps({ explanation, outputs, errors, unexecuted, scene }) {
   if (explanation) steps.push({ title: 'Explanation', text: explanation });
   if (scene?.states?.length) steps.push(...scene.states.map((state, index) => ({ title: state.title ?? `Visual frame ${index + 1}`, text: state.text ?? `Showing ${state.pointCount} plotted points.`, visualState: index })));
   for (const error of errors) steps.push({ title: 'Execution error', text: error.message ?? String(error) });
-  if (outputs.numericData?.length) steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
+  if (outputs.numericData?.length && scene?.source?.id !== 'execution-visualizer') steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
   if (scene && !steps.length) steps.push({ title: 'Visual result', text: 'Generated structured visual output.' });
   if (unexecuted.length) steps.push({ title: 'Unexecuted work', text: unexecuted.map((item) => item.metadata?.capability ?? item.requiredCapability ?? item.id).join(', ') });
   return steps;
