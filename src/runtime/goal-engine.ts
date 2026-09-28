@@ -5,12 +5,12 @@ import { searchPublicKnowledge } from '../knowledge/public-web-search';
 import type { ExecutionEvent } from '../execution/events';
 
 export type GoalAnswers = { websiteScope?: 'starter' | 'existing' };
-export interface GoalSuggestion { inferredGoal: string; category: 'calculate' | 'website' | 'learn' | 'unknown'; question: string }
+export interface GoalSuggestion { inferredGoal: string; category: 'calculate' | 'website' | 'learn' | 'unknown'; question: string; usage?: { promptTokens: number; candidateTokens: number; totalTokens: number } }
 export interface GoalClarifier { suggest(goal: string): Promise<GoalSuggestion> }
 export type GoalDecision =
   | { status: 'ready'; goal: string; route: IntentRoute; desiredResult: string; modelCalls: number }
   | { status: 'needs_input'; goal: string; question: string; choices: { id: string; label: string }[]; modelCalls: number }
-  | { status: 'needs_confirmation'; goal: string; suggestion: GoalSuggestion; question: string; modelCalls: number }
+  | { status: 'needs_confirmation'; goal: string; suggestion: GoalSuggestion; question: string; modelCalls: number; usage?: GoalSuggestion['usage'] }
   | { status: 'unavailable'; goal: string; reason: string; modelCalls: number };
 
 /** Single question-to-result boundary: local intent first, model clarification only for unknown language. */
@@ -33,7 +33,7 @@ export class GoalEngine {
     if (!this.clarifier) return { status: 'unavailable', goal: normalized, reason: 'No local intent rule matches. A model clarifier is not configured.', modelCalls: 0 };
     const suggestion = await this.clarifier.suggest(normalized);
     if (!suggestion || !['calculate', 'website', 'learn', 'unknown'].includes(suggestion.category) || typeof suggestion.inferredGoal !== 'string' || !suggestion.inferredGoal.trim() || suggestion.inferredGoal.length > 4000 || typeof suggestion.question !== 'string' || suggestion.question.length > 500) throw new Error('Intent clarifier returned an invalid suggestion.');
-    return { status: 'needs_confirmation', goal: normalized, suggestion, question: suggestion.question || `Did you mean: ${suggestion.inferredGoal}?`, modelCalls: 1 };
+    return { status: 'needs_confirmation', goal: normalized, suggestion, question: suggestion.question || `Did you mean: ${suggestion.inferredGoal}?`, modelCalls: 1, usage: suggestion.usage };
   }
 
   /** Re-analyze at execution, require explicit caller action, and never use an unconfirmed model suggestion. */
