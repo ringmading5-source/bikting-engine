@@ -53,3 +53,19 @@ test('live calculation streams actual provider and verification events before it
     assert.equal((await fetch(`${server.base}/src/workspace/mathVisual.js`)).status, 200);
   } finally { server.stop(); }
 });
+
+test('website tool streams canonical events and validated files', async () => {
+  const server = await startServer();
+  try {
+    const text = 'Build for me my personal website';
+    const previewResponse = await fetch(`${server.base}/api/preview`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+    const preview = await previewResponse.json();
+    const response = await fetch(`${server.base}/api/scaffold/live`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, planId: preview.plan.id }) });
+    assert.equal(response.status, 200);
+    const entries = (await response.text()).trim().split('\n').map(JSON.parse);
+    assert.ok(entries.some(({ event }) => event?.type === 'provider_invoked' && event.providerId === 'local.website-scaffold'));
+    assert.ok(entries.some(({ event }) => event?.type === 'step_succeeded'));
+    assert.equal(entries.at(-1).result.validated, true);
+    assert.deepEqual(Object.keys(entries.at(-1).result.files).sort(), ['index.html', 'script.js', 'styles.css']);
+  } finally { server.stop(); }
+});
