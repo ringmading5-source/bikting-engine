@@ -39,3 +39,16 @@ test('a missing model reports available IDs without exposing the API key', async
     return true;
   });
 });
+
+test('an unavailable default model retries a listed Flash-Lite model once', async () => {
+  const requests = [];
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url) => {
+    requests.push(url);
+    if (url.includes('gemini-2.5-flash:generateContent')) return { ok: false, status: 404 };
+    if (url.includes('/models?pageSize=')) return { ok: true, json: async () => ({ models: [{ name: 'models/gemini-2.5-flash-lite', supportedGenerationMethods: ['generateContent'] }] }) };
+    return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ intent: 'explain', domain: 'biology', concepts: ['cell'], relationships: [], explanation: 'Cells are living units.' }) }] } }] }) };
+  } });
+  const result = await interpret({ text: 'Explain cells' });
+  assert.equal(requests.length, 3);
+  assert.equal(result.provenance[0].detail, 'gemini-2.5-flash-lite');
+});

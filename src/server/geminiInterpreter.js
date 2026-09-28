@@ -6,31 +6,29 @@ const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analy
 export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fetchImpl = fetch }) {
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
+  let selectedModel = model;
   return async (request) => {
     const baseline = await mockSemanticInterpreter(request);
     // Deterministic operations use only values extracted from the user's actual input.
     if (['calculate', 'plot', 'convert_units', 'analyze_dataset', 'vector_calculate'].includes(baseline.intent)) return baseline;
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-    let response;
-    try {
-      response = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: 'POST', signal: controller.signal,
+    const body = JSON.stringify({
+      systemInstruction: { parts: [{ text: 'Interpret the user request for Bikting. Return a short factual explanation and semantic labels. Never claim to have executed tools, built a website, accessed accounts, or verified facts. Only include relationships clearly supported by the request. Do not include executable code or numeric tool inputs.' }] },
+      contents: [{ role: 'user', parts: [{ text: request.text }] }],
+      generationConfig: { responseMimeType: 'application/json', responseSchema: {
+        type: 'OBJECT', properties: {
+          intent: { type: 'STRING', enum: ['explain', 'write_code', 'unknown'] },
+          domain: { type: 'STRING' }, concepts: { type: 'ARRAY', items: { type: 'STRING' } },
+          relationships: { type: 'ARRAY', items: { type: 'OBJECT', properties: { from: { type: 'STRING' }, relation: { type: 'STRING' }, to: { type: 'STRING' } }, required: ['from', 'relation', 'to'] } },
+          explanation: { type: 'STRING' }
+        }, required: ['intent', 'domain', 'concepts', 'relationships', 'explanation']
+      } }
+    });
+    const generate = (id) => fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${id}:generateContent`, {
+        method: 'POST', signal: AbortSignal.timeout(15000),
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: 'Interpret the user request for Bikting. Return a short factual explanation and semantic labels. Never claim to have executed tools, built a website, accessed accounts, or verified facts. Only include relationships clearly supported by the request. Do not include executable code or numeric tool inputs.' }] },
-          contents: [{ role: 'user', parts: [{ text: request.text }] }],
-          generationConfig: { responseMimeType: 'application/json', responseSchema: {
-            type: 'OBJECT', properties: {
-              intent: { type: 'STRING', enum: ['explain', 'write_code', 'unknown'] },
-              domain: { type: 'STRING' }, concepts: { type: 'ARRAY', items: { type: 'STRING' } },
-              relationships: { type: 'ARRAY', items: { type: 'OBJECT', properties: { from: { type: 'STRING' }, relation: { type: 'STRING' }, to: { type: 'STRING' } }, required: ['from', 'relation', 'to'] } },
-              explanation: { type: 'STRING' }
-            }, required: ['intent', 'domain', 'concepts', 'relationships', 'explanation']
-          } }
-        })
+        body
       });
-    } finally { clearTimeout(timeout); }
+    let response = await generate(selectedModel);
     if (!response.ok) {
       if (response.status === 404) {
         let available = [];
@@ -44,9 +42,14 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
               .map((item) => item.name?.replace(/^models\//, '')).filter((name) => /^[a-zA-Z0-9._-]+$/.test(name)).slice(0, 8);
           }
         } catch { /* Model discovery is diagnostic only. */ }
-        throw new Error(`Gemini model "${model}" was not found for this API key. ${available.length ? `Available generateContent models: ${available.join(', ')}. ` : ''}Check GEMINI_MODEL in Render; use an exact model ID shown in Google AI Studio.`);
+        const fallback = ['gemini-2.5-flash-lite', 'gemini-3.1-flash-lite'].find((candidate) => candidate !== selectedModel && available.includes(candidate));
+        if (fallback) {
+          response = await generate(fallback);
+          if (response.ok) selectedModel = fallback;
+        }
+        if (response.status === 404) throw new Error(`Gemini model "${selectedModel}" was not found for this API key. ${available.length ? `Available generateContent models: ${available.join(', ')}. ` : ''}Check GEMINI_MODEL in Render; use an exact model ID shown in Google AI Studio.`);
       }
-      throw new Error(`Gemini request failed (${response.status}). Check API key, quota, and model access.`);
+      if (!response.ok) throw new Error(`Gemini request failed (${response.status}). Check API key, quota, and model access.`);
     }
     const payload = await response.json();
     const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
@@ -66,7 +69,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],
       goals: [request.text], context: { requestText: request.text, domain: String(proposed.domain ?? 'general').slice(0, 40), geminiExplanation: explanation },
-      confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation' }]
+      confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };
 }
