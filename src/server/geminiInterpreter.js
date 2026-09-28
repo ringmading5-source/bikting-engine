@@ -1,5 +1,6 @@
 import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticInterpreter.js';
 import { relationshipTypes } from '../bikting/core/relationships/RelationshipTypeRegistry.js';
+import { compileBehaviorPrompt, validateVisualProgram } from '../visualization/behaviorPrompt.js';
 
 const intents = new Set(['explain', 'calculate', 'plot', 'convert_units', 'analyze_dataset', 'write_code', 'unknown']);
 const visualArtifacts = new Set(['diagram', 'graph', 'interactive_chart', 'scientific_figure', '3d_scene', 'molecular_structure', 'map', 'network', 'volume', 'teaching_animation']);
@@ -8,6 +9,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
   if (!apiKey) throw new Error('GEMINI_API_KEY is required.');
   if (!/^[a-zA-Z0-9._-]+$/.test(model)) throw new Error('Invalid Gemini model name.');
   let selectedModel = model;
+  const visualProgramCache = new Map();
   return async (request) => {
     const baseline = await mockSemanticInterpreter(request);
     // Deterministic operations use only values extracted from the user's actual input.
@@ -56,12 +58,42 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       .filter(({ from, to }) => from && to);
     const labels = [...new Set([...concepts.map(slug), ...relationships.flatMap(({ from, to }) => [from, to])])];
     const explanation = typeof proposed.explanation === 'string' ? proposed.explanation.slice(0, 3000).trim() : '';
+    const domain = String(proposed.domain ?? 'general').slice(0, 40);
+    const visualArtifact = visualArtifacts.has(proposed.visualArtifact) ? proposed.visualArtifact : 'diagram';
+    let visualProgram = null; let visualPrompt = null; let visualProgramStatus = relationships.length ? 'fallback' : 'not_needed';
+    if (relationships.length) {
+      const compiled = compileBehaviorPrompt({ domain, artifact: visualArtifact, relationships });
+      visualPrompt = compiled.text;
+      const cacheKey = compiled.text;
+      if (visualProgramCache.has(cacheKey)) { visualProgram = visualProgramCache.get(cacheKey); visualProgramStatus = 'cached'; }
+      else {
+        try {
+          const visualResponse = await fetchImpl(`https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateContent`, {
+            method: 'POST', signal: AbortSignal.timeout(12000),
+            headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+            body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: compiled.text }] }], generationConfig: { responseMimeType: 'application/json', responseSchema: {
+              type: 'OBJECT', properties: { steps: { type: 'ARRAY', items: { type: 'OBJECT', properties: {
+                from: { type: 'STRING' }, relation: { type: 'STRING' }, to: { type: 'STRING' }, action: { type: 'STRING', enum: ['highlight', 'flow', 'pulse'] }, narration: { type: 'STRING' }
+              }, required: ['from', 'relation', 'to', 'action', 'narration'] } } }, required: ['steps']
+            } } })
+          });
+          if (visualResponse.ok) {
+            const data = await visualResponse.json();
+            const visualText = data.candidates?.[0]?.content?.parts?.map((part) => part.text ?? '').join('');
+            visualProgram = validateVisualProgram(JSON.parse(visualText), relationships);
+            visualProgramStatus = 'generated';
+            if (visualProgramCache.size >= 100) visualProgramCache.delete(visualProgramCache.keys().next().value);
+            visualProgramCache.set(cacheKey, visualProgram);
+          }
+        } catch { /* The deterministic relationship renderer remains available. */ }
+      }
+    }
     return {
       intent: proposed.intent, modality: 'text', concepts: concepts.map(slug),
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],
-      goals: [request.text], context: { requestText: request.text, domain: String(proposed.domain ?? 'general').slice(0, 40), visualArtifact: visualArtifacts.has(proposed.visualArtifact) ? proposed.visualArtifact : 'diagram', geminiExplanation: explanation },
+      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: explanation, visualPrompt, visualProgram, visualProgramStatus },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };

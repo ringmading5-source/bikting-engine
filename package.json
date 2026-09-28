@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test tests/bikting.test.js tests/phase2.test.js tests/phase3.test.js tests/runtime.integration.test.js tests/gemini.integration.test.js tests/tools-and-animation.test.js",
+    "test": "node --test tests/bikting.test.js tests/phase2.test.js tests/phase3.test.js tests/runtime.integration.test.js tests/gemini.integration.test.js tests/tools-and-animation.test.js tests/behavior-prompt.test.js",
     "test:architecture": "node scripts/run-architecture-tests.mjs",
     "typecheck": "tsc --noEmit"
   },

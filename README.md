@@ -30,6 +30,8 @@ The browser now reads the displayed Gemini explanation and each visual step alou
 
 Tool calls without a subject scene now produce an execution view: the request, selected provider, and observed result appear as visual playback steps. Planned or unavailable operations are labeled as such; they are never presented as completed work. For example, arithmetic and unit conversions show their numeric result, while a code execution placeholder shows that it did not run.
 
+For explanations with relationships, Bikting compiles the relationship triples and executable renderer properties into a **visual behavior prompt** (shown in the engine trace). Gemini proposes ordered `highlight`, `flow`, and `pulse` instructions in the restricted `bikting-visual-v1` format. Bikting rejects invented edges and unsupported actions, then plays accepted instructions through its diagram renderer. A failed or invalid proposal falls back to deterministic relationship steps. Repeated relationship sets reuse cached visual instructions; a new set can require a second Gemini call. This format is an executable visual plan for the registered renderer, not arbitrary model-generated JavaScript or Python. Specialized renderers still require their own adapters, assets, and verification.
+
 ## Pipeline
 
 `src/main.js` sends browser requests to `src/runtime/BiktingRuntime.js`, the production composition root. The runtime owns semantic interpretation, relationship processing, capability-driven planning, execution, and normalized results; the browser only presents its workspace projection.

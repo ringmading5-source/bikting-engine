@@ -9,6 +9,7 @@ test('Gemini interpretation becomes a validated semantic input to the engine', a
     calls++;
     assert.match(url, /gemini-2\.5-flash:generateContent$/);
     assert.equal(options.headers['x-goog-api-key'], 'test-key');
+    if (calls === 2) return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({ steps: [{ from: 'plant', relation: 'causes', to: 'growth', action: 'pulse', narration: 'The plant causes growth.' }] }) }] } }] }) };
     return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify({
       intent: 'explain', domain: 'science', concepts: ['plant'],
       relationships: [{ from: 'plant', relation: 'causes', to: 'growth' }, { from: 'plant', relation: 'unregistered_tool', to: 'money' }],
@@ -16,10 +17,12 @@ test('Gemini interpretation becomes a validated semantic input to the engine', a
     }) }] } }] }) };
   } });
   const result = await createBiktingRuntime({ interpret }).run({ text: 'Explain plant growth', type: 'text' });
-  assert.equal(calls, 1);
+  assert.equal(calls, 2);
   assert.equal(result.semantic.intent, 'explain');
   assert.deepEqual(result.semantic.relationships.map((item) => item.relation), ['causes']);
   assert.ok(result.plan.requiredCapabilities.some((item) => item.requiredCapability === 'text.generate'));
+  assert.equal(result.workspace.scene.states[0].action, 'pulse');
+  assert.ok(result.trace.some((item) => item.section === 'VISUAL PROMPT'));
 });
 
 test('explicit arithmetic stays deterministic and does not spend a Gemini call', async () => {
@@ -79,4 +82,21 @@ test('quota errors stop model retries', async () => {
   } });
   await assert.rejects(interpret({ text: 'Explain cells' }), /429/);
   assert.equal(calls, 3);
+});
+
+test('visual behavior prompt is reused for repeated relationship sets', async () => {
+  let calls = 0;
+  const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url, options) => {
+    calls++;
+    const prompt = JSON.parse(options.body).contents[0].parts[0].text;
+    const output = prompt.includes('"relationships"')
+      ? { steps: [{ from: 'water', relation: 'flows_to', to: 'plant', action: 'flow', narration: 'Water flows to the plant.' }] }
+      : { intent: 'explain', domain: 'biology', visualArtifact: 'diagram', concepts: ['water', 'plant'], relationships: [{ from: 'water', relation: 'flows_to', to: 'plant' }], explanation: 'Water reaches the plant.' };
+    return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(output) }] } }] }) };
+  } });
+  const first = await interpret({ text: 'Explain water and plants' });
+  const second = await interpret({ text: 'Explain water and plants' });
+  assert.equal(calls, 3);
+  assert.equal(first.context.visualProgramStatus, 'generated');
+  assert.equal(second.context.visualProgramStatus, 'cached');
 });

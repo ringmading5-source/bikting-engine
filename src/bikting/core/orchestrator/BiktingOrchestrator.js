@@ -35,6 +35,8 @@ export class BiktingOrchestrator {
     record('INTENT', semantic.intent);
     record('CONCEPTS', semantic.concepts.join(', ') || '(none)');
     record('RELATIONSHIPS', semantic.relationships.map(({ from, relation, to }) => `${from} → ${relation} → ${to}`).join('\n') || '(none)');
+    if (semantic.context.visualPrompt) record('VISUAL PROMPT', semantic.context.visualPrompt);
+    if (semantic.context.visualProgramStatus) record('VISUAL PROGRAM', semantic.context.visualProgramStatus);
     record('VARIABLES', JSON.stringify(semantic.variables));
 
     const registries = { tools: this.tools, models: this.models, catalog: [...this.tools.capabilityCatalog(), ...this.models.capabilityCatalog()] };

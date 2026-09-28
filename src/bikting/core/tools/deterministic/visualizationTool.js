@@ -14,10 +14,13 @@ export const structuredVisualizationTool = {
     }
     const entities = sourceSemantic?.entities ?? [];
     const relationships = (sourceSemantic?.relationships ?? []).map(({ from, relation, to }) => ({ from, relation, to }));
+    const program = sourceSemantic?.context?.visualProgram;
+    const behaviorSteps = program?.language === 'bikting-visual-v1' ? program.steps : null;
+    const ordered = behaviorSteps?.length ? behaviorSteps : relationships;
     const states = relationships.length
-      ? relationships.map((edge, index) => ({ activeNodes: [edge.from, edge.to], activeEdge: index, title: `${label(edge.from)} → ${label(edge.to)}`, text: `${label(edge.from)} ${edge.relation.replaceAll('_', ' ')} ${label(edge.to)}.` }))
+      ? ordered.map((edge) => ({ activeNodes: [edge.from, edge.to], activeEdge: relationships.findIndex((item) => item.from === edge.from && item.relation === edge.relation && item.to === edge.to), action: edge.action ?? 'highlight', title: `${label(edge.from)} → ${label(edge.to)}`, text: edge.narration ?? `${label(edge.from)} ${edge.relation.replaceAll('_', ' ')} ${label(edge.to)}.` }))
       : entities.map(({ id, label: name }) => ({ activeNodes: [id], title: name, text: `Focus on ${name}.` }));
-    const scene = { type: 'diagram', objects: entities.map(({ id, label, type }) => ({ id, label, type })), relationships, states, toolSelection: selectVisualTool({ domain: sourceSemantic?.context?.domain, artifact: sourceSemantic?.context?.visualArtifact ?? 'diagram' }), camera: { projection: '2d', fit: 'content' }, source: { type: 'tool', id: this.id, deterministic: true } };
+    const scene = { type: 'diagram', objects: entities.map(({ id, label, type }) => ({ id, label, type })), relationships, states, behaviorSource: sourceSemantic?.context?.visualProgramStatus ?? 'deterministic', toolSelection: selectVisualTool({ domain: sourceSemantic?.context?.domain, artifact: sourceSemantic?.context?.visualArtifact ?? 'diagram' }), camera: { projection: '2d', fit: 'content' }, source: { type: 'tool', id: this.id, deterministic: true } };
     return { type: 'visual_scene', structuredVisualScenes: scene, deterministic: true };
   },
 };

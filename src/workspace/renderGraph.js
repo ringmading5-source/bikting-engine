@@ -22,9 +22,10 @@ function renderRelationshipGraph(container, visual, stepIndex) {
     const target = coords.find(({ node }) => node.id === edge.to);
     if (!source || !target) return '';
     const active = state?.activeEdge === index;
-    return `<g><path class="edge ${active ? 'active' : ''}" d="M ${source.x + 49} ${source.y} L ${target.x - 49} ${target.y}" marker-end="url(#arrow)"/><text x="${(source.x + target.x) / 2}" y="${source.y - 12}" class="edge-label">${escapeHtml(edge.relation)}</text></g>`;
+    const edgeClass = ['edge', active && 'active', active && ['flow', 'pulse'].includes(state?.action) && `behavior-${state.action}`].filter(Boolean).join(' ');
+    return `<g><path class="${edgeClass}" d="M ${source.x + 49} ${source.y} L ${target.x - 49} ${target.y}" marker-end="url(#arrow)"/><text x="${(source.x + target.x) / 2}" y="${source.y - 12}" class="edge-label">${escapeHtml(edge.relation)}</text></g>`;
   }).join('');
-  const nodes = coords.map(({ node, x, y }) => `<g class="node ${state?.activeNodes.includes(node.id) ? 'active' : ''}"><rect x="${x - 49}" y="${y - 25}" width="98" height="50" rx="9"/><text x="${x}" y="${y - 2}">${escapeHtml(node.label)}</text><text x="${x}" y="${y + 13}" class="node-subtitle">${escapeHtml(node.subtitle ?? '')}</text></g>`).join('');
+  const nodes = coords.map(({ node, x, y }) => `<g class="node ${state?.activeNodes.includes(node.id) ? 'active' : ''} ${state?.action === 'pulse' && node.id === visual.edges[state.activeEdge]?.to ? 'behavior-pulse' : ''}"><rect x="${x - 49}" y="${y - 25}" width="98" height="50" rx="9"/><text x="${x}" y="${y - 2}">${escapeHtml(node.label)}</text><text x="${x}" y="${y + 13}" class="node-subtitle">${escapeHtml(node.subtitle ?? '')}</text></g>`).join('');
   container.classList.remove('empty-state');
   container.innerHTML = `<svg class="visual-svg" viewBox="0 0 ${width} 190" role="img" aria-label="${escapeHtml(visual.type)}"><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="none" stroke="#84978a" stroke-width="1.2"/></marker></defs>${edges}${nodes}</svg>`;
 }
