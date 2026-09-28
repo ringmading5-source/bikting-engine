@@ -16,8 +16,8 @@ function speak(message) {
   if (!voiceEnabled || !('speechSynthesis' in window)) return;
   speechSynthesis.speak(new SpeechSynthesisUtterance(message));
 }
-async function readLiveCalculation(expression, onEntry) {
-  const response = await fetch('/api/calculate/live', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ expression }) });
+async function readLiveRun(endpoint, input, onEntry) {
+  const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
   if (!response.ok) { const payload = await response.json(); throw new Error(payload.error ?? 'Calculation failed.'); }
   const reader = response.body.getReader(); const decoder = new TextDecoder();
   let buffer = '', result;
@@ -68,7 +68,7 @@ async function runPipeline(request) {
         const trace = [{ section: 'PLAN', detail: 'math.calculate · math.calculator' }];
         const narration = { execution_started: 'Starting the approved calculation.', provider_invoked: 'The local calculator is working.', verification_started: 'Checking the result.', step_succeeded: 'The result passed verification.' };
         elements.stage.textContent = 'RUNNING';
-        const output = await readLiveCalculation(expression, (entry) => {
+        const output = await readLiveRun('/api/calculate/live', { expression }, (entry) => {
           if (entry.kind !== 'event') return;
           trace.push({ section: 'LIVE', detail: `${entry.event.sequence}. ${entry.event.type.replaceAll('_', ' ')}${entry.event.providerId ? ` · ${entry.event.providerId}` : ''}` });
           renderTrace(trace);
@@ -96,9 +96,14 @@ async function runPipeline(request) {
     elements.caption.textContent = 'Public Wikipedia search · linked evidence';
     elements.explanation.textContent = 'Searching for source material. Read the linked articles to check relevance and accuracy.';
     try {
-      const response = await fetch('/api/knowledge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ topic }) });
-      const found = await response.json();
-      if (!response.ok) throw new Error(found.error ?? 'Search failed.');
+      const trace = [{ section: 'KNOWLEDGE', detail: `Public search: ${topic}` }];
+      const found = await readLiveRun('/api/knowledge/live', { topic }, (entry) => {
+        if (entry.kind !== 'event') return;
+        trace.push({ section: 'LIVE', detail: `${entry.event.type.replaceAll('_', ' ')} · ${entry.event.providerId}` });
+        renderTrace(trace);
+        if (entry.event.type === 'knowledge_retrieval_started') speak('Searching the public knowledge source.');
+        if (entry.event.type === 'knowledge_retrieval_completed') speak(`Found ${entry.event.data.count} source links.`);
+      });
       elements.visual.replaceChildren();
       for (const item of found.results) {
         const article = document.createElement('article'); article.style.cssText = 'padding:1rem;width:100%';
@@ -109,7 +114,7 @@ async function runPipeline(request) {
       elements.stage.textContent = found.results.length ? 'SOURCES FOUND' : 'NO RESULTS';
       elements.explanation.textContent = `${found.results.length} public source links found for “${found.topic}”. These search snippets are not a verified lesson.`;
       elements.count.textContent = `${found.results.length} sources`;
-      renderTrace([{ section: 'INTENT', detail: request.text }, { section: 'KNOWLEDGE', detail: `Public search: ${found.topic}` }, { section: 'SOURCE', detail: 'Wikipedia · read-only' }]);
+      trace.push({ section: 'SOURCE', detail: 'Wikipedia · read-only; snippets are not a verified lesson' }); renderTrace(trace);
     } catch (error) { elements.stage.textContent = 'SEARCH FAILED'; elements.explanation.textContent = error.message; elements.visual.textContent = 'The public source could not be reached.'; }
     return;
   }
@@ -136,9 +141,15 @@ async function runPipeline(request) {
     scaffoldButton.onclick = async () => {
       scaffoldButton.disabled = true;
       try {
-        const response = await fetch('/api/scaffold', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: request.text, planId: preview.plan.id }) });
-        const output = await response.json();
-        if (!response.ok) throw new Error(output.error ?? 'Website generation failed.');
+        const trace = [{ section: 'PLAN', detail: preview.plan.id }];
+        elements.stage.textContent = 'GENERATING';
+        const output = await readLiveRun('/api/scaffold/live', { text: request.text, planId: preview.plan.id }, (entry) => {
+          if (entry.kind !== 'event') return;
+          trace.push({ section: 'LIVE', detail: `${entry.event.sequence}. ${entry.event.type.replaceAll('_', ' ')}${entry.event.providerId ? ` · ${entry.event.providerId}` : ''}` });
+          renderTrace(trace);
+          if (entry.event.type === 'provider_invoked') speak('The website scaffold tool is generating files.');
+          if (entry.event.type === 'step_succeeded') speak('The website files passed verification.');
+        });
         elements.stage.textContent = 'FILES READY';
         elements.explanation.textContent = 'Generated a local website starter. Edit the placeholder name, projects, and contact section before sharing it.';
         elements.visual.replaceChildren();
@@ -151,7 +162,7 @@ async function runPipeline(request) {
           const source = document.createElement('pre'); source.textContent = content; source.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:15rem;overflow:auto';
           group.append(heading, download, source); elements.visual.append(group);
         }
-        renderTrace([{ section: 'PLAN', detail: output.planId }, { section: 'PROVIDER', detail: output.providerId }, { section: 'OUTPUT', detail: `${Object.keys(output.files).length} validated project files` }]);
+        trace.push({ section: 'OUTPUT', detail: `${Object.keys(output.files).length} validated project files` }); renderTrace(trace);
       } catch (error) { elements.explanation.textContent = error.message; elements.stage.textContent = 'FAILED'; }
       finally { scaffoldButton.disabled = false; }
     };
