@@ -38,3 +38,18 @@ test('pilot mode requires credentials and limits repeated requests', async () =>
     assert.equal(last.status, 429);
   } finally { server.stop(); }
 });
+
+test('live calculation streams actual provider and verification events before its result', async () => {
+  const server = await startServer();
+  try {
+    const response = await fetch(`${server.base}/api/calculate/live`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ expression: '125 * 48' }) });
+    assert.equal(response.status, 200);
+    const entries = (await response.text()).trim().split('\n').map(JSON.parse);
+    const events = entries.filter(({ kind }) => kind === 'event').map(({ event }) => event.type);
+    assert.ok(events.indexOf('provider_invoked') < events.indexOf('verification_started'));
+    assert.ok(events.indexOf('verification_started') < events.indexOf('step_succeeded'));
+    assert.equal(entries.at(-1).result.value, 6000);
+    assert.equal(entries.at(-1).result.verified, true);
+    assert.equal((await fetch(`${server.base}/src/workspace/mathVisual.js`)).status, 200);
+  } finally { server.stop(); }
+});
