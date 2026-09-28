@@ -23,45 +23,7 @@ const defaults = createDefaultRegistries();
 const models = new ModelRegistry();
 if (geminiEnabled) models.register(createModelAdapter({
   id: 'gemini.interpretation-text', name: 'Gemini interpretation text', domain: 'language', modalities: ['text'], capabilities: ['text.generate'],
-  metadata: { provider: 'gemini' }, methods: { async generate(semantic) { return { type: 'explanation', text: semantic.context.geminiExplanation || 'The request was interpreted, but no explanation was returned.' }; } }
-}));
-for (const model of defaults.models.list()) models.register(model);
-const runtime = createBiktingRuntime({ interpret: geminiEnabled ? createGeminiInterpreter({ apiKey: process.env.GEMINI_API_KEY, model: process.env.GEMINI_MODEL || 'gemini-2.5-flash' }) : undefined, tools: defaults.tools, models });
-const server = createServer(async (request, response) => {
-  try {
-    const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
-    if (pathname === '/api/run' || pathname === '/api/intent') {
-      if (request.method !== 'POST') { response.writeHead(405); response.end(); return; }
-      if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) { response.writeHead(401); response.end(); return; }
-      if (request.headers['content-type']?.split(';')[0] !== 'application/json') { response.writeHead(415); response.end(); return; }
-      let body = '';
-      for await (const chunk of request) {
-        body += chunk;
-        if (body.length > 8192) { response.writeHead(413); response.end(); return; }
-      }
-      let input;
-      try { input = JSON.parse(body); } catch { response.writeHead(400); response.end(); return; }
-      if (typeof input?.text !== 'string' || !input.text.trim() || input.text.length > 2000 || (input.sketch !== undefined && input.sketch !== null && (typeof input.sketch !== 'string' || input.sketch.length > 500000)) || (input.sketchLayout !== undefined && input.sketchLayout !== null && (typeof input.sketchLayout !== 'object' || !Array.isArray(input.sketchLayout.pieces)))) { response.writeHead(400); response.end(); return; }
-      if (pathname === '/api/intent') {
-        const semantic = await mockSemanticInterpreter({ text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' });
-        response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        const objects = semantic.entities.map(({ id, label, type }) => ({ id, label, type }));
-        const scene = semantic.relationships.length ? { type: 'diagram', objects, relationships: semantic.relationships.map(({ from, relation, to }) => ({ from, relation, to })), states: semantic.relationships.map(({ from, relation, to }, index) => ({ activeNodes: [from, to], activeEdge: index, action: /flows|causes|produces/.test(relation) ? 'flow' : 'highlight', title: `${from} ${relation} ${to}`, text: `${from} ${relation.replaceAll('_', ' ')} ${to}.` })) } : semantic.context.task?.capability === 'website.build' ? { type: 'website', title: semantic.variables.siteTitle, states: [{ title: 'Intent sketch' }] } : null;
-        response.end(JSON.stringify({ task: semantic.context.task ?? null, relationships: semantic.relationships, scene }));
-        return;
-      }
-      const result = await runtime.run({ type: 'text', text: input.text.trim(), sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, source: 'browser', modality: 'text' });
-      response.writeHead(result.status === 'error' ? 502 : 200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-      response.end(JSON.stringify(result));
-      return;
-    }
-    if (pathname === '/health') {
-      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-      response.end(JSON.stringify({ status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock' }));
-      return;
-    }
-    if (pathname === '/api/capabilities') {
-      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+  metadata: { provider: 'gemini' }, methods: { async generate(semantic) { return { type: 'explan…960 tokens truncated…      response.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
       response.end(JSON.stringify(defaults.tools.capabilityCatalog().map(({ id, domain, operation, acceptedInputs, producedOutputs }) => ({ id, domain, operation, acceptedInputs, producedOutputs }))));
       return;
     }
