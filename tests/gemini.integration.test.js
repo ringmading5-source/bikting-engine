@@ -89,9 +89,8 @@ test('identical requests reuse their full interpretation and visual behavior', a
   const interpret = createGeminiInterpreter({ apiKey: 'private-key', fetchImpl: async (url, options) => {
     calls++;
     const prompt = JSON.parse(options.body).contents[0].parts[0].text;
-    const output = prompt.includes('"relationships"')
-      ? { steps: [{ from: 'water', relation: 'flows_to', to: 'plant', action: 'flow', narration: 'Water flows to the plant.' }] }
-      : { intent: 'explain', domain: 'biology', visualArtifact: 'diagram', concepts: ['water', 'plant'], relationships: [{ from: 'water', relation: 'flows_to', to: 'plant' }], explanation: 'Water reaches the plant.' };
+    assert.match(prompt, /"task":"interpret_relationships"/);
+    const output = { intent: 'explain', domain: 'biology', visualArtifact: 'diagram', concepts: ['water', 'plant'], relationships: [{ from: 'water', relation: 'flows_to', to: 'plant' }], explanation: 'Water reaches the plant.' };
     return { ok: true, json: async () => ({ candidates: [{ content: { parts: [{ text: JSON.stringify(output) }] } }] }) };
   } });
   const first = await interpret({ text: 'Explain water and plants' });
