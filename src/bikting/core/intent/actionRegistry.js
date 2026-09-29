@@ -1,8 +1,8 @@
 /** Action definitions describe reusable slots, relationship traversal and output steps. */
 const builtins = [
-  { id: 'teach', verbs: ['teach'], requiredSlots: ['topic'], question: 'What would you like me to teach?',
+  { id: 'teach', verbs: ['teach', 'tutor', 'instruct'], requiredSlots: ['topic'], question: 'What would you like me to teach?',
     introduction: 'learn', closing: 'check', capabilities: ['visual.scene', 'voice.synthesize'], maxRelationships: 12 },
-  { id: 'explore', verbs: ['explore'], requiredSlots: ['topic'], question: 'What would you like to explore?',
+  { id: 'explore', verbs: ['explore', 'investigate'], requiredSlots: ['topic'], question: 'What would you like to explore?',
     introduction: 'explore', closing: 'none', capabilities: ['visual.scene'], maxRelationships: 12 },
 ];
 

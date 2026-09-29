@@ -1,11 +1,11 @@
 /** Preserve each word's role in the request before action planning. */
 import { getActionDefinition, defaultActionRegistry } from './actionRegistry.js';
+import { wordsForAction } from './actionVocabulary.js';
 export function composeWords(text, semantic = {}, registry = defaultActionRegistry) {
   const words = [...String(text).matchAll(/[\p{L}\p{N}]+(?:['’][\p{L}]+)?/gu)]
     .slice(0, 80).map(([surface], index) => ({ index, surface, normalized: surface.toLowerCase(), role: 'context' }));
   const action = String(semantic.intent ?? 'unknown').split('_')[0];
-  const verbs = { explain: ['explain'], build: ['build', 'make', 'create', 'design'], deploy: ['deploy', 'publish'] };
-  const trigger = words.find((word) => (getActionDefinition(action, registry)?.verbs ?? verbs[action])?.includes(word.normalized));
+  const trigger = words.find((word) => (getActionDefinition(action, registry)?.verbs ?? wordsForAction(action)).includes(word.normalized));
   if (trigger) trigger.role = 'action';
   const recipient = words.find((word) => ['me', 'us'].includes(word.normalized) && word.index > (trigger?.index ?? -1));
   if (recipient && trigger) recipient.role = 'recipient';

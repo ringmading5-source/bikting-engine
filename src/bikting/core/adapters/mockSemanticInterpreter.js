@@ -77,11 +77,11 @@ export async function mockSemanticInterpreter(request) {
     intent = 'write_code'; domain = 'coding'; concepts = ['compound_interest']; requestedOutputs = ['code', 'explanation'];
   } else if (/dataset|trend|data/i.test(text)) {
     intent = 'analyze_dataset'; domain = 'statistics'; concepts = ['dataset_trend']; requestedOutputs = ['trend_analysis', 'explanation'];
-  } else if (/\bcalculate\b|\bsolve\b/i.test(text)) {
+  } else if (/\bcalculate\b|\bcompute\b|\bsolve\b/i.test(text)) {
     intent = 'calculate'; domain = 'mathematics';
-    const expression = /(?:calculate|solve)\s+(.+?)[?!]?$/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
+    const expression = /(?:calculate|compute|solve)\s+(.+?)[?!]?$/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
     variables = { expression }; requestedOutputs = ['numeric_result', 'equation'];
-  } else if (/\bexplain\b/i.test(text)) {
+  } else if (/\bexplain\b|\bdescribe\b/i.test(text)) {
     intent = 'explain'; requestedOutputs = ['explanation'];
   }
   if (!labels.length) labels = concepts.map((concept) => concept.replaceAll('_', ' '));
