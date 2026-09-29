@@ -7,13 +7,15 @@ import { ToolExecutor } from '../execution/ToolExecutor.js';
 import { executeDependencies } from '../execution/DependencyExecutor.js';
 import { approvalFor, verifyResult, summarizeUsage } from '../execution/runControls.js';
 import { composeWords } from '../intent/composeWords.js';
+import { defaultActionRegistry } from '../intent/actionRegistry.js';
 
 export class BiktingOrchestrator {
-  constructor({ interpret, tools, models, relationshipEngine = new RelationshipEngine(), logger = null }) {
+  constructor({ interpret, tools, models, actions = defaultActionRegistry, relationshipEngine = new RelationshipEngine(), logger = null }) {
     if (typeof interpret !== 'function') throw new TypeError('An interpretation adapter is required.');
     this.interpret = interpret;
     this.tools = tools;
     this.models = models;
+    this.actions = actions;
     this.relationshipEngine = relationshipEngine;
     this.logger = logger;
     this.toolExecutor = new ToolExecutor(tools);
@@ -32,7 +34,7 @@ export class BiktingOrchestrator {
     const semantic = createSemanticObject({ source: request.source ?? 'user', modality: request.modality ?? semanticFields.modality ?? 'text', ...semanticFields, provenance: [{ source: 'semantic-interpreter', method: 'adapter' }, ...(interpreted.provenance ?? [])] });
     for (const entity of entities) addEntity(semantic, entity);
     for (const relationship of relationships) this.relationshipEngine.add(semantic, relationship);
-    semantic.context.wordComposition = composeWords(request.text, semantic);
+    semantic.context.wordComposition = composeWords(request.text, semantic, this.actions);
     this.relationshipEngine.updateState(semantic);
     record('SEMANTIC', `id = ${semantic.id}\nmodality = ${semantic.modality}`);
     record('INTENT', semantic.intent);
@@ -44,7 +46,7 @@ export class BiktingOrchestrator {
     if (semantic.context.visualProgramStatus) record('VISUAL PROGRAM', semantic.context.visualProgramStatus);
     record('VARIABLES', JSON.stringify(semantic.variables));
 
-    const registries = { tools: this.tools, models: this.models, catalog: [...this.tools.capabilityCatalog(), ...this.models.capabilityCatalog()] };
+    const registries = { tools: this.tools, models: this.models, actions: this.actions, catalog: [...this.tools.capabilityCatalog(), ...this.models.capabilityCatalog()] };
     const plan = planIntent(semantic, registries);
     const context = createExecutionContext({ request, semanticObject: semantic, plan });
     record('PLAN', plan.steps.map((step) => `${step.id}: ${step.operation}${step.dependsOn?.length ? ` (depends on ${step.dependsOn.join(', ')})` : ''}`).join('\n') || '(no operations required)');
@@ -54,8 +56,8 @@ export class BiktingOrchestrator {
 
     const execution = await executeDependencies(plan.steps, async (step) => {
       if (!step.capability) {
-        const payload = step.operation === 'teach_sequence'
-          ? { ...step.procedure, status: step.procedure.status === 'ready' ? 'completed' : 'blocked', type: 'teaching_procedure', nextAction: step.procedure.reason }
+        const payload = step.operation === 'action_sequence'
+          ? { ...step.procedure, status: step.procedure.status === 'ready' ? 'completed' : 'blocked', type: 'relationship_action_procedure', nextAction: step.procedure.reason }
           : step.operation === 'establish_relationships'
           ? { status: 'completed', type: 'relationship_graph', relationships: semantic.relationships, entities: semantic.entities }
           : { status: 'completed', type: 'planning_operation', operation: step.operation, concepts: semantic.concepts };

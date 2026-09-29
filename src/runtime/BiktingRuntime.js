@@ -12,12 +12,13 @@ import { createWorkspaceProjection } from './workspaceProjection.js';
  * providers can be introduced without changing the browser or workspace.
  */
 export class BiktingRuntime {
-  constructor({ interpret = mockSemanticInterpreter, tools, models, relationshipEngine = new RelationshipEngine(), logger = null } = {}) {
+  constructor({ interpret = mockSemanticInterpreter, tools, models, actions, relationshipEngine = new RelationshipEngine(), logger = null } = {}) {
     const defaults = tools && models ? null : createDefaultRegistries();
     this.orchestrator = new BiktingOrchestrator({
       interpret,
       tools: tools ?? defaults.tools,
       models: models ?? defaults.models,
+      actions,
       relationshipEngine,
       logger,
     });

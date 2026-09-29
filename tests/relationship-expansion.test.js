@@ -4,6 +4,7 @@ import { expandRelationshipChain } from '../src/bikting/core/intent/expandRelati
 import { createGeminiInterpreter } from '../src/server/geminiInterpreter.js';
 import { createBiktingRuntime } from '../src/runtime/BiktingRuntime.js';
 import { previewIntent } from '../src/server/intentPreview.js';
+import { ActionRegistry } from '../src/bikting/core/intent/actionRegistry.js';
 
 test('the word teach alone activates an action and asks for its missing topic without Gemini', async () => {
   const interpret = createGeminiInterpreter({ apiKey: 'test', fetchImpl: async () => { throw Error('Gemini should not choose the action'); } });
@@ -15,6 +16,29 @@ test('the word teach alone activates an action and asks for its missing topic wi
   assert.equal(result.semantic.intent, 'teach');
   assert.equal(result.plan.procedure.status, 'blocked');
   assert.equal(result.workspace.wordComposition.words[0].role, 'action');
+});
+
+test('another registered action uses the same slot and relationship planner', async () => {
+  const interpret = createGeminiInterpreter({ apiKey: 'test', fetchImpl: async () => { throw Error('Bare action must not call Gemini'); } });
+  const preview = await previewIntent({ text: 'Explore' }, interpret, true);
+  assert.equal(preview.task.action, 'explore');
+  assert.match(preview.question, /what.*explore/i);
+  const result = await createBiktingRuntime({ interpret: async () => ({ intent: 'explore', concepts: ['cell'],
+    relationships: [{ from: 'cell', relation: 'contains', to: 'nucleus' }], requestedOutputs: ['visual'], context: {}, confidence: 0.8 }) }).run({ text: 'Explore cells' });
+  assert.equal(result.plan.procedure.action, 'explore');
+  assert.deepEqual(result.plan.steps.map(({ operation }) => operation).slice(0, 1), ['action_sequence']);
+  assert.equal(result.workspace.steps.length, 2);
+});
+
+test('a new action definition runs through the planner without action-specific branches', async () => {
+  const actions = new ActionRegistry([{ id: 'trace', verbs: ['trace'], requiredSlots: ['topic'], question: 'What should I trace?',
+    introduction: 'trace', closing: 'none', capabilities: ['visual.scene'], maxRelationships: 4 }]);
+  const runtime = createBiktingRuntime({ actions, interpret: async () => ({ intent: 'trace', concepts: ['river'],
+    relationships: [{ from: 'river', relation: 'flows_to', to: 'sea' }], requestedOutputs: ['visual'], context: {}, confidence: 0.8 }) });
+  const result = await runtime.run({ text: 'Trace river' });
+  assert.equal(result.plan.procedure.action, 'trace');
+  assert.equal(result.workspace.wordComposition.words[0].role, 'action');
+  assert.equal(result.workspace.steps[1].title, 'river → sea');
 });
 
 test('each new relationship becomes the next frontier; disconnected proposals end the chain', async () => {

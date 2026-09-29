@@ -1,5 +1,6 @@
 import { normalizeCapability } from '../types/capability.js';
-import { compileTeachProcedure } from '../intent/teachProcedure.js';
+import { compileActionProcedure } from '../intent/teachProcedure.js';
+import { getActionDefinition } from '../intent/actionRegistry.js';
 
 const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.deploy', 'artifact.build', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
@@ -25,15 +26,16 @@ export function planIntent(semantic, registries = {}) {
   });
   const reqById = new Map(requirements.map((item) => [item.requiredCapability, item]));
   const steps = [];
-  if (semantic.intent === 'teach') {
-    const procedure = compileTeachProcedure(semantic);
+  const action = getActionDefinition(semantic.intent, registries.actions);
+  if (action) {
+    const procedure = compileActionProcedure(semantic, registries.actions);
     procedure.wordComposition = semantic.context.wordComposition ?? null;
-    addBuiltin(steps, 'teach_sequence', { procedure });
+    addBuiltin(steps, 'action_sequence', { procedure });
     if (procedure.status === 'ready') {
       for (const requirement of requirements) {
         const capability = requirement.requiredCapability;
-        if (!['visual.scene', 'voice.synthesize'].includes(capability)) continue;
-        addStep(steps, requirement, { id: stepId(capability), operation: operationFor(requirement, semantic), dependsOn: ['step-teach_sequence'] });
+        if (!action.capabilities.includes(capability)) continue;
+        addStep(steps, requirement, { id: stepId(capability), operation: operationFor(requirement, semantic), dependsOn: ['step-action_sequence'] });
       }
     }
     steps.forEach((step, index) => { step.order = index + 1; });

@@ -1,4 +1,5 @@
 import { resolveActionRequest } from './requestIntent.js';
+import { resolveRelationalAction } from '../intent/actionRegistry.js';
 
 const motorRelationships = [
   ['electrical_energy', 'flows_to', 'current'], ['current', 'produces', 'magnetic_field'], ['magnetic_field', 'causes', 'force'],
@@ -13,6 +14,7 @@ export async function mockSemanticInterpreter(request) {
   let concepts = []; let relationships = []; let requestedOutputs = []; let labels = [];
   let variables = {}; let equations = [];
   const task = resolveActionRequest(text);
+  const relationalAction = resolveRelationalAction(text);
 
   const forceRange = /\bplot\s+force\b/i.test(text);
   const mass = /\bmass\s*(?:is|=|of)?\s*([\d.]+)\s*kg\b/i.exec(text);
@@ -58,6 +60,9 @@ export async function mockSemanticInterpreter(request) {
     const equation = /([a-z_]\w*\s*=\s*[^,?.!]+)/i.exec(text)?.[1]?.trim().replaceAll('²', '^2');
     equations = [equation ?? 'y = x^2']; concepts = ['function'];
     variables = { xMin: -10, xMax: 10, sampleCount: 41 };
+  } else if (relationalAction) {
+    intent = relationalAction.definition.id; requestedOutputs = ['visual'];
+    if (relationalAction.slots.topic) concepts = [slug(relationalAction.slots.topic)];
   } else if (/electric\s+motor/i.test(text)) {
     intent = 'explain'; domain = 'physics'; concepts = ['electric_motor']; requestedOutputs = ['explanation', 'voice', 'visual'];
     labels = ['Electrical energy', 'Current', 'Magnetic field', 'Force', 'Torque', 'Rotation', 'Mechanical motion'];
@@ -76,10 +81,6 @@ export async function mockSemanticInterpreter(request) {
     intent = 'calculate'; domain = 'mathematics';
     const expression = /(?:calculate|solve)\s+(.+?)[?!]?$/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
     variables = { expression }; requestedOutputs = ['numeric_result', 'equation'];
-  } else if (/\bteach\b/i.test(text)) {
-    intent = 'teach'; requestedOutputs = ['explanation', 'visual'];
-    const subject = /\bteach\s+(?:(?:me|us)\s+)?(?:(?:about|how|the)\s+)?(.+?)[?.!]*$/i.exec(text)?.[1]?.trim();
-    if (subject) concepts = [slug(subject)];
   } else if (/\bexplain\b/i.test(text)) {
     intent = 'explain'; requestedOutputs = ['explanation'];
   }

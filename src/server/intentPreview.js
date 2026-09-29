@@ -1,12 +1,14 @@
 import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticInterpreter.js';
+import { getActionDefinition } from '../bikting/core/intent/actionRegistry.js';
 export async function previewIntent(request, interpret, enabled) {
   if (/^cell[.!?]?$/i.test(request.text.trim())) return { status: 'clarification', relationships: [], scene: null, question: 'Which kind of cell do you mean?', choices: ['Explain a biological cell', 'Explain a battery cell', 'Explain a spreadsheet cell'] };
   const baseline = await mockSemanticInterpreter(request);
   // Website generation belongs after approval. Other interpretations are cached
   // by the shared interpreter so execution reuses the reviewed semantics.
   const semantic = baseline.context.task ? baseline : await interpret(request);
-  if (semantic.intent === 'teach' && !semantic.concepts?.length) return { status: 'clarification', relationships: [], scene: null,
-    question: 'What would you like me to teach?', choices: [], task: { action: 'teach', required: ['topic'] } };
+  const action = getActionDefinition(semantic.intent);
+  if (action && !semantic.concepts?.length) return { status: 'clarification', relationships: [], scene: null,
+    question: action.question, choices: [], task: { action: action.id, required: action.requiredSlots } };
   const relationships = semantic.relationships ?? [];
   const objects = semantic.entities ?? [];
   const scene = relationships.length ? { type: 'diagram', objects, relationships, states: relationships.map(({ from, relation, to }, index) => ({ activeNodes: [from, to], activeEdge: index, action: 'highlight', title: `${from} ${relation} ${to}`, text: `${from} ${relation.replaceAll('_', ' ')} ${to}.` })) } : null;

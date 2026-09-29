@@ -39,7 +39,7 @@ test('teach executes an ordered procedure derived from connected relationships',
   assert.deepEqual(result.workspace.wordComposition.words.map(({ surface, role }) => [surface, role]), [['Teach', 'action'], ['me', 'recipient'], ['cells', 'target']]);
   assert.equal(result.plan.procedure.status, 'ready');
   assert.deepEqual(result.plan.procedure.stages.slice(1, 3).map(({ relationships }) => relationships[0].to), ['nucleus', 'dna']);
-  assert.equal(result.execution[0].type, 'teaching_procedure');
+  assert.equal(result.execution[0].type, 'relationship_action_procedure');
   assert.equal(result.execution[0].status, 'completed');
   assert.equal(result.workspace.steps.at(-1).title, 'Check understanding');
 });
