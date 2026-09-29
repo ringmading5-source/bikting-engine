@@ -5,6 +5,8 @@ export async function previewIntent(request, interpret, enabled) {
   // Website generation belongs after approval. Other interpretations are cached
   // by the shared interpreter so execution reuses the reviewed semantics.
   const semantic = baseline.context.task ? baseline : await interpret(request);
+  if (semantic.intent === 'teach' && !semantic.concepts?.length) return { status: 'clarification', relationships: [], scene: null,
+    question: 'What would you like me to teach?', choices: [], task: { action: 'teach', required: ['topic'] } };
   const relationships = semantic.relationships ?? [];
   const objects = semantic.entities ?? [];
   const scene = relationships.length ? { type: 'diagram', objects, relationships, states: relationships.map(({ from, relation, to }, index) => ({ activeNodes: [from, to], activeEdge: index, action: 'highlight', title: `${from} ${relation} ${to}`, text: `${from} ${relation.replaceAll('_', ' ')} ${to}.` })) } : null;

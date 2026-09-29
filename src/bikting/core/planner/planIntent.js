@@ -32,7 +32,7 @@ export function planIntent(semantic, registries = {}) {
     if (procedure.status === 'ready') {
       for (const requirement of requirements) {
         const capability = requirement.requiredCapability;
-        if (!['visual.scene', 'text.generate', 'voice.synthesize'].includes(capability)) continue;
+        if (!['visual.scene', 'voice.synthesize'].includes(capability)) continue;
         addStep(steps, requirement, { id: stepId(capability), operation: operationFor(requirement, semantic), dependsOn: ['step-teach_sequence'] });
       }
     }
