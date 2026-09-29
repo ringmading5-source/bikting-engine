@@ -167,8 +167,9 @@ function displayResult(result) {
   renderGraph(elements.visual, result.workspace.scene, 0);
   playback?.stop();
   playback = new PlaybackController({ result, preferences: voicePreferences, onStep: (index, step, state) => {
-    renderStep(step, index, result.workspace.steps.length, state, elements);
-    renderGraph(elements.visual, result.workspace.scene, typeof step.visualState === 'number' ? step.visualState : index);
+    renderStep(step, index, result.workspace.moments?.length ?? result.workspace.steps.length, state, elements);
+    const visualState = step.visual?.state ?? step.visualState;
+    renderGraph(elements.visual, result.workspace.scene, typeof visualState === 'number' ? visualState : index);
     elements.stage.textContent = result.workspace.status.toUpperCase();
   } });
   presentResult(result, elements, { onStep: (direction) => direction === 'next' ? playback.next() : playback.previous(), onPlay: () => playback.play() });
@@ -180,7 +181,7 @@ function displayResult(result) {
     elements.caption.textContent = `Rendered with ${rendererName}.${recommended ? ` ${recommended.name} requires ${recommended.requirement}.` : ''}`;
   }
   if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
-  playback.show(result.workspace.scene?.type === 'website' ? result.workspace.steps.length - 1 : 0);
+  playback.show(result.workspace.scene?.type === 'website' ? playback.steps.length - 1 : 0);
 }
 
 

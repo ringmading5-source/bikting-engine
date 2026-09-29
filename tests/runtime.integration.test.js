@@ -42,6 +42,22 @@ test('teach executes an ordered procedure derived from connected relationships',
   assert.equal(result.execution[0].type, 'relationship_action_procedure');
   assert.equal(result.execution[0].status, 'completed');
   assert.equal(result.workspace.steps.at(-1).title, 'Check understanding');
+  assert.equal(result.workspace.moments.length, result.workspace.steps.length);
+  assert.equal(result.workspace.moments[1].display.text, result.workspace.moments[1].voice.text);
+  assert.equal(result.workspace.moments[1].visual.state, result.workspace.steps[1].visualState);
+});
+
+test('website and teaching share the same workspace moment contract', async () => {
+  const result = await createBiktingRuntime().run({ type: 'text', text: 'Build a website for my school' });
+  assert.equal(result.workspace.scene.type, 'website');
+  assert.ok(result.workspace.moments.length >= 2);
+  for (const moment of result.workspace.moments) {
+    assert.equal(typeof moment.display.text, 'string');
+    assert.equal(typeof moment.voice.text, 'string');
+    assert.ok(Object.hasOwn(moment.visual, 'state'));
+    assert.ok(Object.hasOwn(moment, 'action'));
+  }
+  assert.equal(result.workspace.moments.at(-1).visual.state, 1);
 });
 
 test('teach without connected knowledge asks for context instead of inventing a lesson', async () => {

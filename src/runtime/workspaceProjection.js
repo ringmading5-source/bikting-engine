@@ -26,6 +26,15 @@ export function createWorkspaceProjection(result) {
       visualState: typeof segment.visualState === 'number' ? segment.visualState : scene?.states?.length ? Math.min(index, scene.states.length - 1) : undefined,
     }))
     : fallbackSteps({ explanation, outputs, errors, unexecuted, scene });
+  const displaySteps = steps.length ? steps : [{ title: 'Result', text: 'The request completed without a displayable output.' }];
+  const moments = displaySteps.map((step, index) => ({
+    id: `moment-${index + 1}`,
+    title: step.title,
+    display: { text: step.text },
+    voice: { text: step.narration ?? step.text ?? '' },
+    visual: { state: typeof step.visualState === 'number' ? step.visualState : null },
+    action: step.userAction ?? null,
+  }));
 
   return {
     wordComposition: result.semantic?.context?.wordComposition ?? null,
@@ -35,8 +44,9 @@ export function createWorkspaceProjection(result) {
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
     scene,
     visualTool: scene?.toolSelection ?? null,
-    steps: steps.length ? steps : [{ title: 'Result', text: 'The request completed without a displayable output.' }],
-    hasNarration: steps.some((step) => Boolean(step.narration || step.text)),
+    moments,
+    steps: displaySteps,
+    hasNarration: moments.some((moment) => Boolean(moment.voice.text)),
     status: result.status ?? 'unknown',
     confidence: result.semantic?.confidence ?? 0,
     errors,
@@ -54,7 +64,8 @@ function fallbackSteps({ explanation, outputs, errors, unexecuted, scene }) {
   for (const error of errors) steps.push({ title: 'Execution error', text: error.message ?? String(error) });
   if (outputs.numericData?.length && scene?.source?.id !== 'execution-visualizer') steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
   if (scene && !steps.length) steps.push({ title: 'Visual result', text: 'Generated structured visual output.' });
-  if (unexecuted.length) steps.push(...unexecuted.map((item) => ({ title: item.nextAction ? 'Action needs a connected provider' : 'Unexecuted work', text: item.nextAction ?? `No connected tool can execute ${item.metadata?.capability ?? item.requiredCapability ?? item.id}.` })));
+  if (unexecuted.length) steps.push(...unexecuted.map((item) => ({ title: item.nextAction ? 'Action needs a connected provider' : 'Unexecuted work', text: item.nextAction ?? `No connected tool can execute ${item.metadata?.capability ?? item.requiredCapability ?? item.id}.`,
+    userAction: item.nextAction ? { type: item.approval ? 'approval' : 'connect_account', capability: item.metadata?.capability ?? item.requiredCapability ?? null, instruction: item.nextAction, quote: item.approval?.quote ?? null } : null })));
   return steps;
 }
 
