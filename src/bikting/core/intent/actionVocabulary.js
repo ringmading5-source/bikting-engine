@@ -9,6 +9,11 @@ export const actionVocabulary = Object.freeze({
   calculate: ['calculate', 'compute', 'solve'],
   plot: ['plot', 'graph'],
   convert: ['convert'],
+  summarize: ['summarize', 'summarise', 'condense', 'recap'],
+  compare: ['compare', 'contrast'],
+  find: ['find', 'search'],
+  edit: ['edit', 'revise', 'change'],
+  check: ['check', 'verify', 'review'],
 });
 
 export function actionForWord(word) {

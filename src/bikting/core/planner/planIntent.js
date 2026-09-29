@@ -2,7 +2,7 @@ import { normalizeCapability } from '../types/capability.js';
 import { compileActionProcedure } from '../intent/teachProcedure.js';
 import { getActionDefinition } from '../intent/actionRegistry.js';
 
-const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.deploy', 'artifact.build', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
+const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.deploy', 'artifact.build', 'artifact.edit', 'text.summarize', 'text.compare', 'research.search', 'claim.verify', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
 /** Build an ordered, capability-backed plan from structured semantic fields. */
 export function planIntent(semantic, registries = {}) {
@@ -105,7 +105,7 @@ export function deriveRequiredCapabilities(semantic) {
   if (domain === 'statistics' || domain === 'data' || intent === 'analyze_dataset' || outputs.has('statistical_analysis') || outputs.has('trend_analysis')) required.add('statistics.analyze');
   if (domain === 'coding' || intent === 'write_code' || outputs.has('code')) required.add('code.execute');
   const taskCapability = semantic.context?.task?.capability;
-  if (['website.build', 'website.deploy', 'artifact.build'].includes(taskCapability)) required.add(taskCapability);
+  if (['website.build', 'website.deploy', 'artifact.build', 'artifact.edit', 'text.summarize', 'text.compare', 'research.search', 'claim.verify'].includes(taskCapability)) required.add(taskCapability);
   if (!taskCapability && (outputs.has('visual') || outputs.has('graph') || outputs.has('structured_visual_data') || outputs.has('structured_scene') || domain === 'visualization' || relationships.length)) required.add('visual.scene');
   if (intent === 'explain' || outputs.has('explanation')) required.add('text.generate');
   if (outputs.has('voice') || outputs.has('audio')) required.add('voice.synthesize');

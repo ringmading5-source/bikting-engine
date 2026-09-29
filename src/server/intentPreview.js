@@ -10,6 +10,7 @@ export async function previewIntent(request, interpret, enabled) {
   // Website generation belongs after approval. Other interpretations are cached
   // by the shared interpreter so execution reuses the reviewed semantics.
   const semantic = baseline.context.task ? baseline : await interpret(request);
+  if (semantic.context.task?.missing) return { status: 'clarification', relationships: [], scene: null, question: semantic.context.task.missing, choices: [] };
   const action = getActionDefinition(semantic.intent);
   if (action && !semantic.concepts?.length) return { status: 'clarification', relationships: [], scene: null,
     question: action.question, choices: [], task: { action: action.id, required: action.requiredSlots } };

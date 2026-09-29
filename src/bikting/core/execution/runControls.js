@@ -40,19 +40,24 @@ export function verifyResult(step, result) {
   if (capability === 'visual.scene') return result.structuredVisualScenes?.type
     ? { status: 'verified', evidence: 'Structured visual scene' }
     : { status: 'failed', reason: 'Visual tool returned no structured scene.' };
+  if (['text.summarize', 'text.compare'].includes(capability)) return typeof result.text === 'string' && result.text.trim()
+    ? { status: 'verified', evidence: 'Nonempty text output; factual quality requires separate review.' }
+    : { status: 'failed', reason: 'Text worker returned no usable text.' };
   return { status: 'unverified', reason: 'No domain-specific result check registered.' };
 }
 
 export function summarizeUsage(semantic, execution, request = {}) {
   const gemini = semantic.context?.modelUsage ?? null;
+  const worker = execution.map((result) => result.modelUsage).filter(Boolean);
+  const costs = [gemini, ...worker].filter((usage) => usage?.calls > 0).map((usage) => usage.estimatedCostUsd);
   const cacheHit = Boolean(request.modelCacheHit);
   return {
-    modelCalls: cacheHit ? 0 : gemini?.calls ?? 0,
-    inputTokens: cacheHit ? 0 : gemini?.inputTokens ?? 0,
-    outputTokens: cacheHit ? 0 : gemini?.outputTokens ?? 0,
+    modelCalls: cacheHit ? 0 : (gemini?.calls ?? 0) + worker.reduce((sum, usage) => sum + (usage.calls ?? 0), 0),
+    inputTokens: cacheHit ? 0 : (gemini?.inputTokens ?? 0) + worker.reduce((sum, usage) => sum + (usage.inputTokens ?? 0), 0),
+    outputTokens: cacheHit ? 0 : (gemini?.outputTokens ?? 0) + worker.reduce((sum, usage) => sum + (usage.outputTokens ?? 0), 0),
     cacheHit,
     deterministicToolCalls: execution.filter((result) => result.metadata?.kind === 'tool' && result.source?.deterministic && result.status === 'completed').length,
     // Prices depend on model and billing plan; do not invent a dollar amount.
-    estimatedCostUsd: cacheHit ? 0 : gemini?.estimatedCostUsd ?? null,
+    estimatedCostUsd: cacheHit ? 0 : costs.length && costs.every((value) => value != null) ? costs.reduce((sum, value) => sum + value, 0) : null,
   };
 }

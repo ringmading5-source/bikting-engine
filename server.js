@@ -15,6 +15,7 @@ import { createKnowledgeStore } from './src/server/knowledgeStore.js';
 import { createPostgresKnowledgeStore } from './src/server/postgresKnowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
 import { createLiveCostBridge } from './src/server/liveCostBridge.js';
+import { createGeminiTextTool } from './src/server/geminiTextTool.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
 const plotlyBundle = resolve(root, 'node_modules/plotly.js-dist-min/plotly.min.js');
@@ -30,6 +31,7 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
   const knowledgeStore = env.DATABASE_URL ? createPostgresKnowledgeStore({ connectionString: env.DATABASE_URL, ttlMs }) : createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs });
   const providers = createProviderConnections({ env });
   const costBridge = createLiveCostBridge({ knowledgeStore, tools: defaults.tools, env, fetchImpl });
+  if (geminiEnabled) defaults.tools.register(createGeminiTextTool({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
   const models = new ModelRegistry();
   if (geminiEnabled) models.register(createModelAdapter({
     id: 'gemini.interpretation-text', name: 'Gemini interpretation text', domain: 'language', modalities: ['text'], capabilities: ['text.generate'],
