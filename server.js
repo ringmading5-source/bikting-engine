@@ -45,7 +45,10 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
 
 export function startBiktingServer(options = {}) {
   const composed = createBiktingServer(options);
-  composed.server.listen(composed.port, composed.host, () => options.logger?.log?.(`Bikting Engine workspace listening on ${composed.host}:${composed.port}`) ?? console.log(`Bikting Engine workspace listening on ${composed.host}:${composed.port}`));
+  composed.server.listen(composed.port, composed.host, () => {
+    const log = options.logger?.log?.bind(options.logger) ?? console.log;
+    log(`Bikting Engine workspace listening on ${composed.host}:${composed.port}; storage selected: ${composed.knowledgeStore.mode}`);
+  });
   return composed;
 }
 
@@ -71,7 +74,8 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
       if (pathname === '/health') {
         try { await knowledgeStore.ready(); }
         catch { return send(response, 503, { status: 'storage_unavailable' }); }
-        return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock', boundedWebsiteWorker: Boolean(costBridge.executeWebsite), storage: knowledgeStore.mode });
+        return send(response, 200, { status: 'ok', interpreter: geminiEnabled ? 'gemini' : 'mock', boundedWebsiteWorker: Boolean(costBridge.executeWebsite), storage: knowledgeStore.mode,
+          ...(env.RENDER_GIT_COMMIT ? { revision: env.RENDER_GIT_COMMIT.slice(0, 7) } : {}) });
       }
       if (pathname === '/api/usage' && request.method === 'GET') {
         if (testToken && !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);

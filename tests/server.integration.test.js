@@ -53,6 +53,21 @@ test('HTTP boundary exposes the tested Bikting pipeline', async () => {
   assert.equal(invalid.status, 400);
 });
 
+test('health identifies the running Render revision without exposing environment values', async () => {
+  const instance = createBiktingServer({ env: { PORT: '0', HOST: '127.0.0.1', RENDER_GIT_COMMIT: '1234567890abcdef' } });
+  try {
+    await new Promise(resolve => instance.server.listen(0, '127.0.0.1', resolve));
+    const health = await fetch(`http://127.0.0.1:${instance.server.address().port}/health`);
+    assert.equal(health.status, 200);
+    const body = await health.json();
+    assert.equal(body.revision, '1234567');
+    assert.equal(body.storage, 'ephemeral_file');
+    assert.equal(JSON.stringify(body).includes('DATABASE_URL'), false);
+  } finally {
+    await new Promise(resolve => instance.server.close(resolve));
+  }
+});
+
 after(async () => { if (composed) await new Promise((resolve) => composed.server.close(resolve)); });
 
 function post(path, body) { return fetch(`${base}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }); }
