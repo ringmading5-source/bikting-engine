@@ -1,4 +1,5 @@
 import { normalizeCapability } from '../types/capability.js';
+import { compileTeachProcedure } from '../intent/teachProcedure.js';
 
 const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.deploy', 'artifact.build', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
@@ -24,6 +25,23 @@ export function planIntent(semantic, registries = {}) {
   });
   const reqById = new Map(requirements.map((item) => [item.requiredCapability, item]));
   const steps = [];
+  if (semantic.intent === 'teach') {
+    const procedure = compileTeachProcedure(semantic);
+    procedure.wordComposition = semantic.context.wordComposition ?? null;
+    addBuiltin(steps, 'teach_sequence', { procedure });
+    if (procedure.status === 'ready') {
+      for (const requirement of requirements) {
+        const capability = requirement.requiredCapability;
+        if (!['visual.scene', 'text.generate', 'voice.synthesize'].includes(capability)) continue;
+        addStep(steps, requirement, { id: stepId(capability), operation: operationFor(requirement, semantic), dependsOn: ['step-teach_sequence'] });
+      }
+    }
+    steps.forEach((step, index) => { step.order = index + 1; });
+    return { id: `plan-${semantic.id}`, intent: semantic.intent, semanticId: semantic.id, procedure,
+      requiredCapabilities: procedure.status === 'ready' ? requirements.filter(({ requiredCapability }) => steps.some((step) => step.capability === requiredCapability)) : [],
+      capabilities: steps.map((step) => step.capability).filter(Boolean), steps,
+      visualPolicy: 'deterministic_or_domain_renderer_by_default', createdAt: new Date().toISOString() };
+  }
   if (semantic.intent === 'explain' || semantic.requestedOutputs.includes('explanation')) addBuiltin(steps, 'explain_concept', { concepts: semantic.concepts });
   if (semantic.relationships.length) addBuiltin(steps, 'establish_relationships', { relationships: semantic.relationships.map(({ from, relation, to }) => ({ from, relation, to })) });
 

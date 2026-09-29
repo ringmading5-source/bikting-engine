@@ -6,6 +6,7 @@ import { createExecutionContext } from '../execution/ExecutionContext.js';
 import { ToolExecutor } from '../execution/ToolExecutor.js';
 import { executeDependencies } from '../execution/DependencyExecutor.js';
 import { approvalFor, verifyResult, summarizeUsage } from '../execution/runControls.js';
+import { composeWords } from '../intent/composeWords.js';
 
 export class BiktingOrchestrator {
   constructor({ interpret, tools, models, relationshipEngine = new RelationshipEngine(), logger = null }) {
@@ -31,9 +32,11 @@ export class BiktingOrchestrator {
     const semantic = createSemanticObject({ source: request.source ?? 'user', modality: request.modality ?? semanticFields.modality ?? 'text', ...semanticFields, provenance: [{ source: 'semantic-interpreter', method: 'adapter' }, ...(interpreted.provenance ?? [])] });
     for (const entity of entities) addEntity(semantic, entity);
     for (const relationship of relationships) this.relationshipEngine.add(semantic, relationship);
+    semantic.context.wordComposition = composeWords(request.text, semantic);
     this.relationshipEngine.updateState(semantic);
     record('SEMANTIC', `id = ${semantic.id}\nmodality = ${semantic.modality}`);
     record('INTENT', semantic.intent);
+    record('WORD ROLES', semantic.context.wordComposition.words.map(({ surface, role }) => `${surface}: ${role}`).join(', '));
     record('CONCEPTS', semantic.concepts.join(', ') || '(none)');
     record('RELATIONSHIPS', semantic.relationships.map(({ from, relation, to }) => `${from} → ${relation} → ${to}`).join('\n') || '(none)');
     if (semantic.context.buildPrompt) record('BUILD PROMPT', semantic.context.buildPrompt);
@@ -51,7 +54,9 @@ export class BiktingOrchestrator {
 
     const execution = await executeDependencies(plan.steps, async (step) => {
       if (!step.capability) {
-        const payload = step.operation === 'establish_relationships'
+        const payload = step.operation === 'teach_sequence'
+          ? { ...step.procedure, status: step.procedure.status === 'ready' ? 'completed' : 'blocked', type: 'teaching_procedure', nextAction: step.procedure.reason }
+          : step.operation === 'establish_relationships'
           ? { status: 'completed', type: 'relationship_graph', relationships: semantic.relationships, entities: semantic.entities }
           : { status: 'completed', type: 'planning_operation', operation: step.operation, concepts: semantic.concepts };
         const result = createExecutionResult({ semantic, capability: `engine.${step.operation}`, adapterId: step.provider ?? 'bikting.core', kind: 'engine', payload });

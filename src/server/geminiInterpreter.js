@@ -163,7 +163,7 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       visualProgramStatus = 'relationship_engine';
     }
     return {
-      intent: proposed.intent, modality: 'text', concepts: concepts.map(slug),
+      intent: baseline.intent === 'teach' && proposed.intent !== 'unknown' ? 'teach' : proposed.intent, modality: 'text', concepts: concepts.map(slug),
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships, variables: {}, equations: [],
       requestedOutputs: ['explanation', 'visual'],

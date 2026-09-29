@@ -26,3 +26,40 @@ test('planned providers remain visible as unexecuted work instead of producing a
   assert.equal(result.workspace.status, 'partial');
   assert.ok(result.workspace.steps.some((step) => step.title === 'Unexecuted work'));
 });
+
+test('teach executes an ordered procedure derived from connected relationships', async () => {
+  const runtime = createBiktingRuntime({ interpret: async () => ({ intent: 'teach', concepts: ['cell'],
+    entities: [{ id: 'cell', label: 'Cell' }], relationships: [
+      { from: 'cell', relation: 'contains', to: 'nucleus' },
+      { from: 'nucleus', relation: 'contains', to: 'dna' },
+      { from: 'unrelated', relation: 'contains', to: 'other' },
+    ], requestedOutputs: ['explanation', 'visual'], context: { domain: 'biology' }, confidence: 0.8 }) });
+  const result = await runtime.run({ text: 'Teach me cells' });
+  assert.equal(result.semantic.intent, 'teach');
+  assert.deepEqual(result.workspace.wordComposition.words.map(({ surface, role }) => [surface, role]), [['Teach', 'action'], ['me', 'recipient'], ['cells', 'target']]);
+  assert.equal(result.plan.procedure.status, 'ready');
+  assert.deepEqual(result.plan.procedure.stages.slice(1, 3).map(({ relationships }) => relationships[0].to), ['nucleus', 'dna']);
+  assert.equal(result.execution[0].type, 'teaching_procedure');
+  assert.equal(result.execution[0].status, 'completed');
+  assert.equal(result.workspace.steps.at(-1).title, 'Check understanding');
+});
+
+test('teach without connected knowledge asks for context instead of inventing a lesson', async () => {
+  const result = await createBiktingRuntime().run({ text: 'Teach me cells' });
+  assert.equal(result.status, 'partial');
+  assert.equal(result.plan.procedure.status, 'blocked');
+  assert.match(result.workspace.steps[0].text, /need relationships/i);
+});
+
+test('a word modifier changes the action sequence without changing the topic relationships', async () => {
+  const interpret = async () => ({ intent: 'teach', concepts: ['cell'], relationships: [
+    { from: 'cell', relation: 'contains', to: 'nucleus' }, { from: 'nucleus', relation: 'contains', to: 'dna' },
+    { from: 'dna', relation: 'produces', to: 'rna' },
+  ], requestedOutputs: ['explanation'], context: { domain: 'biology' }, confidence: 0.8 });
+  const runtime = createBiktingRuntime({ interpret });
+  const full = await runtime.run({ text: 'Teach me cells' });
+  const brief = await runtime.run({ text: 'Teach me cells briefly' });
+  assert.equal(full.plan.procedure.stages.length, 5);
+  assert.equal(brief.plan.procedure.stages.length, 4);
+  assert.equal(brief.workspace.wordComposition.words.at(-1).role, 'modifier');
+});

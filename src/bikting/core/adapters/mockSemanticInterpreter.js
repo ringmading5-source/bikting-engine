@@ -76,6 +76,10 @@ export async function mockSemanticInterpreter(request) {
     intent = 'calculate'; domain = 'mathematics';
     const expression = /(?:calculate|solve)\s+(.+?)[?!]?$/i.exec(text)?.[1]?.replaceAll('×', '*').replaceAll('÷', '/')?.trim();
     variables = { expression }; requestedOutputs = ['numeric_result', 'equation'];
+  } else if (/\bteach\b/i.test(text)) {
+    intent = 'teach'; requestedOutputs = ['explanation', 'visual'];
+    const subject = /\bteach\s+(?:(?:me|us)\s+)?(?:(?:about|how|the)\s+)?(.+?)[?.!]*$/i.exec(text)?.[1]?.trim();
+    if (subject) concepts = [slug(subject)];
   } else if (/\bexplain\b/i.test(text)) {
     intent = 'explain'; requestedOutputs = ['explanation'];
   }

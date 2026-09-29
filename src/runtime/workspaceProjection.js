@@ -15,7 +15,10 @@ export function createWorkspaceProjection(result) {
   const unexecuted = outputs.unexecuted ?? [];
   const conceptScene = createConceptPieceScene(result);
   const scene = conceptScene ?? outputs.visual?.structuredVisualScenes ?? outputs.structuredVisualScenes?.[0] ?? createExecutionScene(result);
-  const steps = narration.length
+  const teaching = result.plan?.procedure;
+  const steps = teaching?.status === 'ready' ? teaching.stages.map((stage, index) => ({ title: stage.title, text: stage.text, narration: stage.text,
+    visualState: scene?.states?.length ? Math.min(index, scene.states.length - 1) : undefined })) : teaching?.status === 'blocked'
+    ? [{ title: 'Teaching needs context', text: teaching.reason }] : narration.length
     ? narration.map((segment, index) => ({
       title: `Narration ${String(index + 1).padStart(2, '0')}`,
       text: segment.text,
@@ -25,6 +28,7 @@ export function createWorkspaceProjection(result) {
     : fallbackSteps({ explanation, outputs, errors, unexecuted, scene });
 
   return {
+    wordComposition: result.semantic?.context?.wordComposition ?? null,
     knowledge: result.semantic?.context?.knowledge ?? null,
     title: `${humanize(result.semantic?.intent ?? 'request')} request`,
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
