@@ -17,7 +17,7 @@ const home = setupHome({
   onOpen: () => playback?.stop(),
   onPreferences: (preferences) => { voicePreferences = preferences; },
   onNew: () => {
-    latestRun++; activeProject = null; projectBaseText = ''; byId('project-details').reset(); byId('project-details').hidden = true; playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
+    latestRun++; activeProject = null; projectBaseText = ''; byId('project-details').reset(); byId('project-details').hidden = true; byId('project-details-panel').hidden = true; byId('project-details-toggle').setAttribute('aria-expanded', 'false'); playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
     byId('prompt').value = ''; byId('clear-sketch').click();
     byId('intent-checkpoint').hidden = true; byId('run-usage').textContent = '';
     byId('pilot-feedback').hidden = true;
@@ -28,7 +28,7 @@ const home = setupHome({
     renderTrace([]); byId('prompt').focus();
   },
   onResume: (project) => {
-    latestRun++; activeProject = project.id; projectBaseText = project.text; byId('project-details').reset(); byId('project-details').hidden = true; playback?.stop();
+    latestRun++; activeProject = project.id; projectBaseText = project.text; byId('project-details').reset(); byId('project-details').hidden = true; byId('project-details-panel').hidden = true; byId('project-details-toggle').setAttribute('aria-expanded', 'false'); playback?.stop();
     byId('prompt').value = project.text; byId('knowledge-mode').value = project.knowledgeMode ?? 'model'; byId('intent-checkpoint').hidden = true;
     elements.sketch.restore?.(project.sketch, project.sketchLayout);
     if (project.result) displayResult(project.result);
@@ -53,14 +53,33 @@ byId('pilot-feedback').addEventListener('submit', async (event) => {
   } catch (error) { status.textContent = error.message; button.disabled = false; }
 });
 readTextRequest(byId('request-form'), byId('prompt'), (request) => { projectBaseText = request.text; byId('project-details').reset(); runPipeline(request); }, elements.sketch);
+byId('project-details-toggle').addEventListener('click', () => {
+  const form = byId('project-details');
+  form.hidden = !form.hidden;
+  byId('project-details-toggle').setAttribute('aria-expanded', String(!form.hidden));
+  if (!form.hidden) form.elements.namedItem('name').focus();
+});
+const textDrop = byId('project-text-drop');
+textDrop.addEventListener('dragover', (event) => { if (!event.dataTransfer.types.includes('text/plain')) return; event.preventDefault(); textDrop.classList.add('drag-over'); });
+textDrop.addEventListener('dragleave', () => textDrop.classList.remove('drag-over'));
+textDrop.addEventListener('drop', (event) => {
+  event.preventDefault(); textDrop.classList.remove('drag-over');
+  const incoming = event.dataTransfer.getData('text/plain').trim();
+  if (!incoming) return;
+  const field = byId('project-details').elements.namedItem('additional');
+  field.value = [field.value.trim(), incoming].filter(Boolean).join('\n').slice(0, field.maxLength);
+  byId('project-details-status').textContent = 'Text added. Update the preview when ready.';
+});
 byId('project-details').addEventListener('submit', (event) => {
   event.preventDefault();
   const form = event.currentTarget;
-  const fields = ['name', 'purpose', 'sections', 'content', 'style'].map((name) => [name, form.elements.namedItem(name).value.trim()]).filter(([, value]) => value);
+  const fields = ['name', 'purpose', 'sections', 'content', 'style', 'additional'].map((name) => [name, form.elements.namedItem(name).value.trim()]).filter(([, value]) => value);
   if (!fields.length) { byId('project-details-status').textContent = 'Add at least one detail to update the preview.'; return; }
   const details = fields.map(([name, value]) => `${name}: ${value}`).join('\n');
   const text = `${projectBaseText.slice(0, 550)}\n\nUse these project details for the website preview:\n${details}`;
+  if (text.length > 2000) { byId('project-details-status').textContent = 'Please shorten the details to fit this request.'; return; }
   byId('project-details-status').textContent = 'Updating preview…';
+  form.hidden = true; byId('project-details-toggle').setAttribute('aria-expanded', 'false');
   runPipeline({ type: 'text', text, knowledgeMode: byId('knowledge-mode').value, sketch: null, sketchLayout: null });
 });
 
@@ -74,7 +93,7 @@ async function runPipeline(request) {
   byId('run-usage').textContent = '';
   byId('pilot-feedback').hidden = true;
   playback?.stop();
-  byId('project-details').hidden = true;
+  byId('project-details-panel').hidden = true;
   renderGraph(elements.visual, null);
   renderKnowledge(byId('knowledge-sources'), null);
   elements.stage.textContent = 'UNDERSTANDING REQUEST';
@@ -134,7 +153,7 @@ async function runPipeline(request) {
 }
 
 function displayResult(result) {
-  const details = byId('project-details');
+  const details = byId('project-details-panel');
   details.hidden = result.workspace?.scene?.type !== 'website';
   byId('project-details-status').textContent = '';
   const feedback = byId('pilot-feedback');

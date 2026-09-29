@@ -47,6 +47,8 @@
           <article class="visual-card">
             <div class="card-head"><span>RELATIONSHIP MODEL</span><span class="live-tag"><i></i><span id="stage-label">WAITING</span></span></div>
             <div id="visualization" class="visualization empty-state"><div class="empty-orbit">b</div><p>Your selected module will build a visual model here.</p></div>
+            <div id="project-details-panel" class="project-details-panel" hidden>
+              <button id="project-details-toggle" type="button" aria-expanded="false" aria-controls="project-details">＋ Add project details</button>
             <form id="project-details" class="project-details" hidden>
               <strong>Project details</strong><p>Describe what should appear in your website preview. Text is enough.</p>
               <label>Website name<input name="name" type="text" maxlength="100" placeholder="My study space" /></label>
@@ -54,8 +56,11 @@
               <label>Pages or sections<textarea name="sections" maxlength="350" rows="2" placeholder="Home, subjects, study notes, contact"></textarea></label>
               <label>Content and contact details<textarea name="content" maxlength="450" rows="2" placeholder="The words, services, or contact details you want displayed"></textarea></label>
               <label>Look and feel<input name="style" type="text" maxlength="120" placeholder="Calm colors, clear headings" /></label>
+              <label>Additional details<textarea name="additional" maxlength="500" rows="3" placeholder="Any other text you want Bikting to use"></textarea></label>
+              <div id="project-text-drop" class="project-text-drop" tabindex="0">Drop selected text here, or paste it above</div>
               <button type="submit">Update preview</button><span id="project-details-status" role="status"></span>
             </form>
+            </div>
             <div id="knowledge-sources" class="knowledge-sources"></div><div class="visual-caption" id="visual-caption">A domain module determines how its ideas should be rendered.</div>
           </article>
           <article class="explanation-card">
