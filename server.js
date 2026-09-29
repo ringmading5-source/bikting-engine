@@ -64,7 +64,7 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
         const input = await readInput(request);
         if (!validInput(input)) return send(response, 400, null);
-        const normalized = { text: input.text.trim(), knowledgeMode: input.knowledgeMode === 'web' ? 'web' : 'model', sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, modality: 'text' };
+        const normalized = { text: input.text.trim(), knowledgeMode: input.knowledgeMode === 'web' ? 'web' : 'model', sketch: input.sketch ?? null, sketchLayout: input.sketchLayout ?? null, projectContext: input.projectContext ?? null, modality: 'text' };
         if (pathname === '/api/run/stream') return streamRun(response, normalized, runtime, interpret, geminiEnabled, costBridge);
         if (pathname === '/api/intent') {
           try { return send(response, 200, await previewIntent(normalized, interpret, geminiEnabled)); }
@@ -126,7 +126,7 @@ async function readInput(request) {
 }
 
 function validInput(input) {
-  return typeof input?.text === 'string' && Boolean(input.text.trim()) && input.text.length <= 2000 && (input.knowledgeMode === undefined || input.knowledgeMode === 'model' || input.knowledgeMode === 'web') && (input.sketch === undefined || input.sketch === null || typeof input.sketch === 'string' && input.sketch.length <= 500000) && (input.sketchLayout === undefined || input.sketchLayout === null || typeof input.sketchLayout === 'object' && !Array.isArray(input.sketchLayout) && Array.isArray(input.sketchLayout.pieces));
+  return typeof input?.text === 'string' && Boolean(input.text.trim()) && input.text.length <= 2000 && (input.knowledgeMode === undefined || input.knowledgeMode === 'model' || input.knowledgeMode === 'web') && (input.sketch === undefined || input.sketch === null || typeof input.sketch === 'string' && input.sketch.length <= 500000) && (input.sketchLayout === undefined || input.sketchLayout === null || typeof input.sketchLayout === 'object' && !Array.isArray(input.sketchLayout) && Array.isArray(input.sketchLayout.pieces)) && (input.projectContext === undefined || input.projectContext === null || input.projectContext.type === 'website' && typeof input.projectContext.html === 'string' && input.projectContext.html.length <= 50000 && typeof input.projectContext.title === 'string' && input.projectContext.title.length <= 100);
 }
 
 async function streamRun(response, request, runtime, interpret, geminiEnabled, costBridge) {

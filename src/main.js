@@ -52,7 +52,11 @@ byId('pilot-feedback').addEventListener('submit', async (event) => {
     status.textContent = 'Thanks. Your feedback was saved.';
   } catch (error) { status.textContent = error.message; button.disabled = false; }
 });
-readTextRequest(byId('request-form'), byId('prompt'), (request) => { projectBaseText = request.text; byId('project-details').reset(); runPipeline(request); }, elements.sketch);
+readTextRequest(byId('request-form'), byId('prompt'), (request) => { projectBaseText = request.text; byId('project-details').reset(); runPipeline({ ...request, projectContext: /^\s*(?:please\s+)?(?:edit|revise|change)\b/i.test(request.text) ? currentProjectContext() : null }); }, elements.sketch);
+function currentProjectContext() {
+  const scene = playback?.result?.workspace?.scene;
+  return scene?.type === 'website' && typeof scene.html === 'string' ? { type: 'website', html: scene.html, title: String(scene.title ?? 'Website').slice(0, 100) } : null;
+}
 byId('project-details-toggle').addEventListener('click', () => {
   const form = byId('project-details');
   form.hidden = !form.hidden;
@@ -186,7 +190,7 @@ function displayResult(result) {
 
 
 async function sendStreamRequest(request, onEvent) {
-  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout };
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout, projectContext: request.projectContext };
   let response = await fetch('/api/run/stream', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
   if (response.status === 401) {
     testToken = window.prompt('Enter your Bikting test access token:') ?? '';
@@ -209,7 +213,7 @@ async function sendStreamRequest(request, onEvent) {
 }
 
 function sendRequest(request, path = '/api/run') {
-  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout };
+  const body = typeof request === 'string' ? { text: request } : { text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout, projectContext: request.projectContext };
   return fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(testToken ? { 'x-bikting-test-token': testToken } : {}) }, body: JSON.stringify(body) });
 }
 

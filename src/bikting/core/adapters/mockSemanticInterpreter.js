@@ -1,6 +1,7 @@
 import { resolveActionRequest } from './requestIntent.js';
 import { resolveRelationalAction } from '../intent/actionRegistry.js';
 import { resolveWorkAction } from '../intent/workActions.js';
+import { sentenceMeaning } from '../intent/sentenceMeaning.js';
 
 const motorRelationships = [
   ['electrical_energy', 'flows_to', 'current'], ['current', 'produces', 'magnetic_field'], ['magnetic_field', 'causes', 'force'],
@@ -15,7 +16,8 @@ export async function mockSemanticInterpreter(request) {
   let concepts = []; let relationships = []; let requestedOutputs = []; let labels = [];
   let variables = {}; let equations = [];
   const task = resolveActionRequest(text);
-  const work = resolveWorkAction(text);
+  const work = resolveWorkAction(text, request.projectContext);
+  const meaning = sentenceMeaning(text, request.projectContext);
   const relationalAction = resolveRelationalAction(text);
 
   const forceRange = /\bplot\s+force\b/i.test(text);
@@ -34,6 +36,7 @@ export async function mockSemanticInterpreter(request) {
   } else if (work) {
     intent = work.action; domain = 'general'; concepts = work.input ? [slug(work.input.slice(0, 80))] : [];
     requestedOutputs = ['text'];
+    if (work.capability === 'website.edit') variables = { siteHtml: request.projectContext.html, editInstruction: work.input, siteTitle: request.projectContext.title };
   } else if (forceRange) {
     intent = 'plot'; domain = 'physics'; concepts = ['force', 'mass', 'acceleration'];
     requestedOutputs = ['graph', 'numeric_data', 'structured_scene'];
@@ -90,7 +93,7 @@ export async function mockSemanticInterpreter(request) {
     intent = 'explain'; requestedOutputs = ['explanation'];
   }
   if (!labels.length) labels = concepts.map((concept) => concept.replaceAll('_', ' '));
-  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : work ? [{ id: work.action, type: work.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, sketch: request.sketch ?? null, sketchLayout: request.sketchLayout ?? null, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : work ? { task: { ...work, target: work.input } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
+  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : work ? [{ id: work.action, type: work.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, sentenceMeaning: meaning, sketch: request.sketch ?? null, sketchLayout: request.sketchLayout ?? null, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : work ? { task: { ...work, target: work.input } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
 }
 
 function statisticFromText(text) { if (text.includes('standard deviation')) return 'standard_deviation'; if (text.includes('median')) return 'median'; if (text.includes('variance')) return 'variance'; if (text.includes('correlation')) return 'correlation'; if (text.includes('minimum')) return 'min'; if (text.includes('maximum')) return 'max'; return 'mean'; }

@@ -6,6 +6,8 @@ export function compileBuildPrompt(semantic, requestText) {
     relationships: semantic.relationships.map(({ from, relation, to }) => ({ from, relation, to })),
     directions: semantic.relationships.map(({ from, relation, to }) => `Use ${from} ${relation} ${to}.`),
     requestedDetails: requestText,
+    purpose: semantic.context.sentenceMeaning?.purpose ?? null,
+    audienceConstraints: semantic.context.sentenceMeaning?.constraints ?? [],
     userSketch: semantic.context.sketch ? 'Attached PNG sketch supplied by the user. Preserve its layout intent.' : null,
     sketch: ['header with site name', 'main section reflecting requested details', 'about section', 'contact section with editable placeholder'],
     artifact: 'one self-contained responsive HTML file',

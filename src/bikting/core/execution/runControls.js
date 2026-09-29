@@ -25,7 +25,7 @@ export function approvalFor(step, request) {
 export function verifyResult(step, result) {
   if (result.status !== 'completed') return { status: 'not_verified', reason: `Execution status: ${result.status}` };
   const capability = step.capability;
-  if (capability === 'website.build') {
+  if (capability === 'website.build' || capability === 'website.edit') {
     const html = result.html;
     return typeof html === 'string' && /<!doctype html>/i.test(html) && /<\/html>\s*$/i.test(html) && result.structuredVisualScenes?.html === html
       ? { status: 'verified', evidence: 'Complete HTML and matching preview' }

@@ -12,6 +12,7 @@ export function compileActionProcedure(semantic, registry = defaultActionRegistr
   const seen = new Set([concept]);
   const ordered = [];
   const request = semantic.context?.wordComposition ?? {};
+  const beginner = semantic.context?.sentenceMeaning?.constraints?.some(({ kind, value }) => kind === 'audience_level' && value === 'beginner');
   const limit = request.modifiers?.includes('length') ? 2 : definition.maxRelationships;
   let frontier = [concept];
   while (frontier.length && ordered.length < limit) {
@@ -26,7 +27,7 @@ export function compileActionProcedure(semantic, registry = defaultActionRegistr
   }
   if (!ordered.length) return { status: 'blocked', action: definition.id, reason: `No supplied relationship connects to ${label(concept)}.`, stages: [] };
   return { status: 'ready', action: definition.id, concept, stages: [
-    { id: 'overview', title: 'Start with the whole', text: `${request.recipient === 'me' ? 'You' : 'We'} will ${definition.introduction} ${label(concept)} and how its parts connect.`, relationships: [] },
+    { id: 'overview', title: 'Start with the whole', text: `${request.recipient === 'me' ? 'You' : 'We'} will ${definition.introduction} ${label(concept)} and how its parts connect.${beginner ? ' We will start with the basic idea and introduce one relationship at a time.' : ''}`, relationships: [] },
     ...ordered.map((edge, index) => ({ id: `relationship-${index + 1}`, title: `${label(edge.from)} → ${label(edge.to)}`, text: `${label(edge.from)} ${label(edge.relation)} ${label(edge.to)}.`, relationships: [edge] })),
     ...(definition.closing === 'check' ? [{ id: 'check', title: 'Check understanding', text: `How does ${label(ordered[0].from)} relate to ${label(ordered[0].to)}?`, relationships: [ordered[0]] }] : []),
   ] };

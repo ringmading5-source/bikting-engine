@@ -117,7 +117,7 @@ export class BiktingOrchestrator {
     const outputFor = (capability) => execution.find((result) => result.metadata?.capability === capability && !['error', ...unexecutedStatuses].includes(result.status)) ?? null;
     const explanation = outputFor('text.summarize') ?? outputFor('text.compare') ?? outputFor('text.generate');
     const narration = outputFor('voice.synthesize');
-    const visualResult = outputFor('visual.scene');
+    const visualResult = outputFor('website.edit') ?? outputFor('visual.scene');
     const visual = visualResult ? { ...visualResult, type: 'visual_scene', renderer: 'domain_specific_or_programmatic' } : plan.capabilities.includes('visual.scene') ? execution.find((result) => result.metadata?.capability === 'visual.scene') ?? null : null;
     const outputs = {
       explanation, narration, visual,
