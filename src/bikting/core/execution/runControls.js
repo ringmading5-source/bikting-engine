@@ -3,6 +3,20 @@ export const approvalCapabilities = new Set(['website.deploy', 'artifact.publish
 
 export function approvalFor(step, request) {
   if (!approvalCapabilities.has(step.capability)) return null;
+  if (step.capability === 'payment.charge') {
+    const quote = step.quote;
+    const validQuote = quote && typeof quote.id === 'string' && quote.id.length > 0 &&
+      typeof quote.provider === 'string' && quote.provider.length > 0 &&
+      typeof quote.item === 'string' && quote.item.length > 0 &&
+      Number.isSafeInteger(quote.amountMinor) && quote.amountMinor > 0 &&
+      typeof quote.currency === 'string' && /^[A-Z]{3}$/.test(quote.currency);
+    const approval = request.purchaseApproval;
+    const matches = validQuote && approval && approval.quoteId === quote.id &&
+      approval.provider === quote.provider && approval.item === quote.item &&
+      approval.amountMinor === quote.amountMinor && approval.currency === quote.currency;
+    return matches ? null : { capability: step.capability, status: 'approval_required', quote: validQuote ? quote : null,
+      reason: validQuote ? `Approve ${quote.item} from ${quote.provider} for ${quote.currency} ${(quote.amountMinor / 100).toFixed(2)} before purchase.` : 'A provider quote with an exact price is required before purchase.' };
+  }
   const approved = Array.isArray(request.approvedCapabilities) && request.approvedCapabilities.includes(step.capability);
   return approved ? null : { capability: step.capability, reason: `Approve ${step.capability} before it can run.`, status: 'approval_required' };
 }

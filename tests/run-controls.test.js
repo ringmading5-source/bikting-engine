@@ -26,6 +26,16 @@ test('side effects need explicit approval; even a completed provider claim is ch
   assert.equal(verifyResult({ capability: 'website.build' }, { status: 'completed', html: 'done' }).status, 'failed');
 });
 
+test('purchase approval applies only to its exact quoted action', () => {
+  const quote = { id: 'quote-1', provider: 'Registrar', item: 'example.com for one year', amountMinor: 1200, currency: 'USD' };
+  const step = { capability: 'payment.charge', quote };
+  assert.equal(approvalFor(step, { approvedCapabilities: ['payment.charge'] }).status, 'approval_required');
+  assert.equal(approvalFor({ capability: 'payment.charge' }, { purchaseApproval: quote }).status, 'approval_required');
+  assert.equal(approvalFor(step, { purchaseApproval: { ...quote, quoteId: quote.id, amountMinor: 1300 } }).status, 'approval_required');
+  assert.equal(approvalFor(step, { purchaseApproval: { ...quote, quoteId: quote.id } }), null);
+  assert.equal(approvalFor({ capability: 'payment.charge', quote: { ...quote, id: 'quote-2' } }, { purchaseApproval: { ...quote, quoteId: quote.id } }).status, 'approval_required');
+});
+
 test('the executor rejects a tool without the required input before invoking it', async () => {
   let invoked = false;
   const tools = new ToolRegistry();

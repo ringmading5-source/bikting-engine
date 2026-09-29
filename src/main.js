@@ -95,31 +95,9 @@ async function runPipeline(request) {
       byId('edit-intent').onclick = () => { checkpoint.hidden = true; byId('prompt').focus(); };
       return;
     }
-    if (intent.scene) {
-      playback?.stop();
-      renderGraph(elements.visual, intent.scene, 0);
-      elements.title.textContent = intent.task ? 'Build intent sketch' : 'Relationship intent sketch';
-      elements.explanation.textContent = intent.task ? `Intent: ${intent.task.action} ${intent.task.target}. Building from ${intent.relationships.map(({ from, relation, to }) => `${from} ${relation.replaceAll('_', ' ')} ${to}`).join(', ')}.` : `The engine found ${intent.relationships.length} relationships and is preparing the visual or build tool.`;
-    }
-    byId('intent-summary').textContent = intent.task ? `${intent.task.action} ${intent.task.target} — ${request.text}` : request.text;
-    byId('intent-relationships').textContent = intent.relationships.length ? `Relationships: ${intent.relationships.map(({ from, relation, to }) => `${from} → ${relation.replaceAll('_', ' ')} → ${to}`).join('; ')}` : 'No relationship diagram is needed for this preview.';
-    byId('intent-limitations').textContent = intent.message;
-    checkpoint.hidden = false;
-    elements.stage.textContent = 'CHECK INTENT';
-    completed = true;
-    clearInterval(stageTimer);
-    const confirmed = await new Promise((resolve) => {
-      byId('confirm-intent').onclick = () => { checkpoint.hidden = true; resolve(true); };
-      byId('edit-intent').onclick = () => { checkpoint.hidden = true; byId('prompt').focus(); resolve(false); };
-    });
-    if (!confirmed || run !== latestRun) return;
-    if (byId('prompt').value.trim() !== request.text || byId('knowledge-mode').value !== (request.knowledgeMode ?? 'model')) {
-      elements.stage.textContent = 'REVIEW REVISED INTENT';
-      elements.explanation.textContent = 'Your request changed after this preview. Run request again to review the new intent.';
-      byId('prompt').focus();
-      return;
-    }
-    elements.stage.textContent = 'EXECUTING TOOL';
+    // A clear goal runs without exposing the planner. Clarification is shown above.
+    elements.stage.textContent = 'WORKING';
+    elements.explanation.textContent = 'Working on your request…';
   } catch (error) {
     if (run === latestRun) { elements.stage.textContent = 'ERROR'; elements.explanation.textContent = `Intent preview unavailable: ${error.message}`; }
     return;
