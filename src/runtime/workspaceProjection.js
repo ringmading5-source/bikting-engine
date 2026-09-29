@@ -29,6 +29,7 @@ export function createWorkspaceProjection(result) {
 
   return {
     wordComposition: result.semantic?.context?.wordComposition ?? null,
+    teachingExpansion: result.semantic?.context?.teachingExpansion ?? null,
     knowledge: result.semantic?.context?.knowledge ?? null,
     title: `${humanize(result.semantic?.intent ?? 'request')} request`,
     summary: summaryFor({ explanation, outputs, errors, unexecuted, result }),
