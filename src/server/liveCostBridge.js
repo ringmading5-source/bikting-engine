@@ -9,7 +9,7 @@ import { validateGeneratedWebsite } from './buildPrompt.js';
 import { pilotRecord } from './pilotMetrics.js';
 
 const digest = value => createHash('sha256').update(JSON.stringify(value)).digest('hex');
-const stableRequest = request => ({ text: request.text, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout, projectContext: request.projectContext });
+const stableRequest = request => ({ text: request.text, language: request.language, knowledgeMode: request.knowledgeMode, sketch: request.sketch, sketchLayout: request.sketchLayout, projectContext: request.projectContext });
 
 export function createLiveCostBridge({ knowledgeStore, tools, env, fetchImpl = fetch }) {
   const telemetry = new CostTelemetry();

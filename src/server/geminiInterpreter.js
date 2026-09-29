@@ -225,13 +225,13 @@ export function createGeminiInterpreter({ apiKey, model = 'gemini-2.5-flash', fe
       intent: relationalAction ? relationalAction.id : proposed.intent, modality: 'text', concepts: relationalAction ? [teachingRoot ?? slug(baseline.concepts[0]), ...concepts.map(slug).filter((id) => id !== teachingRoot)] : concepts.map(slug),
       entities: labels.map((id) => ({ id, label: id.replaceAll('_', ' '), type: 'concept' })),
       relationships: expandedRelationships, variables: {}, equations: [],
-      requestedOutputs: relationalAction ? ['visual'] : ['explanation', 'visual'],
-      goals: [request.text], context: { requestText: request.text, domain, visualArtifact, geminiExplanation: relationalAction ? '' : explanation, visualPrompt, visualProgram, visualProgramStatus, knowledge, promptPacket: { task: promptPacket.task, sourceIds: promptPacket.evidence.sources.map(({ id }) => id), maxOutputTokens: promptPacket.limits.maxOutputTokens }, teachingExpansion: teachingExpansion && { rounds: teachingExpansion.rounds, stopReason: teachingExpansion.stopReason }, modelUsage: { calls: modelCalls, inputTokens: (payload.usageMetadata?.promptTokenCount ?? 0) + researchUsage.inputTokens + expansionUsage.inputTokens, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0) + researchUsage.outputTokens + expansionUsage.outputTokens, estimatedCostUsd: payload.biktingEstimatedCostUsd == null || expansionUsage.estimatedCostUsd == null || researchUsage.estimatedCostUsd == null && request.knowledgeMode === 'web' ? null : payload.biktingEstimatedCostUsd + (researchUsage.estimatedCostUsd ?? 0) + expansionUsage.estimatedCostUsd } },
+      requestedOutputs: [...(relationalAction ? ['visual'] : ['explanation', 'visual']), ...(baseline.requestedOutputs.includes('animation') ? ['animation'] : [])],
+      goals: [request.text], context: { requestText: request.text, domain, language: baseline.context.language, sentenceMeaning: baseline.context.sentenceMeaning, visualArtifact, geminiExplanation: relationalAction ? '' : explanation, visualPrompt, visualProgram, visualProgramStatus, knowledge, promptPacket: { task: promptPacket.task, sourceIds: promptPacket.evidence.sources.map(({ id }) => id), maxOutputTokens: promptPacket.limits.maxOutputTokens }, teachingExpansion: teachingExpansion && { rounds: teachingExpansion.rounds, stopReason: teachingExpansion.stopReason }, modelUsage: { calls: modelCalls, inputTokens: (payload.usageMetadata?.promptTokenCount ?? 0) + researchUsage.inputTokens + expansionUsage.inputTokens, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0) + researchUsage.outputTokens + expansionUsage.outputTokens, estimatedCostUsd: payload.biktingEstimatedCostUsd == null || expansionUsage.estimatedCostUsd == null || researchUsage.estimatedCostUsd == null && request.knowledgeMode === 'web' ? null : payload.biktingEstimatedCostUsd + (researchUsage.estimatedCostUsd ?? 0) + expansionUsage.estimatedCostUsd } },
       confidence: 0.7, provenance: [{ source: 'gemini', method: 'structured_interpretation', detail: selectedModel }]
     };
   };
   return (request) => {
-    const key = `${request.knowledgeMode ?? 'model'}\0${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}\0${JSON.stringify(request?.sketchLayout ?? null)}`;
+    const key = `${request.knowledgeMode ?? 'model'}\0${request.language ?? 'und'}\0${String(request?.text ?? '').trim()}\0${String(request?.sketch ?? '')}\0${JSON.stringify(request?.sketchLayout ?? null)}\0${createHash('sha256').update(JSON.stringify(request.projectContext ?? null)).digest('hex')}`;
     const cached = interpretationCache.get(key);
     if (cached && now() - cached.createdAt < cacheTtlMs) { request.modelCacheHit = true; return cached.promise; }
     interpretationCache.delete(key);
@@ -254,7 +254,7 @@ function usageFrom(payload, calls) {
   return { calls, inputTokens: payload.usageMetadata?.promptTokenCount ?? 0, outputTokens: (payload.usageMetadata?.candidatesTokenCount ?? 0) + (payload.usageMetadata?.thoughtsTokenCount ?? 0), estimatedCostUsd: payload.biktingEstimatedCostUsd ?? null };
 }
 
-function taskKey(request) { return createHash('sha256').update(`${request.knowledgeMode ?? 'model'}\0${request.text}`).digest('hex'); }
+function taskKey(request) { return createHash('sha256').update(`${request.knowledgeMode ?? 'model'}\0${request.language ?? 'und'}\0${request.text}\0${JSON.stringify(request.projectContext ?? null)}`).digest('hex'); }
 
 function withRelationshipProgram(semantic) {
   if (!semantic.relationships.length) return semantic;

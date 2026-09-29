@@ -26,7 +26,8 @@ export function createWorkspaceProjection(result) {
       visualState: typeof segment.visualState === 'number' ? segment.visualState : scene?.states?.length ? Math.min(index, scene.states.length - 1) : undefined,
     }))
     : fallbackSteps({ explanation, outputs, errors, unexecuted, scene });
-  const displaySteps = steps.length ? steps : [{ title: 'Result', text: 'The request completed without a displayable output.' }];
+  const displaySteps = steps.length ? [...steps] : [{ title: 'Result', text: 'The request completed without a displayable output.' }];
+  if (teaching?.status === 'ready' && unexecuted.length) displaySteps.push(...unexecutedSteps(unexecuted));
   const moments = displaySteps.map((step, index) => ({
     id: `moment-${index + 1}`,
     title: step.title,
@@ -64,10 +65,12 @@ function fallbackSteps({ explanation, outputs, errors, unexecuted, scene }) {
   for (const error of errors) steps.push({ title: 'Execution error', text: error.message ?? String(error) });
   if (outputs.numericData?.length && scene?.source?.id !== 'execution-visualizer') steps.push({ title: 'Result', text: describeNumeric(outputs.numericData[0]) });
   if (scene && !steps.length) steps.push({ title: 'Visual result', text: 'Generated structured visual output.' });
-  if (unexecuted.length) steps.push(...unexecuted.map((item) => ({ title: item.nextAction ? 'Action needs a connected provider' : 'Unexecuted work', text: item.nextAction ?? `No connected tool can execute ${item.metadata?.capability ?? item.requiredCapability ?? item.id}.`,
-    userAction: item.nextAction ? { type: item.approval ? 'approval' : 'connect_account', capability: item.metadata?.capability ?? item.requiredCapability ?? null, instruction: item.nextAction, quote: item.approval?.quote ?? null } : null })));
+  if (unexecuted.length) steps.push(...unexecutedSteps(unexecuted));
   return steps;
 }
+
+function unexecutedSteps(unexecuted) { return unexecuted.map((item) => ({ title: item.nextAction ? 'Action needs a connected provider' : 'Unexecuted work', text: item.nextAction ?? `No connected tool can execute ${item.metadata?.capability ?? item.requiredCapability ?? item.id}.`,
+  userAction: item.nextAction ? { type: item.approval ? 'approval' : 'connect_account', capability: item.metadata?.capability ?? item.requiredCapability ?? null, instruction: item.nextAction, quote: item.approval?.quote ?? null } : null })); }
 
 function summaryFor({ explanation, outputs, errors, unexecuted, result }) {
   const detail = explanation

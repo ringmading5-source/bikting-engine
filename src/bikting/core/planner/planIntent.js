@@ -2,7 +2,7 @@ import { normalizeCapability } from '../types/capability.js';
 import { compileActionProcedure } from '../intent/teachProcedure.js';
 import { getActionDefinition } from '../intent/actionRegistry.js';
 
-const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.edit', 'website.deploy', 'artifact.build', 'artifact.edit', 'text.summarize', 'text.compare', 'research.search', 'claim.verify', 'visual.scene', 'text.generate', 'voice.synthesize', 'vision.interpret'];
+const capabilityOrder = ['data.generate_range', 'physics.calculate_force', 'physics.calculate_force_series', 'physics.represent', 'vector.calculate', 'math.calculate', 'statistics.analyze', 'units.convert', 'code.execute', 'website.build', 'website.edit', 'website.deploy', 'artifact.build', 'artifact.edit', 'text.summarize', 'text.compare', 'research.search', 'claim.verify', 'visual.scene', 'visual.animate', 'text.generate', 'voice.synthesize', 'vision.interpret'];
 
 /** Build an ordered, capability-backed plan from structured semantic fields. */
 export function planIntent(semantic, registries = {}) {
@@ -34,7 +34,7 @@ export function planIntent(semantic, registries = {}) {
     if (procedure.status === 'ready') {
       for (const requirement of requirements) {
         const capability = requirement.requiredCapability;
-        if (!action.capabilities.includes(capability)) continue;
+        if (!action.capabilities.includes(capability) && capability !== 'visual.animate') continue;
         addStep(steps, requirement, { id: stepId(capability), operation: operationFor(requirement, semantic), dependsOn: ['step-action_sequence'] });
       }
     }
@@ -108,6 +108,7 @@ export function deriveRequiredCapabilities(semantic) {
   const taskCapability = semantic.context?.task?.capability;
   if (['website.build', 'website.edit', 'website.deploy', 'artifact.build', 'artifact.edit', 'text.summarize', 'text.compare', 'research.search', 'claim.verify'].includes(taskCapability)) required.add(taskCapability);
   if (!taskCapability && (outputs.has('visual') || outputs.has('graph') || outputs.has('structured_visual_data') || outputs.has('structured_scene') || domain === 'visualization' || relationships.length)) required.add('visual.scene');
+  if (outputs.has('animation') || semantic.context?.sentenceMeaning?.presentation?.motion === 'animated') required.add('visual.animate');
   if (intent === 'explain' || outputs.has('explanation')) required.add('text.generate');
   if (outputs.has('voice') || outputs.has('audio')) required.add('voice.synthesize');
   if (semantic.modality === 'vision' || outputs.has('visual_semantics') || intent === 'interpret_visual') required.add('vision.interpret');

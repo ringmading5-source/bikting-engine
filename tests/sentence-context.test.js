@@ -12,6 +12,18 @@ test('sentence frame distinguishes purpose, audience, and reference', () => {
   const level = sentenceMeaning("Teach cells as if I'm a beginner");
   assert.deepEqual(level.constraints, [{ kind: 'audience_level', value: 'beginner' }]);
   assert.equal(sentenceMeaning('Change its colors').reference.resolved, null);
+  assert.equal(sentenceMeaning('Teach cells with animations', null, { language: 'en' }).presentation.motion, 'animated');
+  assert.equal(sentenceMeaning('Cells', null, { language: 'sw' }).language, 'sw');
+});
+
+test('animation requests retain a required capability instead of claiming a diagram is animation', async () => {
+  const result = await createBiktingRuntime({ interpret: async (request) => ({ intent: 'teach', concepts: ['cell'],
+    relationships: [{ from: 'cell', relation: 'contains', to: 'nucleus' }], requestedOutputs: ['visual', 'animation'],
+    context: { sentenceMeaning: sentenceMeaning(request.text) }, confidence: 0.9 }) }).run({ text: 'Teach cells with animation' });
+  assert.equal(result.semantic.context.sentenceMeaning.presentation.motion, 'animated');
+  assert.equal(result.plan.capabilities.includes('visual.animate'), true);
+  assert.equal(result.status, 'partial');
+  assert.ok(result.workspace.moments.some((moment) => /visual\.animate/.test(moment.display.text)));
 });
 
 test('a beginner constraint changes the teaching sequence', async () => {

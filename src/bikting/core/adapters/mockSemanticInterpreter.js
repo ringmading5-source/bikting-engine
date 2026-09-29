@@ -17,7 +17,7 @@ export async function mockSemanticInterpreter(request) {
   let variables = {}; let equations = [];
   const task = resolveActionRequest(text);
   const work = resolveWorkAction(text, request.projectContext);
-  const meaning = sentenceMeaning(text, request.projectContext);
+  const meaning = sentenceMeaning(text, request.projectContext, { language: request.language });
   const relationalAction = resolveRelationalAction(text);
 
   const forceRange = /\bplot\s+force\b/i.test(text);
@@ -91,9 +91,13 @@ export async function mockSemanticInterpreter(request) {
     variables = { expression }; requestedOutputs = ['numeric_result', 'equation'];
   } else if (/\bexplain\b|\bdescribe\b/i.test(text)) {
     intent = 'explain'; requestedOutputs = ['explanation'];
+  } else if (meaning.presentation.motion) {
+    intent = 'animate'; concepts = [slug(text.replace(/\b(?:animate|animation|animations|animated)\b/gi, '').trim())].filter(Boolean);
+    requestedOutputs = ['visual'];
   }
+  if (meaning.presentation.motion) requestedOutputs = [...new Set([...requestedOutputs, 'animation'])];
   if (!labels.length) labels = concepts.map((concept) => concept.replaceAll('_', ' '));
-  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : work ? [{ id: work.action, type: work.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, sentenceMeaning: meaning, sketch: request.sketch ?? null, sketchLayout: request.sketchLayout ?? null, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : work ? { task: { ...work, target: work.input } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
+  return { intent, modality, concepts, entities: labels.map((label) => ({ id: slug(label), label, type: 'concept' })), relationships, actions: task ? [{ id: task.action, type: task.capability }] : work ? [{ id: work.action, type: work.capability }] : [], variables, equations, requestedOutputs, goals: intent === 'unknown' ? [] : [`Perform ${intent.replaceAll('_', ' ')}`], context: { requestText: text, domain, language: meaning.language, sentenceMeaning: meaning, sketch: request.sketch ?? null, sketchLayout: request.sketchLayout ?? null, ...(task ? { task: { action: task.action, target: task.target, capability: task.capability } } : work ? { task: { ...work, target: work.input } } : {}) }, confidence: intent === 'unknown' ? 0.35 : 0.91 };
 }
 
 function statisticFromText(text) { if (text.includes('standard deviation')) return 'standard_deviation'; if (text.includes('median')) return 'median'; if (text.includes('variance')) return 'variance'; if (text.includes('correlation')) return 'correlation'; if (text.includes('minimum')) return 'min'; if (text.includes('maximum')) return 'max'; return 'mean'; }

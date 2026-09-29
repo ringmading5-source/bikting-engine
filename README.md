@@ -1,5 +1,7 @@
 # Bikting Engine
 
+The core [intent direction](docs/intent-direction.md) treats action words, sentence relationships, project references, and requests such as animation as one language-neutral meaning frame. Current deterministic phrase handling is English-specific; other languages require validated adapters or model interpretation.
+
 A small, dependency-free browser prototype of Bikting as a modular interaction and orchestration system. The current vertical slice accepts text, interprets a request, creates a plan, routes it to a domain module, and delivers structured explanation, visual state, and narration to a workspace.
 
 ## Run locally
