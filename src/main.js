@@ -11,12 +11,13 @@ let playback;
 let testToken = '';
 let latestRun = 0;
 let activeProject = null;
+let projectBaseText = '';
 let voicePreferences = { language: 'en-US', rate: 0.95 };
 const home = setupHome({
   onOpen: () => playback?.stop(),
   onPreferences: (preferences) => { voicePreferences = preferences; },
   onNew: () => {
-    latestRun++; activeProject = null; playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
+    latestRun++; activeProject = null; projectBaseText = ''; byId('project-details').reset(); byId('project-details').hidden = true; playback?.stop(); playback = null; renderKnowledge(byId('knowledge-sources'), null);
     byId('prompt').value = ''; byId('clear-sketch').click();
     byId('intent-checkpoint').hidden = true; byId('run-usage').textContent = '';
     byId('pilot-feedback').hidden = true;
@@ -27,7 +28,7 @@ const home = setupHome({
     renderTrace([]); byId('prompt').focus();
   },
   onResume: (project) => {
-    latestRun++; activeProject = project.id; playback?.stop();
+    latestRun++; activeProject = project.id; projectBaseText = project.text; byId('project-details').reset(); byId('project-details').hidden = true; playback?.stop();
     byId('prompt').value = project.text; byId('knowledge-mode').value = project.knowledgeMode ?? 'model'; byId('intent-checkpoint').hidden = true;
     elements.sketch.restore?.(project.sketch, project.sketchLayout);
     if (project.result) displayResult(project.result);
@@ -51,7 +52,17 @@ byId('pilot-feedback').addEventListener('submit', async (event) => {
     status.textContent = 'Thanks. Your feedback was saved.';
   } catch (error) { status.textContent = error.message; button.disabled = false; }
 });
-readTextRequest(byId('request-form'), byId('prompt'), (request) => runPipeline(request), elements.sketch);
+readTextRequest(byId('request-form'), byId('prompt'), (request) => { projectBaseText = request.text; byId('project-details').reset(); runPipeline(request); }, elements.sketch);
+byId('project-details').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const fields = ['name', 'purpose', 'sections', 'content', 'style'].map((name) => [name, form.elements.namedItem(name).value.trim()]).filter(([, value]) => value);
+  if (!fields.length) { byId('project-details-status').textContent = 'Add at least one detail to update the preview.'; return; }
+  const details = fields.map(([name, value]) => `${name}: ${value}`).join('\n');
+  const text = `${projectBaseText.slice(0, 550)}\n\nUse these project details for the website preview:\n${details}`;
+  byId('project-details-status').textContent = 'Updating preview…';
+  runPipeline({ type: 'text', text, knowledgeMode: byId('knowledge-mode').value, sketch: null, sketchLayout: null });
+});
 
 async function runPipeline(request) {
   const run = ++latestRun;
@@ -63,6 +74,7 @@ async function runPipeline(request) {
   byId('run-usage').textContent = '';
   byId('pilot-feedback').hidden = true;
   playback?.stop();
+  byId('project-details').hidden = true;
   renderGraph(elements.visual, null);
   renderKnowledge(byId('knowledge-sources'), null);
   elements.stage.textContent = 'UNDERSTANDING REQUEST';
@@ -122,6 +134,9 @@ async function runPipeline(request) {
 }
 
 function displayResult(result) {
+  const details = byId('project-details');
+  details.hidden = result.workspace?.scene?.type !== 'website';
+  byId('project-details-status').textContent = '';
   const feedback = byId('pilot-feedback');
   feedback.hidden = !result.pilotRunId;
   if (result.pilotRunId) { feedback.reset(); feedback.dataset.runId = result.pilotRunId; feedback.querySelector('button[type="submit"]').disabled = false; byId('pilot-feedback-status').textContent = ''; }
@@ -146,7 +161,7 @@ function displayResult(result) {
     elements.caption.textContent = `Rendered with ${rendererName}.${recommended ? ` ${recommended.name} requires ${recommended.requirement}.` : ''}`;
   }
   if (!('speechSynthesis' in window) && !result.workspace.scene?.states?.length) elements.play.disabled = true;
-  playback.show(0);
+  playback.show(result.workspace.scene?.type === 'website' ? result.workspace.steps.length - 1 : 0);
 }
 
 
