@@ -1,6 +1,10 @@
 import { mockSemanticInterpreter } from '../bikting/core/adapters/mockSemanticInterpreter.js';
 import { getActionDefinition } from '../bikting/core/intent/actionRegistry.js';
+import { parseActionSequence } from '../bikting/core/intent/parseActionSequence.js';
 export async function previewIntent(request, interpret, enabled) {
+  const sequence = parseActionSequence(request.text);
+  if (sequence.status === 'negated' || sequence.status === 'unresolved') return { status: 'clarification', relationships: [], scene: null,
+    question: sequence.status === 'negated' ? 'I will not run a negated action. What positive action would you like?' : 'Name the target of each action in order, for example: Build a website, then explore the website preview.', choices: [] };
   if (/^cell[.!?]?$/i.test(request.text.trim())) return { status: 'clarification', relationships: [], scene: null, question: 'Which kind of cell do you mean?', choices: ['Explain a biological cell', 'Explain a battery cell', 'Explain a spreadsheet cell'] };
   const baseline = await mockSemanticInterpreter(request);
   // Website generation belongs after approval. Other interpretations are cached

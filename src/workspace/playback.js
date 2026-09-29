@@ -13,7 +13,8 @@ export class PlaybackController {
     this.index = Math.max(0, Math.min(index, this.steps.length - 1));
     const visualState = this.steps[this.index]?.visual?.state ?? this.steps[this.index]?.visualState;
     const visualIndex = typeof visualState === 'number' ? visualState : this.index;
-    this.onStep(this.index, this.steps[this.index], this.scene?.states?.[visualIndex]);
+    const scene = this.steps[this.index]?.visual?.scene ?? this.scene;
+    this.onStep(this.index, this.steps[this.index], scene?.states?.[visualIndex]);
     return this.index;
   }
   next() { if (this.index < this.steps.length - 1) this.show(this.index + 1); else this.stop(); }
