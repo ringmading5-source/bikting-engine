@@ -15,12 +15,20 @@ class Application:
         self.engine=engine;self.pending={}
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
+        from web_intent_loop import WebIntentLoop
+        self.discovery=WebIntentLoop(engine,self.web)
         self.engine.db.execute('''CREATE TABLE IF NOT EXISTS outcome_feedback (
             id INTEGER PRIMARY KEY,decision TEXT NOT NULL,input_state BLOB NOT NULL,
             output_state BLOB NOT NULL,relationships TEXT NOT NULL)''')
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='discovery_start':
+            return self.discovery.start(payload.get('texts'),payload.get('value'),payload.get('urls'),payload.get('max_searches',3),payload.get('alphabetical',False))
+        if action=='discovery_step':return self.discovery.step(payload.get('job'))
+        if action=='discovery_status':return self.discovery.get(payload.get('job'))
+        if action=='discovery_stop':return self.discovery.stop(payload.get('job'))
+        if action=='discovery_resume':return self.discovery.resume(payload.get('job'))
         if action=='word_register':
             return self.engine.words.register(payload.get('text'),children=payload.get('children'),intent=payload.get('intent'))
         if action=='word_resolve':

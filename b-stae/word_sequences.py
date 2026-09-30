@@ -2,6 +2,7 @@
 import hashlib
 import json
 import re
+from contextlib import nullcontext
 
 class WordSequences:
     def __init__(self,engine):
@@ -18,17 +19,17 @@ class WordSequences:
         if not 1<=len(words)<=64:raise ValueError('1..64 whitespace-delimited words required')
         return words
     def pack(self,words):return json.dumps([w.hex() for w in words],separators=(',',':')).encode()
-    def register(self,text,children=None,intent=None):
+    def register(self,text,children=None,intent=None,commit=True):
         words=self.tokens(text)
         if (children is None)==(intent is None):raise ValueError('provide child sequences or a grounded intent')
         if children is not None:
             if not isinstance(children,list) or not 1<=len(children)<=16:raise ValueError('1..16 child sequences required')
             definition={'children':[[w.hex() for w in self.tokens(child)] for child in children]}
         else:definition={'intent':self.engine.intents.parse(intent)}
-        with self.db:self.db.execute('INSERT OR IGNORE INTO word_relations(count,first,last,sequence,definition) VALUES (?,?,?,?,?)',
+        with (self.db if commit else nullcontext()):self.db.execute('INSERT OR IGNORE INTO word_relations(count,first,last,sequence,definition) VALUES (?,?,?,?,?)',
             (len(words),words[0],words[-1],self.pack(words),json.dumps(definition,sort_keys=True)))
         return {'status':'registered','word_count':len(words),'first_hex':words[0].hex(),'last_hex':words[-1].hex()}
-    def resolve(self,text,value,max_rounds=16,max_nodes=256,max_actions=32):
+    def resolve(self,text,value,max_rounds=16,max_nodes=256,max_actions=32,persist=True):
         if any(type(x)is not int for x in (max_rounds,max_nodes,max_actions)) or not 1<=max_rounds<=32 or not 1<=max_nodes<=2048 or not 1<=max_actions<=64:raise ValueError('invalid stabilization bounds')
         words=self.tokens(text);pending=[{'words':[w.hex() for w in words]}];history=set();trace=[];nodes=0
         def lookup(tokens):
@@ -92,7 +93,8 @@ class WordSequences:
                     # Include all definitions so a changed relationship changes memory identity.
                     definitions=[tuple(row) for row in self.db.execute('SELECT id,definition FROM word_relations ORDER BY id')]
                     key=hashlib.sha256(self.pack(words)+recognized.state.encode()+context.encode()+json.dumps(definitions).encode()).hexdigest()
-                    with self.db:self.db.execute('INSERT OR REPLACE INTO stable_word_intents VALUES (?,?,?,?)',(key,self.pack(words),recognized.state.encode(),json.dumps(report)))
+                    if persist:
+                        with self.db:self.db.execute('INSERT OR REPLACE INTO stable_word_intents VALUES (?,?,?,?)',(key,self.pack(words),recognized.state.encode(),json.dumps(report)))
                     return report
                 pending=following
             raise Stop('bounded','stabilization round budget reached')
