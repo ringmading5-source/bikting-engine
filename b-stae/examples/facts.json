@@ -1,0 +1,7 @@
+{
+  "facts": [
+    {"subject": "dog", "predicate": "is_a", "object": "mammal"},
+    {"subject": "mammal", "predicate": "is_a", "object": "animal"},
+    {"subject": "cell", "predicate": "contains", "object": "membrane"}
+  ]
+}

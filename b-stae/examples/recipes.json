@@ -1,0 +1,8 @@
+{
+  "recipes": [
+    {"request":"increase by two", "representation":"int64", "operation":"add", "operand":2, "steps":1},
+    {"request":"make red brighter", "representation":"rgb24", "operation":"shift", "operand":[20,0,0], "steps":1},
+    {"request":"add an exclamation mark", "representation":"utf8", "operation":"append", "operand":"!", "steps":1},
+    {"request":"double the volume", "representation":"pcm16", "operation":"gain", "operand":[2,1], "steps":1}
+  ]
+}

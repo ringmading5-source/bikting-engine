@@ -1,0 +1,9 @@
+{
+  "training": [
+    {"before":{"1":"Hi"},"after":{"1":"Hi!"}},
+    {"before":{"1":"Hello"},"after":{"1":"Hello!"}}
+  ],
+  "validation": [
+    {"before":{"1":"Hey"},"after":{"1":"Hey!"}}
+  ]
+}

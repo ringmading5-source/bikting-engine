@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: b-stae
+    runtime: python
+    plan: free
+    branch: main
+    rootDir: b-stae
+    buildCommand: python -m unittest discover -s tests -q
+    startCommand: python app.py --host 0.0.0.0
+    healthCheckPath: /health
+    envVars:
+      - key: BSTAE_ACCESS_TOKEN
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
