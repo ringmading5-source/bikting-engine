@@ -17,6 +17,8 @@ class IntentEngine:
             boundary TEXT PRIMARY KEY, programs TEXT NOT NULL)''')
     def parse(self,request):
         if isinstance(request,dict):
+            if set(request)=={'operation','style'} and request.get('operation')=='plot_values' and request.get('style') in ('line','bar'):
+                return request
             if request.get('operation')=='translate' and set(request)=={'operation','delta'}:
                 if not isinstance(request['delta'],list) or len(request['delta'])!=3 or any(type(x)is not int for x in request['delta']):raise ValueError('three integer deltas required')
                 return request

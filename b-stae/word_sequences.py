@@ -80,6 +80,19 @@ class WordSequences:
                 if following==pending:
                     if any('words' in item for item in following):raise Stop('unknown','ungrounded fixed point')
                     actions=[item['intent'] for item in following]
+                    plotting=[action for action in actions if action['operation']=='plot_values']
+                    if plotting:
+                        if len(actions)!=1:raise Stop('incoherent','plotting currently requires one terminal; mixed action chains are unsupported')
+                        try:
+                            _,state=self.engine.capabilities.series(value)
+                            spec=self.engine.capabilities.specification('line graph' if plotting[0]['style']=='line' else 'bar chart','B-STAE graph')
+                            capability=self.engine.capabilities.select(spec)
+                        except ValueError as error:raise Stop('incoherent',str(error))
+                        return {'status':'stabilized','actions':actions,'trace':trace,'rounds':round_id+1,'nodes':nodes,
+                            'words':[{'text':w.decode(),'hex':w.hex()} for w in words],
+                            'index':{'word_count':len(words),'first_hex':words[0].hex(),'last_hex':words[-1].hex()},
+                            'coherence':{'all_terminals_grounded':True,'input_types_valid':True,'requirements':spec,'capability':capability.id},
+                            'scope':'registered plotting terminal reached a fixed point; output still requires execution verification'}
                     recognized,context=self.engine.modalities.recognize(value);state=recognized.state;targets=[]
                     try:
                         for action in actions:
@@ -102,6 +115,9 @@ class WordSequences:
     def execute(self,text,value,**bounds):
         result=self.resolve(text,value,**bounds)
         if result['status']!='stabilized':return result
+        if len(result['actions'])==1 and result['actions'][0]['operation']=='plot_values':
+            chart=self.engine.capabilities.execute('line graph' if result['actions'][0]['style']=='line' else 'bar chart',value)
+            return dict(result,**{k:v for k,v in chart.items() if k not in ('trace',)},stabilized=True,execution_trace=chart['trace'])
         executed=self.engine.recursion.execute_actions(result,value)
         if executed['target_hex']!=result['coherence']['target_hex']:raise ValueError('stabilized intent target mismatch')
         return dict(executed,stabilized=True)

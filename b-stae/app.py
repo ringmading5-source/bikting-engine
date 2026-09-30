@@ -23,6 +23,9 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='capability_inventory':return {'capabilities':self.engine.capabilities.inventory()}
+        if action=='capability_execute':
+            return self.engine.capabilities.execute(payload.get('request'),payload.get('values'),payload.get('title','B-STAE graph'))
         if action=='inspect_relationships':
             return self.engine.extraction.inspect(payload.get('subject'))
         if action=='discovery_start':

@@ -39,6 +39,13 @@ class Engine(BinaryEngine):
         self.concepts = ConceptGrounding(self)
         from relationship_extraction import RelationshipExtraction
         self.extraction = RelationshipExtraction(self)
+        from capabilities import CapabilityRegistry
+        self.capabilities = CapabilityRegistry(self)
+        self.words.register('plot ordered values',intent={'operation':'plot_values','style':'line'})
+        self.words.register('graph these values',children=['plot ordered values'])
+        self.words.register('line graph',children=['plot ordered values'])
+        self.words.register('plot ordered bars',intent={'operation':'plot_values','style':'bar'})
+        self.words.register('bar chart',children=['plot ordered bars'])
     def resolve(self, entry, target, max_depth=5, max_expansions=1000,
                 allowed=frozenset({1,2,3,4,5}), max_frontier=10000):
         if any(type(v) is not int for v in (max_depth,max_expansions,max_frontier)) or max_depth < 0 or max_expansions < 1 or max_frontier < 1:

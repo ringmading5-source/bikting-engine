@@ -3,7 +3,8 @@ from engine import Engine
 from knowledge import parse_source
 from web_intent_loop import WebIntentLoop
 class GroundingTests(unittest.TestCase):
-    def setUp(self):self.e=Engine(database=':memory:')
+    def setUp(self):
+        self.e=Engine(database=':memory:');self.initial_word_count=self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0]
     def tearDown(self):self.e.close()
     def source(self,text,url='https://example.org/ball'):
         sid=self.e.knowledge.ingest(parse_source(text,'text/plain',url));self.e.encode_source(sid);return sid
@@ -33,7 +34,7 @@ class GroundingTests(unittest.TestCase):
         web=Web();loop=WebIntentLoop(self.e,web);job=loop.start(['draw ball'],100,max_searches=1)
         loop.step(job['id']);job=loop.step(job['id'])
         self.assertEqual(web.calls,['ball']);self.assertEqual(job['status'],'complete');self.assertIn('<circle',job['results'][0]['result']['svg'])
-        self.assertEqual(self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0],0)
+        self.assertEqual(self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0],self.initial_word_count)
     def test_changed_source_not_reused(self):
         sid=self.source('A ball is a round object.');self.e.concepts.extract(sid,'ball')
         self.e.db.execute("UPDATE sources SET sha256='changed' WHERE id=?",(sid,))

@@ -3,7 +3,8 @@ from engine import Engine
 from knowledge import parse_source
 from web_intent_loop import WebIntentLoop
 class ExtractionTests(unittest.TestCase):
-    def setUp(self):self.e=Engine(database=':memory:')
+    def setUp(self):
+        self.e=Engine(database=':memory:');self.initial_word_count=self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0]
     def tearDown(self):self.e.close()
     def source(self,text,url='https://example.org/source'):
         sid=self.e.knowledge.ingest(parse_source(text,'text/plain',url));self.e.encode_source(sid);return sid
@@ -37,7 +38,7 @@ class ExtractionTests(unittest.TestCase):
         web=Web();loop=WebIntentLoop(self.e,web);job=loop.start(['inspect cell'],100,max_searches=1)
         loop.step(job['id']);job=loop.step(job['id']);self.assertEqual(job['status'],'complete');self.assertEqual(web.queries,['cell'])
         self.assertEqual(len(job['results'][0]['result']['relations']),2)
-        self.assertEqual(self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0],0)
+        self.assertEqual(self.e.db.execute('SELECT COUNT(*) FROM word_relations').fetchone()[0],self.initial_word_count)
     def test_duplicate_idempotence(self):
         sid=self.source('A cell contains cytoplasm.')
         self.e.extraction.extract(sid,'cell');self.e.extraction.extract(sid,'cell')
