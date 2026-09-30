@@ -21,6 +21,10 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='image_observe':
+            return self.engine.images.observe(payload.get('observations'))
+        if action=='image_transform':
+            return self.engine.images.transform(payload.get('image'),payload.get('model'))
         if action=='sequence_example':
             row=self.engine.db.execute('SELECT report FROM behavior_models WHERE relationship_id=600').fetchone()
             if row:return json.loads(row[0])

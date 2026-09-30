@@ -245,3 +245,13 @@ python main.py behavior '{"25":{"position":[100,0,0]}}' '{"name":"advance","dura
 Use the actual returned source ID. Structured JSON sources can also be fetched through `main.py web URL` before learning; prose webpages are not automatically converted into behavior traces. Separate event groups must be learned as separate models. This version does not track entities from unstructured video or learn arbitrary nonlinear dynamics.
 
 Validation: 128 tests pass, including ordered frame extraction, text/color/audio/position sequences, changed-span reporting, event/time conditioning, malformed/different schemas, validation failure non-promotion, word-delta serialization, model persistence, app prediction and real authenticated HTTP sequence routes.
+
+### Image states and automatic pixel-program memory
+
+The Image bytes in memory panel decodes uploaded images in the browser, composites transparency over white, and reduces them to at most 64 × 64 pixels. Packed RGB bytes and dimensions are sent to the engine. Supply two before/after training pairs and one held-out validation pair; receiving all six images triggers extraction, validation and storage automatically, without an approval step.
+
+`engine.images.observe({"training": [...], "validation": [...]})` returns a content-addressed model. Each pair has `before` and `after` images with `width`, `height`, `rgb_hex`. The program is inferred from pixel states using the existing byte-fragment engine; every supplied output pixel must match exactly. Validation requires a separate image and at least one unseen pixel input. Duplicate sources reuse the model. The database retains supplied observation bytes, program bytes, hashes and validation report.
+
+`engine.images.transform(image, model)` executes that stored program independently on every pixel. The browser renders returned pixel bytes as the resulting image. Dimension mismatch, invalid bytes, guard failure, corrupted program or arithmetic overflow rejects the operation. API actions are `image_observe` and `image_transform`.
+
+Scope: uniform RGB channel permutations, fixed channel arithmetic or XOR supported by the bounded inference class. This does not learn spatial motion, object identity, arbitrary image edits or behavior from prose. Held-out checks support a hypothesis; they do not prove all unseen outputs correct. Models persist with SQLite; the browser's current model selection lasts for the page session. Image previews and uploads have not received live browser QA; Python routes, persistence and program rejection behavior are covered by tests.

@@ -25,6 +25,8 @@ class Engine(BinaryEngine):
         self.learner = Learner(self)
         from sequences import SequenceExtractor
         self.sequences = SequenceExtractor(self)
+        from image_memory import ImageMemory
+        self.images = ImageMemory(self)
     def resolve(self, entry, target, max_depth=5, max_expansions=1000,
                 allowed=frozenset({1,2,3,4,5}), max_frontier=10000):
         if any(type(v) is not int for v in (max_depth,max_expansions,max_frontier)) or max_depth < 0 or max_expansions < 1 or max_frontier < 1:
