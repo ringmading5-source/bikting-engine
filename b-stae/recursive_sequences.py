@@ -94,6 +94,8 @@ class RecursiveSequences:
     def execute(self,sequence,value,**bounds):
         resolution=self.resolve(sequence,**bounds)
         if resolution['status']!='resolved':return resolution
+        return self.execute_actions(resolution,value)
+    def execute_actions(self,resolution,value):
         recognized,context=self.engine.modalities.recognize(value);state=recognized.state
         # Preflight the entire plan before executing or reinforcing any paths.
         states=[state]

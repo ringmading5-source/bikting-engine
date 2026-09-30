@@ -21,6 +21,17 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='word_register':
+            return self.engine.words.register(payload.get('text'),children=payload.get('children'),intent=payload.get('intent'))
+        if action=='word_resolve':
+            return self.engine.words.resolve(payload.get('text'),payload.get('value'))
+        if action=='word_execute':
+            return self.engine.words.execute(payload.get('text'),payload.get('value'))
+        if action=='word_demo':
+            self.engine.words.register('increase',intent={'operation':'add','amount':2})
+            self.engine.words.register('increase twice',children=['increase','increase'])
+            self.engine.words.register('increase four times',children=['increase twice','increase twice'])
+            return self.engine.words.execute('increase four times',payload.get('value',100))
         if action=='recursive_register':
             return self.engine.recursion.register(payload.get('sequence'),children=payload.get('children'),intent=payload.get('intent'))
         if action=='recursive_resolve':
