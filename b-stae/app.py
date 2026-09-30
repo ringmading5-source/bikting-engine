@@ -21,6 +21,17 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='recursive_register':
+            return self.engine.recursion.register(payload.get('sequence'),children=payload.get('children'),intent=payload.get('intent'))
+        if action=='recursive_resolve':
+            return self.engine.recursion.resolve(payload.get('sequence'))
+        if action=='recursive_execute':
+            return self.engine.recursion.execute(payload.get('sequence'),payload.get('value'))
+        if action=='recursive_demo':
+            self.engine.recursion.register('step-two',intent={'operation':'add','amount':2})
+            self.engine.recursion.register('increase-four',children=['step-two','step-two'])
+            self.engine.recursion.register('increase-eight',children=['increase-four','increase-four'])
+            return self.engine.recursion.execute('increase-eight',payload.get('value',100))
         if action=='intent_execute':
             return self.engine.intents.execute(payload.get('value'),payload.get('intent'),payload.get('max_depth',3))
         if action=='image_intent':

@@ -31,6 +31,8 @@ class Engine(BinaryEngine):
         self.modalities = ModalityMemory(self)
         from intent_engine import IntentEngine
         self.intents = IntentEngine(self)
+        from recursive_sequences import RecursiveSequences
+        self.recursion = RecursiveSequences(self)
     def resolve(self, entry, target, max_depth=5, max_expansions=1000,
                 allowed=frozenset({1,2,3,4,5}), max_frontier=10000):
         if any(type(v) is not int for v in (max_depth,max_expansions,max_frontier)) or max_depth < 0 or max_expansions < 1 or max_frontier < 1:
