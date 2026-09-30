@@ -5,7 +5,7 @@ services:
     plan: free
     branch: main
     rootDir: b-stae
-    buildCommand: python -m unittest discover -s tests -q
+    buildCommand: python -m pip install -r requirements.txt && python -m unittest discover -s tests -q
     startCommand: python app.py --host 0.0.0.0
     healthCheckPath: /health
     envVars:

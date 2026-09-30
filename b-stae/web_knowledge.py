@@ -18,7 +18,11 @@ class PublicScraper(WebScraper):
 
 class WebKnowledge:
     def __init__(self,engine,scraper=None):
-        self.engine=engine;self.scraper=scraper or PublicScraper(timeout=12,max_bytes=500_000)
+        self.engine=engine
+        if scraper is None:
+            from soup_scraper import SoupScraper
+            scraper=SoupScraper(timeout=12,max_bytes=500_000)
+        self.scraper=scraper
         self.engine.db.execute('CREATE TABLE IF NOT EXISTS web_queries (query TEXT PRIMARY KEY,sources TEXT NOT NULL,fetched_at TEXT NOT NULL)')
     def store(self,record):
         sid=self.engine.knowledge.ingest(record);self.engine.encode_source(sid);return sid
@@ -38,8 +42,11 @@ class WebKnowledge:
         if url:
             if not isinstance(url,str) or len(url)>2000:raise ValueError('invalid source URL')
             record=self.scraper.scrape(url);sid=self.store(record)
+            ids=[sid]+[self.store(item) for item in record.get('embedded_relationships',[])[:5]]
             return {'status':'source_found','provider':'page_scraper','query':query,'cached':False,
-                    'sources':[self.record(sid,query)],'scope':'source evidence; no executable relationship learned'}
+                    'sources':[self.record(item,query) for item in ids],
+                    'relationship_links':record.get('relationship_links',[]),
+                    'scraper':'beautifulsoup4','scope':'source evidence; executable imports require validation'}
         key=query.casefold();row=self.engine.db.execute('SELECT * FROM web_queries WHERE query=?',(key,)).fetchone()
         if row and (datetime.now(timezone.utc)-datetime.fromisoformat(row['fetched_at'])).total_seconds()<3600:
             return {'status':'source_found','provider':'wikipedia_api','query':query,'cached':True,

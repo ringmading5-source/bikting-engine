@@ -76,7 +76,9 @@ class WebScraper:
         data, mime, encoding = self.fetch(url)
         if mime not in ('text/html', 'text/plain', 'application/json'):
             raise ValueError('supported sources: HTML, plain text, JSON')
-        return parse_source(data.decode(encoding, errors='replace'), mime, url)
+        return self.parse_page(data.decode(encoding, errors='replace'), mime, url)
+    def parse_page(self, content, mime, url):
+        return parse_source(content, mime, url)
 
 def parse_source(content, mime, source):
     title = source

@@ -319,3 +319,11 @@ App **Web discovery → stabilized intent** starts the automatic client-driven l
 API: `discovery_start` (texts, value, optional URLs/search budget/alphabetical), `discovery_step`, `discovery_status`, `discovery_stop`, `discovery_resume` (job ID). The default provider remains Wikipedia, not a general internet search engine. Live provider access depends on the deployment network.
 
 Validation: 172 tests pass, including search→validated import→execute→next task, prose-only exhaustion, invalid-source atomic rollback, alphabetical order, ambiguity blocking, resume/stop and network failure. Tests use source/network fixtures; browser syntax checked, live graphical and external-network QA pending.
+
+### Installed HTML scraping tool
+
+Beautiful Soup 4.14.3 is now installed and pinned in `requirements.txt`. Run `python -m pip install -r requirements.txt` before starting/testing locally. Render's Blueprint build installs requirements before tests; existing dashboard services using only the test command must update their Build Command accordingly.
+
+`soup_scraper.py` uses Beautiful Soup on the existing bounded public HTTP fetcher. It extracts main/article text, removes common hidden/navigation material, retains page titles, collects embedded `<script type="application/json">` objects with the exact `word_relationships` schema, and exposes up to five same-site JSON links. The discovery loop automatically ingests embedded sources and can follow discovered JSON links within its existing attempt budget. Robots restrictions, timeouts, public-address checks and byte bounds remain in the HTTP adapter. No page scripts are executed.
+
+The scraper does not turn ordinary prose into executable semantics. Structured definitions still require held-out observation validation before registration. JavaScript-rendered pages are not supported. Queue stepping is still client/API-driven, not a permanent background service. Validation: 175 tests pass, including visible-content extraction, restricted link selection, embedded-schema ingestion through the loop to verified execution, and malformed JSON rejection.

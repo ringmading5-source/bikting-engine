@@ -51,7 +51,7 @@ class WebIntentLoop:
         if not isinstance(urls,list) or len(urls)>5 or any(not isinstance(u,str) or len(u)>2000 for u in urls):raise ValueError('up to five source URLs required')
         if alphabetical:texts=sorted(texts,key=str.casefold)
         data={'id':secrets.token_hex(12),'status':'running','index':0,'tasks':texts,'value':value,'urls':urls,
-            'max_searches':max_searches,'attempt':0,'results':[],'history':[],'seen_sources':[]}
+            'max_searches':max_searches,'attempt':0,'results':[],'history':[],'seen_sources':[],'discovered_urls':[]}
         self.save(data);return data
     def save(self,data):
         with self.db:self.db.execute('INSERT OR REPLACE INTO intent_search_jobs VALUES (?,?)',(data['id'],json.dumps(data)))
@@ -81,7 +81,11 @@ class WebIntentLoop:
         queries=[text]+unresolved+[word.decode() for word in self.engine.words.tokens(text)]
         queries=list(dict.fromkeys(queries));query=queries[min(attempt,len(queries)-1)]
         try:
-            found=self.web.research(query,data['urls'][attempt] if attempt<len(data['urls']) else None)
+            url=data['urls'][attempt] if attempt<len(data['urls']) else (data.get('discovered_urls',[]).pop(0) if data.get('discovered_urls') else None)
+            found=self.web.research(query,url)
+            for link in found.get('relationship_links',[])[:5]:
+                if link not in data['urls'] and link not in data.setdefault('discovered_urls',[]):data['discovered_urls'].append(link)
+            data['discovered_urls']=data['discovered_urls'][:5]
             history={'task':text,'query':query,'sources':found.get('sources',[]),'imports':[]}
             for source in found.get('sources',[]):
                 sid=source['source_id']
