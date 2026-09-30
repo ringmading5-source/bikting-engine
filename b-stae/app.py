@@ -21,6 +21,12 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='modality_observe':
+            return self.engine.modalities.observe(payload.get('observations'))
+        if action=='modality_transform':
+            return self.engine.modalities.transform(payload.get('value'),payload.get('model'))
+        if action=='modality_models':
+            return {'models':self.engine.modalities.models()}
         if action=='image_observe':
             return self.engine.images.observe(payload.get('observations'))
         if action=='image_transform':
