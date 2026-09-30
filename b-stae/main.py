@@ -17,6 +17,8 @@ if __name__ == '__main__':
     sub.add_parser('import-relations').add_argument('source_id',type=int)
     learner=sub.add_parser('learn-observations');learner.add_argument('source_id',type=int);learner.add_argument('relationship_id',type=int)
     sub.add_parser('predict').add_argument('participants')
+    seq=sub.add_parser('learn-sequences');seq.add_argument('source_id',type=int);seq.add_argument('relationship_id',type=int)
+    behavior=sub.add_parser('behavior');behavior.add_argument('participants');behavior.add_argument('event')
     rec=sub.add_parser('recognize');rec.add_argument('value');rec.add_argument('--file',action='store_true')
     args=p.parse_args()
     engine=Engine(database=args.db)
@@ -25,6 +27,10 @@ if __name__ == '__main__':
             from session import session
             session(engine)
             raise SystemExit(0)
+        elif args.command=='learn-sequences':result=engine.sequences.learn_source(args.source_id,args.relationship_id)
+        elif args.command=='behavior':
+            from session import participants
+            result=engine.sequences.predict(participants(args.participants),json.loads(args.event))
         elif args.command=='learn-observations':result=engine.learner.learn_source(args.source_id,args.relationship_id)
         elif args.command=='predict':
             from session import participants

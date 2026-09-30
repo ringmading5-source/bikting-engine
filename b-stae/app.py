@@ -21,6 +21,20 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='sequence_example':
+            row=self.engine.db.execute('SELECT report FROM behavior_models WHERE relationship_id=600').fetchone()
+            if row:return json.loads(row[0])
+            sid=self.engine.ingest_file(Path(__file__).parent/'examples'/'position-sequences.json')
+            return self.engine.sequences.learn_source(sid,600)
+        if action=='sequence_learn':
+            data=payload.get('sequences')
+            if not isinstance(data,dict):raise ValueError('sequence source object required')
+            sid=self.engine.knowledge.ingest(parse_source(json.dumps(data),'application/json','local-sequences:'+secrets.token_hex(8)))
+            self.engine.encode_source(sid)
+            return self.engine.sequences.learn_source(sid,payload['relationship_id'])
+        if action=='behavior_predict':
+            from session import participants
+            return self.engine.sequences.predict(participants(payload['inputs']),payload.get('event'))
         if action=='research':
             try:return self.web.research(payload.get('query'),payload.get('url'))
             except Exception as error:return {'status':'web_error','reason':str(error),'sources':[]}

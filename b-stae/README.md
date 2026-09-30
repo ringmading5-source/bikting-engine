@@ -199,3 +199,49 @@ This adds retrieval and source-backed information, not an automatic semantic obj
 Validation: 116 tests pass, including API-response ingestion, binary evidence, cache reuse, HTML extraction, private-destination rejection, bounded queries and explicit network failure. External API tests use fixtures; live retrieval still needs checking from the deployed Render service.
 
 Primary API reference: https://www.mediawiki.org/wiki/API:Query and https://www.mediawiki.org/wiki/Extension:TextExtracts .
+
+## Behavior-sequence extraction
+
+`sequences.py` implements time-ordered, event-conditioned behavior extraction. In the app, choose **Learn position sequence example**, then **Predict next behavior state**. The example learns from positions 0 → 2 → 4, checks a held-out 20 → 22 transition, and predicts 100 → 102 under the same event and one-unit duration. It does not infer the concept of a ball from the word `ball`; the observations supply a represented position trajectory.
+
+Sequence source structure:
+
+```json
+{
+  "training_sequences": [{
+    "frames": [
+      {"time":0,"entities":{"1":{"position":[0,0,0]}}},
+      {"time":1,"entities":{"1":{"position":[2,0,0]}}},
+      {"time":2,"entities":{"1":{"position":[4,0,0]}}}
+    ],
+    "events": [{"name":"advance"},{"name":"advance"}]
+  }],
+  "validation_sequences": [{
+    "frames": [
+      {"time":0,"entities":{"1":{"position":[20,0,0]}}},
+      {"time":1,"entities":{"1":{"position":[22,0,0]}}}
+    ],
+    "events": [{"name":"advance"}]
+  }]
+}
+```
+
+The extractor recognizes each frame's ordinary values, requires stable entity IDs/types within observations, enforces strictly increasing timestamps, and requires one event between consecutive frames. It adds `duration` from the frame interval (rejecting contradictory supplied durations). Group one exact event/context descriptor per model. Training requires two distinct entry states; validation entries must be held out. Events are canonical byte records with a reserved ID, retained as guards on the learned relationship rather than merely displayed labels.
+
+The report includes frame times, sequence indices, event context, payload lengths, common byte prefixes/suffixes and changed byte spans. A candidate must reproduce every training and validation transition before its relationship, report and source hash are stored. The event-labelled change is observational evidence, not proof of causation. Model prediction requires the same event/context/duration, binds compatible participants, abstains on ambiguity or budget exhaustion, and verifies the resulting bytes.
+
+New recognized structured values: `{"position":[x,y,z]}` with signed integer coordinates and `{"audio":{"samples":[...],"sample_rate":8000}}` for bounded PCM16 data. Audio sequence events must retain matching `sample_rate`. Position units are adapter-defined. Sequence predictions do not infer physical units or dynamics from pixels or speech descriptions.
+
+In addition to copy/insert/permutation/XOR, the byte-rewrite kernel now supports checked little-endian word deltas on fixed-width segments. The learner can infer constant deltas for known numeric layouts (integer, position coordinates, PCM samples and RGB channels), after trying simpler copy/reorder hypotheses. Word overflow is rejected. Existing BRLT descriptors stay compatible; delta fragments carry extra numeric fields. This extends the explicit machine hypothesis class; it is not arbitrary program induction or a new physical law.
+
+CLI:
+
+```sh
+python main.py file examples/position-sequences.json
+python main.py learn-sequences 1 600
+python main.py behavior '{"25":{"position":[100,0,0]}}' '{"name":"advance","duration":1}'
+```
+
+Use the actual returned source ID. Structured JSON sources can also be fetched through `main.py web URL` before learning; prose webpages are not automatically converted into behavior traces. Separate event groups must be learned as separate models. This version does not track entities from unstructured video or learn arbitrary nonlinear dynamics.
+
+Validation: 128 tests pass, including ordered frame extraction, text/color/audio/position sequences, changed-span reporting, event/time conditioning, malformed/different schemas, validation failure non-promotion, word-delta serialization, model persistence, app prediction and real authenticated HTTP sequence routes.

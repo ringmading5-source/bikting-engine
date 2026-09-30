@@ -2,7 +2,7 @@
 import json
 import itertools
 from dataclasses import replace
-from core import BinaryState,Record,UTF8,MAX_STATE
+from core import BinaryState,Record,UTF8,MAX_STATE,INT64,POSITION3,PCM16,RGB
 from byte_relationships import Guard,Effect,Fragment,Relationship
 from bound_relationships import bindings,instantiate
 
@@ -35,6 +35,16 @@ def infer_fragments(examples):
             for order in itertools.islice(itertools.permutations(range(blocks)),1000):
                 if all(b''.join(a.payload[i*width:(i+1)*width] for i in order)==b.payload for a,b in examples):
                     return tuple(Fragment(entity,i*width,width) for i in order),'block-reorder'
+        widths={INT64:(8,True),POSITION3:(4,True),PCM16:(2,True),RGB:(1,False)}
+        if inputs[0].kind in widths:
+            width,signed=widths[inputs[0].kind]
+            if length and length%width==0:
+                fragments=[]
+                for offset in range(0,length,width):
+                    deltas={int.from_bytes(b.payload[offset:offset+width],'little',signed=signed)-int.from_bytes(a.payload[offset:offset+width],'little',signed=signed) for a,b in examples}
+                    if len(deltas)!=1:break
+                    fragments.append(Fragment(entity,offset,width,delta=next(iter(deltas)),signed=signed))
+                if len(fragments)==length//width:return tuple(fragments),'word-delta'
         masks=[bytes(x^y for x,y in zip(a.payload,b.payload)) for a,b in examples]
         if len(set(masks))==1:return (Fragment(entity,xor=masks[0]),),'xor'
     raise ValueError('no hypothesis in supported byte transformation class')

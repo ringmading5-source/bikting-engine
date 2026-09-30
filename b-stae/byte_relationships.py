@@ -34,10 +34,14 @@ class Fragment:
     count: int = -1 # -1 means remaining payload
     literal: bytes = b''
     xor: bytes = b''
+    delta: int = 0
+    signed: bool = True
     def __post_init__(self):
         if any(type(v) is not int for v in (self.source,self.offset,self.count)) or self.source < -1 or self.offset<0 or self.count < -1:raise ValueError('invalid fragment')
         if type(self.literal) is not bytes or type(self.xor) is not bytes:raise TypeError('fragment payloads must be bytes')
-        if self.source==-1 and (self.offset!=0 or self.count!=-1 or self.xor):raise ValueError('literal cannot have copy fields')
+        if type(self.delta) is not int or type(self.signed) is not bool:raise ValueError('invalid word arithmetic fields')
+        if self.delta and (self.count not in (1,2,4,8) or self.xor):raise ValueError('word delta requires a fixed-width copy without XOR')
+        if self.source==-1 and (self.offset!=0 or self.count!=-1 or self.xor or self.delta):raise ValueError('literal cannot have copy fields')
         if self.source!=-1 and self.literal:raise ValueError('copy cannot contain literal bytes')
     def read(self,state):
         if self.source==-1:return self.literal
@@ -49,6 +53,8 @@ class Fragment:
         if self.xor:
             if len(self.xor)!=len(data):raise ValueError('XOR mask length mismatch')
             data=bytes(a^b for a,b in zip(data,self.xor))
+        if self.delta:
+            data=(int.from_bytes(data,'little',signed=self.signed)+self.delta).to_bytes(self.count,'little',signed=self.signed)
         return data
 
 @dataclass(frozen=True)
@@ -87,7 +93,7 @@ class Relationship:
         return BinaryState(tuple(records[k] for k in sorted(records)))
     def encode(self):
         data={'id':self.id,'guards':[[g.entity,g.kind,g.offset,g.signature.hex(),g.mask.hex(),g.length] for g in self.guards],
-              'effects':[[e.entity,e.kind,[[f.source,f.offset,f.count,f.literal.hex(),f.xor.hex()] for f in e.fragments]] for e in self.effects]}
+              'effects':[[e.entity,e.kind,[([f.source,f.offset,f.count,f.literal.hex(),f.xor.hex(),f.delta,f.signed] if f.delta else [f.source,f.offset,f.count,f.literal.hex(),f.xor.hex()]) for f in e.fragments]] for e in self.effects]}
         body=json.dumps(data,sort_keys=True,separators=(',',':')).encode()
         if len(body)>MAX_STATE:raise ValueError('relationship exceeds byte limit')
         return b'BRLT'+struct.pack('<BI',1,len(body))+body
@@ -99,7 +105,7 @@ class Relationship:
         d=json.loads(raw[9:])
         if set(d)!={'id','guards','effects'}:raise ValueError('invalid relationship schema')
         guards=tuple(Guard(g[0],g[1],g[2],bytes.fromhex(g[3]),bytes.fromhex(g[4]),g[5]) for g in d['guards'])
-        effects=tuple(Effect(e[0],e[1],tuple(Fragment(f[0],f[1],f[2],bytes.fromhex(f[3]),bytes.fromhex(f[4])) for f in e[2])) for e in d['effects'])
+        effects=tuple(Effect(e[0],e[1],tuple(Fragment(f[0],f[1],f[2],bytes.fromhex(f[3]),bytes.fromhex(f[4]),f[5] if len(f)==7 else 0,f[6] if len(f)==7 else True) for f in e[2])) for e in d['effects'])
         relationship=cls(d['id'],guards,effects)
         if relationship.encode()!=raw:raise ValueError('noncanonical relationship')
         return relationship

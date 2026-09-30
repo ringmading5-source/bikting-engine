@@ -24,6 +24,17 @@ def recognize(value, entity=1):
         if re.fullmatch(r'#[0-9a-fA-F]{6}',value):
             return Recognized(BinaryState((Record(entity,RGB,bytes.fromhex(value[1:])),)), 'rgb24', {'notation':'css-hex'})
         return Recognized(BinaryState((Record(entity,UTF8,value.encode('utf-8')),)), 'utf8', {})
+    if isinstance(value,dict) and set(value)=={'position'}:
+        coordinates=value['position']
+        if not isinstance(coordinates,list) or len(coordinates)!=3 or any(type(x) is not int for x in coordinates):raise ValueError('three integer position coordinates required')
+        return Recognized(BinaryState((Record(entity,POSITION3,struct.pack('<iii',*coordinates)),)), 'position3', {'units':'adapter-defined'})
+    if isinstance(value,dict) and set(value)=={'audio'}:
+        audio=value['audio']
+        if not isinstance(audio,dict) or set(audio)!={'samples','sample_rate'}:raise ValueError('audio samples and sample_rate required')
+        samples=audio['samples'];rate=audio['sample_rate']
+        if not isinstance(samples,list) or len(samples)>100000 or any(type(x) is not int or not -32768<=x<=32767 for x in samples) or type(rate) is not int or rate<=0:raise ValueError('bounded PCM16 samples and positive sample rate required')
+        payload=struct.pack('<'+'h'*len(samples),*samples)
+        return Recognized(BinaryState((Record(entity,PCM16,payload),)), 'pcm16', {'sample_rate':rate,'channels':1,'frames':len(samples)})
     if type(value) is bytes: return recognize_bytes(value,entity)
     if isinstance(value,Path): return recognize_file(value,entity)
     # Tuples deliberately not guessed as colors/positions.

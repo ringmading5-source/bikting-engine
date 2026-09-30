@@ -32,3 +32,7 @@ Official references: https://render.com/docs/web-services and https://render.com
 ## Web lookup update
 
 Redeploy the latest `main` commit, then refresh the page. Enter the existing access token, type `ball`, and click **Look up on web**. A blank source URL selects Wikipedia's API; an explicit public URL selects robots-aware page scraping. No new environment variable or search API key is required. Source retrieval depends on the deployed service's outbound network and the provider allowing the request. Errors are displayed rather than replaced with invented knowledge.
+
+## Behavior sequences update
+
+Deploy the latest main commit and refresh. In **Behavior sequences**, click **Learn position sequence example**, then **Predict next behavior state**. The default input position [100,0,0] advances to [102,0,0] for the learned `advance` event with duration 1. The byte-change report is displayed below. Custom sources need frames/events and separate training/validation sequences; they can be pasted in the sequence-source form. This is observation-based model inference, not automatically inferred meaning for an arbitrary typed word.
