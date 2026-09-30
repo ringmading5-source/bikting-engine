@@ -28,3 +28,7 @@ After deployment:
 The push prepares deployment; it does not create or deploy the Render service.
 
 Official references: https://render.com/docs/web-services and https://render.com/docs/disks.
+
+## Web lookup update
+
+Redeploy the latest `main` commit, then refresh the page. Enter the existing access token, type `ball`, and click **Look up on web**. A blank source URL selects Wikipedia's API; an explicit public URL selects robots-aware page scraping. No new environment variable or search API key is required. Source retrieval depends on the deployed service's outbound network and the provider allowing the request. Errors are displayed rather than replaced with invented knowledge.

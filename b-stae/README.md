@@ -185,3 +185,17 @@ This folder is a standalone Python service. See [RENDER.md](RENDER.md) for the e
 The deployment file is `b-stae/render.yaml`, distinct from the repository's existing Node service Blueprint. Free deployment has ephemeral SQLite memory. Persistent memory requires a disk and BSTAE_DB_PATH under its mount, as explained in RENDER.md. This is still a single-user prototype access gate, not user accounts or production authentication.
 
 Render-preparation validation: 111 tests pass, including real HTTP health/page access through an external Host, token-gated prediction and cross-origin rejection. No credentials or runtime databases are included in Git.
+
+## Connected web lookup
+
+The app now has **Look up on web**, separate from **Transform bytes**. Enter a topic such as `ball`, keep the optional URL blank, and look it up. `web_knowledge.py` uses Wikipedia's public MediaWiki API to search for up to three article introductions, then stores their text in binary source memory. No LLM API or additional search key is used.
+
+Enter a public page URL to use the existing robots-aware page scraper instead. The hosted fetch adapter permits only public DNS destinations and standard HTTP(S) ports, refuses redirects, and retains byte limits and timeouts. Pages requiring JavaScript, a login, or denying robots access are unsupported. Failed retrieval returns an explicit error; it does not invent content.
+
+The interface displays article/page titles, source URLs, excerpts, retrieval timestamps and byte previews. Wikipedia topic queries cache their source references for one hour in the local database. Cache results are labeled. Free Render restarts can still clear this SQLite state.
+
+This adds retrieval and source-backed information, not an automatic semantic object model. A scraped description of a ball is evidence; it is not promoted into physics, rendering or executable interaction rules. Existing learned relationships remain distinct. The English Wikipedia provider can return multiple possible meanings and is not a general whole-web search engine. Specific URLs can retrieve other supported sources.
+
+Validation: 116 tests pass, including API-response ingestion, binary evidence, cache reuse, HTML extraction, private-destination rejection, bounded queries and explicit network failure. External API tests use fixtures; live retrieval still needs checking from the deployed Render service.
+
+Primary API reference: https://www.mediawiki.org/wiki/API:Query and https://www.mediawiki.org/wiki/Extension:TextExtracts .

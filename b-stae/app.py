@@ -13,12 +13,17 @@ from core import BinaryState,decode_outputs
 class Application:
     def __init__(self,engine):
         self.engine=engine;self.pending={}
+        from web_knowledge import WebKnowledge
+        self.web=WebKnowledge(engine)
         self.engine.db.execute('''CREATE TABLE IF NOT EXISTS outcome_feedback (
             id INTEGER PRIMARY KEY,decision TEXT NOT NULL,input_state BLOB NOT NULL,
             output_state BLOB NOT NULL,relationships TEXT NOT NULL)''')
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='research':
+            try:return self.web.research(payload.get('query'),payload.get('url'))
+            except Exception as error:return {'status':'web_error','reason':str(error),'sources':[]}
         if action=='learn':
             training=payload.get('training');validation=payload.get('validation')
             data={'training':training,'validation':validation}

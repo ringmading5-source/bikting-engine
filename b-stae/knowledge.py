@@ -13,7 +13,7 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 from urllib.robotparser import RobotFileParser
 
-USER_AGENT = 'B-STAE/0.2'
+USER_AGENT = 'B-STAE/0.2 (https://github.com/ringmading5-source/bikting-engine; source lookup)'
 MAX_BYTES = 2_000_000
 
 class PageParser(HTMLParser):
