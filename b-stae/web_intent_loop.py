@@ -70,7 +70,8 @@ class WebIntentLoop:
             if data['index']==len(data['tasks']):data['status']='complete'
             self.save(data);return data
         if result['status']=='unknown':
-            concept=self.engine.concepts.resolve(text)
+            inspection_subject=self.engine.extraction.request(text)
+            concept=self.engine.extraction.inspect(inspection_subject) if inspection_subject else self.engine.concepts.resolve(text)
             if concept['status']=='fulfilled':
                 data['results'].append({'text':text,'result':concept});data['index']+=1;data['attempt']=0;data['seen_sources']=[]
                 if data['index']==len(data['tasks']):data['status']='complete'
@@ -86,7 +87,8 @@ class WebIntentLoop:
             for item in result['trace'][-1]['after']:
                 if 'words' in item:unresolved.append(' '.join(bytes.fromhex(w).decode() for w in item['words']))
         concept_request=self.engine.concepts.request(text)
-        queries=([concept_request['subject']] if concept_request else [])+[text]+unresolved+[word.decode() for word in self.engine.words.tokens(text)]
+        inspection_subject=self.engine.extraction.request(text)
+        queries=([inspection_subject] if inspection_subject else ([concept_request['subject']] if concept_request else []))+[text]+unresolved+[word.decode() for word in self.engine.words.tokens(text)]
         queries=list(dict.fromkeys(queries));query=queries[min(attempt,len(queries)-1)]
         try:
             url=data['urls'][attempt] if attempt<len(data['urls']) else (data.get('discovered_urls',[]).pop(0) if data.get('discovered_urls') else None)
@@ -101,7 +103,10 @@ class WebIntentLoop:
                 data['seen_sources'].append(sid)
                 try:
                     history['imports'].append(self.import_source(sid))
-                    if concept_request:history['imports'].append(self.engine.concepts.extract(sid,concept_request['subject']))
+                    if concept_request:
+                        history['imports'].append(self.engine.concepts.extract(sid,concept_request['subject']))
+                        history['imports'].append(self.engine.extraction.extract(sid,concept_request['subject']))
+                    if inspection_subject:history['imports'].append(self.engine.extraction.extract(sid,inspection_subject))
                 except (ValueError,TypeError,KeyError) as error:history['imports'].append({'status':'rejected','reason':str(error)})
             data['history'].append(history)
         except Exception as error:

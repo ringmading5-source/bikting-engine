@@ -23,6 +23,8 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='inspect_relationships':
+            return self.engine.extraction.inspect(payload.get('subject'))
         if action=='discovery_start':
             return self.discovery.start(payload.get('texts'),payload.get('value'),payload.get('urls'),payload.get('max_searches',3),payload.get('alphabetical',False))
         if action=='discovery_step':return self.discovery.step(payload.get('job'))
