@@ -21,6 +21,10 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='intent_execute':
+            return self.engine.intents.execute(payload.get('value'),payload.get('intent'),payload.get('max_depth',3))
+        if action=='image_intent':
+            return self.engine.intents.image(payload.get('image'),payload.get('intent'))
         if action=='modality_observe':
             return self.engine.modalities.observe(payload.get('observations'))
         if action=='modality_transform':
