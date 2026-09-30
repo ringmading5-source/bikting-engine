@@ -41,6 +41,8 @@ class Engine(BinaryEngine):
         self.extraction = RelationshipExtraction(self)
         from capabilities import CapabilityRegistry
         self.capabilities = CapabilityRegistry(self)
+        from series_pipeline import SeriesPipeline
+        self.series_plans = SeriesPipeline(self)
         self.words.register('plot ordered values',intent={'operation':'plot_values','style':'line'})
         self.words.register('graph these values',children=['plot ordered values'])
         self.words.register('line graph',children=['plot ordered values'])

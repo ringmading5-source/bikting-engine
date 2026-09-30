@@ -31,6 +31,7 @@ class WordSequences:
         return {'status':'registered','word_count':len(words),'first_hex':words[0].hex(),'last_hex':words[-1].hex()}
     def resolve(self,text,value,max_rounds=16,max_nodes=256,max_actions=32,persist=True):
         if any(type(x)is not int for x in (max_rounds,max_nodes,max_actions)) or not 1<=max_rounds<=32 or not 1<=max_nodes<=2048 or not 1<=max_actions<=64:raise ValueError('invalid stabilization bounds')
+        if hasattr(self.engine,'series_plans'):self.engine.series_plans.register_request(text,commit=persist)
         words=self.tokens(text);pending=[{'words':[w.hex() for w in words]}];history=set();trace=[];nodes=0
         def lookup(tokens):
             nonlocal nodes
@@ -82,17 +83,13 @@ class WordSequences:
                     actions=[item['intent'] for item in following]
                     plotting=[action for action in actions if action['operation']=='plot_values']
                     if plotting:
-                        if len(actions)!=1:raise Stop('incoherent','plotting currently requires one terminal; mixed action chains are unsupported')
                         try:
-                            _,state=self.engine.capabilities.series(value)
-                            spec=self.engine.capabilities.specification('line graph' if plotting[0]['style']=='line' else 'bar chart','B-STAE graph')
-                            capability=self.engine.capabilities.select(spec)
-                        except ValueError as error:raise Stop('incoherent',str(error))
+                            plan=self.engine.series_plans.preflight(actions,value)
+                        except (ValueError,OverflowError) as error:raise Stop('incoherent',str(error))
                         return {'status':'stabilized','actions':actions,'trace':trace,'rounds':round_id+1,'nodes':nodes,
                             'words':[{'text':w.decode(),'hex':w.hex()} for w in words],
                             'index':{'word_count':len(words),'first_hex':words[0].hex(),'last_hex':words[-1].hex()},
-                            'coherence':{'all_terminals_grounded':True,'input_types_valid':True,'requirements':spec,'capability':capability.id},
-                            'scope':'registered plotting terminal reached a fixed point; output still requires execution verification'}
+                            'coherence':plan,'scope':'typed capability chain stabilized; output still requires execution verification'}
                     recognized,context=self.engine.modalities.recognize(value);state=recognized.state;targets=[]
                     try:
                         for action in actions:
@@ -117,7 +114,10 @@ class WordSequences:
         if result['status']!='stabilized':return result
         if len(result['actions'])==1 and result['actions'][0]['operation']=='plot_values':
             chart=self.engine.capabilities.execute('line graph' if result['actions'][0]['style']=='line' else 'bar chart',value)
-            return dict(result,**{k:v for k,v in chart.items() if k not in ('trace',)},stabilized=True,execution_trace=chart['trace'])
+            return dict(result,**{k:v for k,v in chart.items() if k!='trace'},stabilized=True,execution_trace=chart['trace'])
+        if any(action['operation']=='plot_values' for action in result['actions']):
+            chart=self.engine.series_plans.execute(result['actions'],value)
+            return dict(result,**{k:v for k,v in chart.items() if k!='trace'},stabilized=True,execution_trace=chart['trace'])
         executed=self.engine.recursion.execute_actions(result,value)
         if executed['target_hex']!=result['coherence']['target_hex']:raise ValueError('stabilized intent target mismatch')
         return dict(executed,stabilized=True)

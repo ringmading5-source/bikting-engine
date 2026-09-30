@@ -17,6 +17,10 @@ class IntentEngine:
             boundary TEXT PRIMARY KEY, programs TEXT NOT NULL)''')
     def parse(self,request):
         if isinstance(request,dict):
+            if set(request)=={'operation','amount'} and request.get('operation')=='series_add' and type(request.get('amount')) in (int,float):
+                import math
+                if not math.isfinite(request['amount']) or abs(request['amount'])>1e12:raise ValueError('invalid series addition amount')
+                return request
             if set(request)=={'operation','style'} and request.get('operation')=='plot_values' and request.get('style') in ('line','bar'):
                 return request
             if request.get('operation')=='translate' and set(request)=={'operation','delta'}:
