@@ -257,3 +257,30 @@ relationships are supplied labels; the system does not discover their semantics.
 No physical action or external tool is executed by this learner, and these models
 are not automatically added to the task planner's executable behavior registry.
 No LLM calls, neural training or universal intelligence claim is involved.
+
+## Coupled-field learning and reproducible evaluation
+
+`coupled_learn` accepts the same complete observations as `transition_learn`,
+but learns `after = A * before + b` across named fields using exact rational
+Gaussian elimination. Every next-state field can depend on all current fields.
+Training must have sufficient independent variation to identify a unique model.
+Correlated/underdetermined observations reject instead of arbitrarily choosing
+coefficients. Inconsistent training and failed held-out checks reject.
+
+`coupled_predict` and `coupled_feedback` retain exact action/context/relationship
+gates, int64 output validation, explicit extrapolation, persistent evidence,
+counterexample disabling and hash checks. Inverse consistency uses the full
+matrix when invertible. Predictions are not observed outcomes or physical actions.
+Different explicitly supplied contexts can have separate models; relevant context
+conditions and relationship semantics are not automatically discovered.
+Use the coupled panel's example: next stock depends on current stock PLUS incoming
+units. This is a cross-field dependency the earlier fieldwise model cannot fit.
+
+Run `python evaluation.py` or the app's “Run fixed synthetic evaluation” button.
+The fixed benchmark uses seed 1729 and an isolated in-memory engine. It reports
+individual cases and totals by category, with disjoint training, validation and
+20 test states per simulated context (40 held-out predictions across two modes).
+It also checks the fieldwise baseline's failure, context rejection, goal composition,
+and nonlinear-pattern rejection. No fitting happens on the test states. The small
+synthetic benchmark cannot establish natural-language understanding, perception,
+causal discovery, unrestricted generalization or universal intelligence.

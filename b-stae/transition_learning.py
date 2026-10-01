@@ -38,6 +38,7 @@ class TransitionLearning:
         if value['outcome']!='observed' or not isinstance(value['source'],str) or not 1<=len(value['source'])<=256:raise ValueError('observed outcome and evidence source required')
         return gate(value['action'],value['context'],value['relationships'])
     def apply(self,model,value,reverse=False):
+        if model.get('model_class')=='coupled_affine':raise ValueError('use the coupled transition adapter for this model')
         state(value)
         if set(value)!=set(model['coefficients']):raise ValueError('model field schema mismatch')
         result={}
@@ -87,7 +88,11 @@ class TransitionLearning:
         if row is None:raise ValueError('unknown transition model')
         model=json.loads(row['payload'])
         if hashlib.sha256(canonical(model)).hexdigest()!=ident:raise ValueError('corrupt transition evidence')
+        if model.get('model_class')=='coupled_affine' and type(self) is TransitionLearning:raise ValueError('use the coupled transition adapter for this model')
         return model,bool(row['active'])
+    def inverse_consistency(self,model,value,result):
+        if all(Fraction(*c['a']) for c in model['coefficients'].values()):return self.apply(model,result,reverse=True)==value
+        return None
     def predict(self,ident,value,action,context,relationships,allow_extrapolation=False):
         if type(allow_extrapolation)is not bool:raise ValueError('boolean extrapolation flag required')
         model,active=self.get(ident)
@@ -97,8 +102,7 @@ class TransitionLearning:
         result=self.apply(model,value)
         outside=any(not model['training_range'][k][0]<=x<=model['training_range'][k][1] for k,x in value.items())
         if outside and not allow_extrapolation:return {'status':'outside_observed_range','reason':'Extrapolation requires an explicit flag.','model_calls':0}
-        inverse=None
-        if all(Fraction(*c['a']) for c in model['coefficients'].values()):inverse=self.apply(model,result,reverse=True)==value
+        inverse=self.inverse_consistency(model,value,result)
         return {'status':'predicted','state':result,'model_id':ident,'extrapolated':outside,'inverse_consistent':inverse,'verified_outcome':False,'model_calls':0,'scope':model['scope']}
     def feedback(self,ident,observation):
         supplied=self.observation(observation);model,active=self.get(ident)

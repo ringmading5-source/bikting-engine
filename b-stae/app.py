@@ -20,6 +20,8 @@ class Application:
         self.goals=GoalPlanner(self.tasks)
         from transition_learning import TransitionLearning
         self.transitions=TransitionLearning(engine)
+        from coupled_transition_learning import CoupledTransitionLearning
+        self.coupled=CoupledTransitionLearning(engine)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -27,6 +29,15 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='coupled_example':
+            from evaluation import demo
+            return demo()
+        if action=='coupled_learn':return self.coupled.learn(payload.get('examples'),payload.get('validation'))
+        if action=='coupled_predict':return self.coupled.predict(payload.get('model_id'),payload.get('state'),payload.get('transition_action'),payload.get('context'),payload.get('relationships'),payload.get('allow_extrapolation',False))
+        if action=='coupled_feedback':return self.coupled.feedback(payload.get('model_id'),payload.get('observation'))
+        if action=='evaluation_run':
+            from evaluation import evaluate
+            return evaluate()
         if action=='transition_example':
             from transition_demo import example
             return example()
