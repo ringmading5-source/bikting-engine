@@ -12,6 +12,8 @@ from core import BinaryState,decode_outputs
 class Application:
     def __init__(self,engine):
         self.engine=engine
+        from gemini_adapter import GeminiAdapter
+        self.gemini=GeminiAdapter(engine)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -19,6 +21,9 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='gemini_status':return self.gemini.status()
+        if action=='gemini_interpret':return self.gemini.interpret(payload.get('text'),payload.get('value'))
+        if action=='gemini_execute':return self.gemini.execute(payload.get('text'),payload.get('value'))
         if action=='representation_example':
             from representation_demo import demo_request
             return demo_request()

@@ -11,5 +11,9 @@ services:
     envVars:
       - key: BSTAE_ACCESS_TOKEN
         sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
       - key: PYTHONUNBUFFERED
         value: "1"

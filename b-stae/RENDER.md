@@ -19,3 +19,20 @@ reference; store it and execute it. Stored composition accepts explicit phrase
 intents or registered child phrases. There are no training or prediction controls.
 
 Code publication alone does not deploy a Render service.
+
+## Optional Gemini interpreter
+
+Set `GEMINI_API_KEY` in the **Python B-STAE service** Environment settings,
+then save and redeploy. A key on the separate Node service is not shared.
+`GEMINI_MODEL` defaults to `gemini-2.5-flash` and can be changed server-side.
+Never paste a key into chat, the request editor, source code, or browser storage.
+Use “Check connection setup”, then “Preview operation” in the Gemini panel.
+Configuration status only confirms a key exists; a preview verifies actual access.
+
+The adapter uses one model call (20-second timeout, 512 output tokens, no retries)
+to propose a single supported operation. Known operation syntax stays local.
+Only request text and representation metadata are sent, not the current payload.
+Malformed, truncated, unsupported or incompatible proposals stop. B-STAE verifies
+the chosen transformation; this does not prove Gemini interpreted the user correctly.
+Speech transcription, image understanding and arbitrary tool/code execution are
+not added by this adapter. Gemini requests consume your API quota.
