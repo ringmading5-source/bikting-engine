@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual, randomUUID } from 'node:crypto';
 import { createBiktingRuntime } from './src/runtime/BiktingRuntime.js';
 import { createGeminiInterpreter } from './src/server/geminiInterpreter.js';
 import { createDefaultRegistries } from './src/bikting/core/registry/createDefaultRegistries.js';
@@ -15,6 +15,8 @@ import { createKnowledgeStore } from './src/server/knowledgeStore.js';
 import { createPostgresKnowledgeStore } from './src/server/postgresKnowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
 import { createLiveCostBridge } from './src/server/liveCostBridge.js';
+import { proposeCode } from './src/server/codingProposal.js';
+import { runCodingAgent, readCodingSnapshot } from './src/server/codingAgent.js';
 import { createRelationalMemory } from './src/server/relationalMemory.js';
 import { createGeminiTextTool } from './src/server/geminiTextTool.js';
 
@@ -58,7 +60,7 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
     return providerInterpret(request);
   };
   const runtime = createBiktingRuntime({ interpret, tools: defaults.tools, models });
-  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory });
+  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory, fetchImpl });
   const server = createServer(handler);
   return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge, knowledgeStore, relationalMemory };
 }
@@ -72,7 +74,8 @@ export function startBiktingServer(options = {}) {
   return composed;
 }
 
-function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory }) {
+function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory, fetchImpl }) {
+  let agentQueue = Promise.resolve();
   return async (request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -90,6 +93,34 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         }
         const result = await costBridge.run(runtime, { type: 'text', ...normalized, source: 'browser' });
         return send(response, result.status === 'error' ? 502 : 200, result);
+      }
+      if (pathname === '/api/agent/propose') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE || !env.GEMINI_API_KEY) return send(response, 503, { error: 'Coding workspace and attached model are required.' });
+        const input = await readInput(request);
+        try {
+          const snapshot = await readCodingSnapshot({ workspace: env.BIKTING_AGENT_WORKSPACE, path: input?.path });
+          return send(response, 200, await proposeCode({ snapshot, instruction: input?.instruction, apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
+        } catch (error) { return send(response, error instanceof TypeError ? 400 : 502, { error: error.message }); }
+      }
+      if (pathname === '/api/agent/code') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE) return send(response, 503, { error: 'Coding workspace is not configured.' });
+        const input = await readInput(request);
+        const work = agentQueue.then(async () => {
+          for (const record of [
+            { id: 'builtin:file-replace', tool: 'file.replace', preconditions: { fileMatches: false }, effects: { fileMatches: true } },
+            { id: 'builtin:file-syntax', tool: 'file.syntax-check', preconditions: { fileMatches: true }, effects: { syntaxValid: true } },
+          ]) await relationalMemory.put({ ...record, kind: 'procedure', text: record.tool, queries: [], source: 'builtin:coding-agent-v1', review: 'approved', context: { agent: 'coding-v1' }, expiresAt: Date.now() + 86400000 });
+          return runCodingAgent({ ...(input ?? {}), workspace: env.BIKTING_AGENT_WORKSPACE, memory: relationalMemory, onVerified: async evidence => knowledgeStore.set(`agent-evidence:${randomUUID()}`, { ...evidence, path: input?.path, recordedAt: new Date().toISOString(), verification: 'observed' }) });
+        });
+        agentQueue = work.catch(() => {});
+        try { return send(response, 200, await work); }
+        catch (error) { return send(response, error instanceof TypeError ? 400 : 409, { error: error.message }); }
       }
       if (['/api/memory/records', '/api/memory/retrieve', '/api/memory/answer', '/api/memory/plan'].includes(pathname)) {
         if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);

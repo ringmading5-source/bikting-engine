@@ -24,6 +24,7 @@ function validate(record) {
       !Number.isFinite(record.expiresAt) || !Array.isArray(record.queries) || record.queries.length > 20 || !record.queries.every(text)) throw new TypeError('Invalid memory record.');
   if (record.kind === 'fact' && (!text(record.subject) || !text(record.predicate) || !text(record.value))) throw new TypeError('A fact requires subject, predicate, and value.');
   if (record.kind === 'procedure' && (!bindings(record.preconditions) || !bindings(record.effects) || !Object.keys(record.effects).length)) throw new TypeError('A procedure requires bounded preconditions and effects.');
+  if (record.tool !== undefined && (!text(record.tool) || record.kind !== 'procedure')) throw new TypeError('Invalid procedure executor.');
   return structuredClone({ ...record, context: record.context ?? {} });
 }
 
@@ -111,7 +112,7 @@ export function createRelationalMemory({ knowledgeStore, now = Date.now, maxReco
           if (seen.has(id)) continue;
           // Bound frontier size as well as expanded nodes.
           if (seen.size >= maxNodes) return { status: 'budget_exhausted', visited, modelCalls: 0 };
-          seen.add(id); queue.push({ state: next, path: [...current.path, { id: procedure.id, source: procedure.source, preconditions: procedure.preconditions, effects: procedure.effects }] });
+          seen.add(id); queue.push({ state: next, path: [...current.path, { id: procedure.id, source: procedure.source, tool: procedure.tool, preconditions: procedure.preconditions, effects: procedure.effects }] });
         }
       }
       return { status: queue.length || depthLimited ? 'budget_exhausted' : 'needs_knowledge', visited, modelCalls: 0 };
