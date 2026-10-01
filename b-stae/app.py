@@ -150,7 +150,7 @@ def serve(engine,port,host='127.0.0.1'):
             return self.headers.get('Host') in known
         def do_GET(self):
             if self.path=='/health':
-                self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
+                self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'vector-model-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
             if not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
             if self.path!='/':self.reply(404,b'Not found','text/plain');return
             self.reply(200,Path(__file__).with_name('app.html').read_bytes(),'text/html; charset=utf-8')
