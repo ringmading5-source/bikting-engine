@@ -32,3 +32,12 @@ test('interpreter can reuse persisted semantic knowledge after its memory cache 
   assert.equal(calls, 1);
   assert.equal(reused.context.geminiExplanation, 'A cell is a basic unit of life.');
 });
+
+test('concurrent persistence retains every completed update without temporary-file races', async () => {
+  directory = directory ?? await mkdtemp(join(tmpdir(), 'bikting-knowledge-'));
+  const filePath = join(directory, 'parallel.json');
+  const store = createKnowledgeStore({ filePath });
+  await Promise.all(Array.from({ length: 20 }, (_, index) => store.set(`key:${index}`, { index })));
+  const restarted = createKnowledgeStore({ filePath });
+  for (let index = 0; index < 20; index++) assert.deepEqual(await restarted.get(`key:${index}`), { index });
+});
