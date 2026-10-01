@@ -96,3 +96,45 @@ Run `python representation_demo.py` or use the shared-state panel in the app.
 The browser plays supplied PCM audio and schedules captions/color/position views
 against a common audio clock. Browser rendering is approximate; timing metadata
 is checked deterministically. The example audio is a structural fixture, not speech.
+
+## Complete tasks and independent goals
+
+`task_execute` accepts `text`, `value`, `goal: {equals: EXPECTED}`, optional
+`output_code`, `max_actions` (default 16) and `use_gemini` (default false).
+It resolves registered word relationships, a bounded English numeric grammar,
+or explicit operations; `then` composes operations. Missing definitions,
+conflicts, cycles and exceeded budgets stop the task. All intermediate typed
+states and the independently supplied goal are checked before execution.
+Successful requests store context/version/definition-bound plans; repeated
+requests avoid Gemini and still execute and verify every operation.
+
+The test suite covers a previously unregistered combination of two registered
+phrases. This is compositional reuse, not learned or universal generalization.
+`representation_transition` continues to provide the shared multimodal trajectory.
+Task output presents the verified result as text, a structured view, and optionally
+browser speech synthesis. Speech onset/duration is device dependent; the task
+view does not claim sample-accurate speech synchronization.
+
+`input_decode` supports bounded base64 UTF-8, PCM16 WAV and P6 PPM.
+`artifact_create` stores and reads back named text/JSON/SVG bytes in SQLite and
+returns a downloadable payload; filenames cannot select arbitrary filesystem paths.
+The task panel can download a verified result. Existing capability APIs provide
+checked numeric plots. Input decoding is not speech transcription or image semantics.
+
+## Durable memory and backups
+
+Set `BSTAE_DB_PATH` to a path on an actual persistent disk, for example
+`/var/data/bstae/knowledge.sqlite3`, only after mounting that disk on the host.
+No disk is provisioned or paid plan selected by this code. `storage_status`
+reports configuration without mistaking an environment variable for persistence.
+For an operator checkpoint use:
+
+```sh
+python storage_backup.py knowledge.sqlite3 /persistent/backups/checkpoint.sqlite3
+```
+
+The backup uses SQLite's consistent backup API, verifies integrity, and refuses
+to overwrite an existing destination. To restore, stop the service, set its
+`BSTAE_DB_PATH` to the verified checkpoint on persistent storage, and restart.
+Backups include knowledge and workspace data; they are not exposed by the HTTP API.
+A restart test verifies that a backed-up plan can be reused and reverified.

@@ -14,6 +14,8 @@ class Application:
         self.engine=engine
         from gemini_adapter import GeminiAdapter
         self.gemini=GeminiAdapter(engine)
+        from task_runtime import TaskRuntime
+        self.tasks=TaskRuntime(engine,self.gemini)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -21,6 +23,12 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='task_execute':return self.tasks.execute(payload.get('text'),payload.get('value'),payload.get('goal'),payload.get('output_code','101'),payload.get('max_actions',16),payload.get('use_gemini',False))
+        if action=='input_decode':return {'value':self.tasks.input(payload.get('value'))}
+        if action=='artifact_create':return self.tasks.artifact(payload.get('name'),payload.get('content'),payload.get('mime','text/plain'))
+        if action=='storage_status':
+            path=self.engine.db.execute('PRAGMA database_list').fetchone()[2]
+            return {'backend':'sqlite','configured_path':bool(os.environ.get('BSTAE_DB_PATH')),'persistent_disk_verified':False,'memory_only':not bool(path),'reason':'A configured path does not prove the host has a persistent disk.'}
         if action=='gemini_status':return self.gemini.status()
         if action=='gemini_interpret':return self.gemini.interpret(payload.get('text'),payload.get('value'))
         if action=='gemini_execute':return self.gemini.execute(payload.get('text'),payload.get('value'))
