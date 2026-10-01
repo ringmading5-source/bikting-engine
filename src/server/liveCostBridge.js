@@ -39,7 +39,7 @@ export function createLiveCostBridge({ knowledgeStore, tools, env, fetchImpl = f
       await knowledgeStore.recordPilot(record);
       return { ...result, pilotRunId: record.id };
     };
-    const key = digest(stableRequest(request));
+    const key = digest({ version: 'read-only-v2', model: env.GEMINI_MODEL || 'gemini-2.5-flash', request: stableRequest(request) });
     if (request.knowledgeMode !== 'web') {
       const found = await search.search({ query: key, projectId: 'workspace', sources: ['validated_experience'] });
       if (found.status === 'resolved') {
@@ -50,7 +50,8 @@ export function createLiveCostBridge({ knowledgeStore, tools, env, fetchImpl = f
     }
     const result = await runtime.run(request);
     if (request.knowledgeMode !== 'web' && result.status === 'completed' && result.usage?.modelCalls > 0 &&
-      result.execution?.length && result.execution.every(item => item.metadata?.kind === 'engine' || item.verification?.status === 'verified')) {
+      result.execution?.length && result.execution.every(item => item.metadata?.kind === 'engine' ||
+        (['website.build', 'text.summarize', 'text.compare', 'math.calculate', 'physics.calculate_force', 'vector.calculate', 'units.convert', 'visual.scene'].includes(item.metadata?.capability) && item.verification?.status === 'verified'))) {
       await memory.store({ id: key, projectId: 'workspace', taskId: key, intent: key, relationships: result.semantic?.relationships?.map(({ from, relation, to }) => `${from}:${relation}:${to}`) ?? [],
         capabilityIds: result.selectedCapabilities ?? [], evidenceIds: [], result, validation: { valid: true, issues: [], method: 'runtime_verification' }, repairHistory: [], recordedAt: new Date().toISOString() });
     }

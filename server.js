@@ -31,7 +31,7 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
   const knowledgeStore = env.DATABASE_URL ? createPostgresKnowledgeStore({ connectionString: env.DATABASE_URL, ttlMs }) : createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs });
   const providers = createProviderConnections({ env });
   const costBridge = createLiveCostBridge({ knowledgeStore, tools: defaults.tools, env, fetchImpl });
-  if (geminiEnabled) defaults.tools.register(createGeminiTextTool({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
+  if (geminiEnabled) defaults.tools.register(createGeminiTextTool({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall, knowledgeStore, onMemoryHit: () => costBridge.telemetry.recordResolution('cache') }));
   const models = new ModelRegistry();
   if (geminiEnabled) models.register(createModelAdapter({
     id: 'gemini.interpretation-text', name: 'Gemini interpretation text', domain: 'language', modalities: ['text'], capabilities: ['text.generate'],
