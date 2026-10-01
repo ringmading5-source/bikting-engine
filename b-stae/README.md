@@ -411,3 +411,23 @@ Tests use the same algorithm for inventory and tank text plus numeric prediction
 no domain-specific parser change is made for tank inputs. A local HTTP experiment
 checks four withheld stock/incoming pairs using the learned reversed-order frame.
 This shows limited supervised slot generalization, not general language understanding.
+# Multi-pattern generalization benchmark
+
+Run `python pattern_evaluation.py` from `b-stae` to fit four numeric behaviors
+with the existing coupled learner: addition, subtraction, doubling and field
+swapping. Each model receives five observed transitions and two separate
+validation transitions. It is then scored on 25 new input pairs, including
+negative values, using independent synthetic scoring oracles. No executable
+oracle or arithmetic rule is passed to the learner.
+
+The benchmark also asks the learned planner to reach `(x=18, y=4)` from
+`(x=3, y=4)` without training on any action sequences. It finds addition,
+doubling, addition: `3 -> 7 -> 14 -> 18`. Each step is scored against the
+independent oracle. Context mismatch, range limits, depth limits, contradictory
+feedback and unsupported variable multiplication are checked separately.
+
+Current result: 116/116 benchmark checks, including 100/100 unseen predictions,
+with zero LLM calls. These are reproducible synthetic results for exact affine
+patterns with explicit action/context labels, not evidence of general language
+understanding or universal intelligence. The benchmark uses temporary memory;
+it does not install these models in a deployed application's database.
