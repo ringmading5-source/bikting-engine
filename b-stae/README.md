@@ -71,3 +71,28 @@ handling and formats are bounded adapters, not general language or perception.
 Standalone Python execution uses no LLM or GPU. The Node retrieval vectors are
 deterministic feature hashes, not trained embeddings. Real workload cost savings
 still need measurement.
+
+## Shared multimodal representation (v1)
+
+`representation.py` wraps modality-specific data in one validated, versioned
+state: sequence IDs, timing, optional positions, relationships, and output code.
+Text retains exact UTF-8, voice accepts mono PCM16 samples with sample rate,
+and visuals accept RGB colors or integer 3D positions. This encodes supplied
+data; it does not infer meaning, transcribe audio, or generate speech.
+
+`represent` returns the canonical BSTA binary packet and SHA-256 state ID.
+`representation_transition` accepts `state`, `steps` and optional `max_steps`
+(1..64, default 16). Each step specifies `item`, explicit `intent`, and `expected`.
+It executes existing checked operations, validates each resulting state, and
+stores a trajectory only after all expected results match. The input is unchanged.
+Missing IDs, inconsistent synchronization, overflow and exhausted step budgets
+reject execution. A failed batch may populate the existing verified primitive
+path cache, but never publishes a partial multimodal trajectory.
+
+Output bits: `001` text, `010` voice, `100` visual; combine them up to `111`.
+`000` stores an internal-only trajectory. Routing affects output, not execution.
+`representation_trajectory` retrieves a hash-checked trajectory by ID after restart.
+Run `python representation_demo.py` or use the shared-state panel in the app.
+The browser plays supplied PCM audio and schedules captions/color/position views
+against a common audio clock. Browser rendering is approximate; timing metadata
+is checked deterministically. The example audio is a structural fixture, not speech.

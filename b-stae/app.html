@@ -1,12 +1,39 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B-STAE knowledge and procedures</title><style>body{background:#111826;color:#e8eef9;font:16px system-ui;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:#1b293c;border:1px solid #314156;border-radius:12px;padding:20px;margin:20px 0}label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:6px}input,textarea{box-sizing:border-box;width:100%;background:#111b2b;color:#fff;border:1px solid #52647b}textarea{min-height:70px}button{background:#72dbbf;border:0;margin-top:12px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#adc0d8}</style></head><body><main>
 <h1>B-STAE knowledge and procedures</h1><p>Store source knowledge and explicit procedures. Retrieve applicable procedures, compose bounded paths, and verify execution against the supplied target.</p><label for="token">Access token (for hosted deployments)</label><input id="token" type="password" autocomplete="off">
+<section><h2>Shared text, voice and visual states</h2><p>Encode structured inputs and execute verified transitions with one shared timeline.</p><label for="representation-request">Transition request (JSON)</label><textarea id="representation-request" style="min-height:240px" placeholder='{"action":"representation_transition","state":{},"steps":[]}'></textarea><button id="representation-demo">Load and run example</button><button id="representation-run">Execute request</button><button id="representation-play" disabled>Play verified output</button><p id="representation-note">The example uses three PCM samples to test the audio path. Supply recorded PCM audio for speech; this does not generate speech.</p><div id="representation-output" aria-live="polite"></div><pre id="representation-result"></pre></section>
 <section><h2>Source-backed knowledge</h2><label for="query">Query</label><input id="query" value="electric motor"><label for="url">Optional public source URL</label><input id="url" type="url"><button id="research">Retrieve sources</button><pre id="sources" aria-live="polite"></pre><small>Source text is evidence; it does not automatically become an executable procedure.</small></section>
 <section><h2>Explicit procedure</h2><label for="value">Current value (JSON)</label><textarea id="value">100</textarea><label for="intent">Supported operation</label><input id="intent" value="add 2"><label for="source">Procedure source reference</label><input id="source" placeholder="Your runbook or specification reference"><button id="register">Store procedure</button><button id="execute">Resolve and execute</button><pre id="procedure-result" aria-live="polite"></pre><small>Supported: add N; append "text"; brighten N; move by X,Y,Z; shift samples by N. Output checks verify the declared transformation, not real-world factual truth.</small></section>
 <section><h2>Stored composition</h2><label for="word">Phrase</label><input id="word" placeholder="A registered phrase"><label for="definition">Explicit definition (JSON)</label><textarea id="definition" placeholder='{"intent":{"operation":"add","amount":2}}'></textarea><button id="word-register">Store phrase</button><button id="word-execute">Execute stored composition</button><pre id="word-result" aria-live="polite"></pre><small>Definitions contain an explicit intent or registered child phrases. Missing and conflicting definitions stop execution.</small></section><button id="status">Inspect memory</button><pre id="status-result" aria-live="polite"></pre></main>
 <script>
 const el=id=>document.getElementById(id);
-async function call(payload){const response=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json','X-BSTAE-Token':el('token').value},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Error(result.error||`Request failed (${response.status})`);return result}
+async function call(payload){const response=await fetch('/api',{method:'POST',headers:{'Content-Type':'application/json','X-BSTAE-Token':el('token').value},body:JSON.stringify(payload)});const result=await response.json();if(!response.ok)throw Error(result.reason||result.error||`Request failed (${response.status})`);return result}
 function bind(id,target,makePayload){el(id).onclick=async()=>{el(target).textContent='Working…';try{el(target).textContent=JSON.stringify(await call(makePayload()),null,2)}catch(error){el(target).textContent=error.message}}}
+let verifiedEvent=null, playback=null, scheduled=[];
+async function runRepresentation(payload){
+ el('representation-play').disabled=true;verifiedEvent=null;
+ el('representation-result').textContent='Working…';
+ try{const result=await call(payload);el('representation-result').textContent=JSON.stringify(result,null,2);if(result.verified&&Array.isArray(result.outputs)){verifiedEvent=result;el('representation-play').disabled=false}}
+ catch(error){el('representation-result').textContent=error.message}
+}
+el('representation-demo').onclick=async()=>{try{const request=await call({action:'representation_example'});el('representation-request').value=JSON.stringify(request,null,2);await runRepresentation(request)}catch(error){el('representation-result').textContent=error.message}};
+el('representation-run').onclick=()=>{try{runRepresentation(JSON.parse(el('representation-request').value))}catch(error){el('representation-result').textContent=error.message}};
+el('representation-play').onclick=async()=>{
+ if(!verifiedEvent)return;
+ scheduled.forEach(clearTimeout);scheduled=[];
+ if(playback)await playback.close();playback=new AudioContext();await playback.resume();
+ const base=playback.currentTime+0.1;el('representation-output').replaceChildren();
+ for(const item of verifiedEvent.outputs){
+  if(item.modality==='voice'){
+   const audio=item.value.audio;if(!audio.samples.length)continue;
+   const buffer=playback.createBuffer(1,audio.samples.length,audio.sample_rate);buffer.getChannelData(0).set(audio.samples.map(v=>v/32768));
+   const source=playback.createBufferSource();source.buffer=buffer;source.connect(playback.destination);source.start(base+item.timing.start_ms/1000);source.stop(base+(item.timing.start_ms+item.timing.duration_ms)/1000);
+  }else{
+   scheduled.push(setTimeout(()=>{const node=document.createElement('div');node.textContent=item.modality==='text'?item.value:JSON.stringify(item.value);
+    if(item.modality==='visual'){node.style.cssText='width:80px;min-height:40px;border:2px solid #72dbbf;padding:8px';if(typeof item.value==='string')node.style.backgroundColor=item.value;else node.style.transform=`translate(${item.value.position[0]*10}px,${item.value.position[1]*10}px)`}
+    el('representation-output').append(node);scheduled.push(setTimeout(()=>node.remove(),item.timing.duration_ms));},Math.max(0,(base-playback.currentTime)*1000)+item.timing.start_ms));
+  }
+ }
+};
 bind('research','sources',()=>({action:'research',query:el('query').value,url:el('url').value||undefined}));
 bind('register','procedure-result',()=>({action:'modality_register',value:JSON.parse(el('value').value),intent:el('intent').value,source:el('source').value}));
 bind('execute','procedure-result',()=>({action:'intent_execute',value:JSON.parse(el('value').value),intent:el('intent').value}));
