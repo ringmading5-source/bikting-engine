@@ -22,6 +22,8 @@ class Application:
         self.transitions=TransitionLearning(engine)
         from coupled_transition_learning import CoupledTransitionLearning
         self.coupled=CoupledTransitionLearning(engine)
+        from learned_planner import LearnedTransitionPlanner
+        self.learned_planner=LearnedTransitionPlanner(engine)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -29,6 +31,14 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='learned_plan':
+            return self.learned_planner.solve(payload.get('initial'),payload.get('target'),payload.get('model_ids'),payload.get('context'),payload.get('relationships'),payload.get('max_depth',4),payload.get('max_nodes',128),payload.get('max_frontier',128))
+        if action=='learned_plan_example':
+            from learned_planner_demo import train, CONTEXT, RELATIONSHIPS
+            return {'model_ids':train(self.engine),'context':CONTEXT,'relationships':RELATIONSHIPS,'source':'synthetic:composition-demo-v1','model_calls':0}
+        if action=='text_transition_answer':
+            from text_transition import answer
+            return answer(self.coupled,payload.get('model_id'),payload.get('text'))
         if action=='coupled_example':
             from evaluation import demo
             return demo()

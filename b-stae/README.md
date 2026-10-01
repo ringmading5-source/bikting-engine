@@ -355,3 +355,24 @@ means no active candidate matches the supplied conditions; `bounded` means a sea
 limit was reached; `unsolved` means the reachable graph was exhausted. Counterexample
 feedback disables models before future planning. This demonstration and Python
 planner are not yet connected to the website or the English question adapter.
+
+### Try learned planning and text questions in the web app
+
+The home page now includes **Solve an unseen combination**. Enter your access
+token, click **Learn the two demo behaviors**, and click **Find a plan** with the
+default stock 10, incoming 5, outgoing 3 and target 12. Change inputs within 0..20
+to test unseen combinations. The page displays discovered actions and state changes;
+search failures explain missing applicability or exhausted bounds. Demo evidence
+and model IDs are stored in the configured SQLite database.
+
+For English inventory questions, load the **coupled inventory example**, then
+click **Learn coupled hypothesis**. Its model ID fills the **Ask the learned
+inventory model** panel automatically. Click **Answer without an LLM** to ask the
+sample seven-plus-nine question. These separate panels use different model schemas.
+The text panel does not translate arbitrary requests into planner goals.
+
+API actions: `learned_plan_example` explicitly fits the synthetic demo models;
+`learned_plan` accepts initial/target/model_ids/context/relationships and optional
+max_depth/max_nodes/max_frontier; `text_transition_answer` accepts model_id/text.
+All routes retain the existing hosted token and origin checks. No Gemini calls
+are used by these routes. Predictions remain hypotheses, not observed outcomes.
