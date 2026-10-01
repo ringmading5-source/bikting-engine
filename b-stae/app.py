@@ -24,6 +24,8 @@ class Application:
         self.coupled=CoupledTransitionLearning(engine)
         from learned_planner import LearnedTransitionPlanner
         self.learned_planner=LearnedTransitionPlanner(engine)
+        from text_learning import TextPatternLearning
+        self.text_learning=TextPatternLearning(engine)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -31,6 +33,13 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='text_learning_example':
+            from text_learning_demo import example
+            return dict(example(),action='text_pattern_learn')
+        if action=='text_pattern_learn':return self.text_learning.learn(payload.get('examples'),payload.get('validation'))
+        if action=='text_pattern_parse':return self.text_learning.parse(payload.get('text_model_id'),payload.get('text'))
+        if action=='text_pattern_answer':return self.text_learning.answer(payload.get('text_model_id'),payload.get('model_id'),payload.get('text'))
+        if action=='text_pattern_feedback':return self.text_learning.feedback(payload.get('text_model_id'),payload.get('example'))
         if action=='learned_plan':
             return self.learned_planner.solve(payload.get('initial'),payload.get('target'),payload.get('model_ids'),payload.get('context'),payload.get('relationships'),payload.get('max_depth',4),payload.get('max_nodes',128),payload.get('max_frontier',128))
         if action=='learned_plan_example':

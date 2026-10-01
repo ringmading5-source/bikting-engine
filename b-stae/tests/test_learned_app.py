@@ -29,3 +29,20 @@ class LearnedAppTests(unittest.TestCase):
                 self.assertEqual(app.dispatch(dict(payload,max_depth=1))['status'],'bounded')
                 self.assertEqual(app.dispatch({'action':'text_transition_answer','model_id':model_id,'text':'What is chemistry?'})['status'],'unsupported')
             finally:engine.close()
+
+    def test_learned_text_routes_and_feedback(self):
+        engine=Engine(database=':memory:')
+        try:
+            app=Application(engine)
+            data=app.dispatch({'action':'text_learning_example'})
+            trained=app.dispatch(data)
+            ident=trained['text_model_id']
+            parsed=app.dispatch({'action':'text_pattern_parse','text_model_id':ident,'text':'nine arrived; I already had seven.'})
+            self.assertEqual(parsed['state'],{'stock':7,'incoming':9})
+            numeric=app.dispatch(app.dispatch({'action':'coupled_example'})['training'])
+            result=app.dispatch({'action':'text_pattern_answer','text_model_id':ident,'model_id':numeric['model_id'],'text':'nine arrived; I already had seven.'})
+            self.assertEqual(result['prediction']['state']['stock'],16)
+            bad=dict(data['examples'][0],state={'stock':19,'incoming':4})
+            self.assertEqual(app.dispatch({'action':'text_pattern_feedback','text_model_id':ident,'example':bad})['status'],'text_hypothesis_disabled')
+            self.assertEqual(app.dispatch({'action':'text_pattern_parse','text_model_id':ident,'text':'nine arrived; I already had seven.'})['status'],'disabled')
+        finally:engine.close()

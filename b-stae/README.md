@@ -376,3 +376,38 @@ API actions: `learned_plan_example` explicitly fits the synthetic demo models;
 max_depth/max_nodes/max_frontier; `text_transition_answer` accepts model_id/text.
 All routes retain the existing hosted token and origin checks. No Gemini calls
 are used by these routes. Predictions remain hypotheses, not observed outcomes.
+
+### Supervised text-to-state pattern learning
+
+The **Learn sentence patterns from examples** panel adds a bounded language-learning
+experiment. Click **Load labeled text examples**, then **Learn and validate sentence
+patterns**. **Read the state** tests the learned bindings. To calculate an answer,
+learn the coupled inventory example below; its numeric model ID fills this panel.
+The default `nine arrived; I already had seven.` yields stock 7/incoming 9 and a
+predicted stock of 16 with no LLM calls. The original explicit grammar panel remains
+available as a separate adapter.
+
+`TextPatternLearning` induces literal token frames and numeric slot order from
+labeled text/state/action/context/relationships/source pairs. No inventory or tank
+sentence pattern is installed in this learner. Number words/digits use the existing
+English decoder. Each frame requires three examples with three distinct values per
+slot, plus held-out validation states and text. Ambiguous alignments, extra quantities,
+failed validation and mixed schemas/gates reject. Up to four nonnegative int64 fields,
+32 training records and 16 validation records are supported. Matching requires a
+learned frame; novel syntax, open-ended definitions, perception and causal semantics
+are outside this experiment. Semantic labels are supplied by the training author.
+
+API actions: `text_learning_example`, `text_pattern_learn` (examples/validation),
+`text_pattern_parse` (text_model_id/text), `text_pattern_answer`
+(text_model_id/model_id/text), and `text_pattern_feedback` (text_model_id/example).
+Models retain training/validation evidence and content hashes in SQLite. A matching
+sentence with contradictory field labels disables its model. Unsupported new frames
+are reported as gaps rather than automatically invalidating an existing frame.
+Feedback does not modify coefficients or automatically retrain. Answering checks the
+text model's gate against the independently learned numeric model. Numeric outputs
+remain predictions with `verified_outcome: false`.
+
+Tests use the same algorithm for inventory and tank text plus numeric prediction;
+no domain-specific parser change is made for tank inputs. A local HTTP experiment
+checks four withheld stock/incoming pairs using the learned reversed-order frame.
+This shows limited supervised slot generalization, not general language understanding.
