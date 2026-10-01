@@ -329,3 +329,29 @@ inputs outside the model's observed range. The numeric transformation is learned
 the language grammar and output sentence are programmed. Image recognition and
 learned general text understanding remain future work. This CLI is not yet exposed
 in the web interface.
+
+### Unseen composition of learned transitions
+
+Run `python learned_planner_demo.py`. The demo fits receive and sell models from
+separate synthetic before/after observations with independently varied fields.
+No training observation contains an action sequence. Given stock 10, incoming 5,
+outgoing 3 and target stock 12, the planner discovers a two-transition composition
+and replays it through checked models. Four additional withheld combinations are
+tested. This is bounded numeric compositional generalization, not learned language.
+
+`LearnedTransitionPlanner.solve(initial, target, model_ids, context, relationships)`
+requires explicit named int64 states, candidate model IDs, context and environment
+relationships. Each model's context must match exactly; all of its relationship
+conditions must be present in the supplied environment. These are caller-supplied
+conditions, not discovered semantics. The goal specifies the desired state, not
+an action sequence. Models retain schema/range/int64 checks and reject extrapolation.
+Search deduplicates states and limits depth, nodes and frontier size. Unknown,
+corrupt, disabled or inapplicable models are excluded with rejection counts.
+
+`goal_satisfied` means the requested numeric state was reached under the learned
+hypotheses and checked again by replay. `verified_outcome` remains false: this does
+not operate a warehouse or independently prove physical outcomes. `knowledge_gap`
+means no active candidate matches the supplied conditions; `bounded` means a search
+limit was reached; `unsolved` means the reachable graph was exhausted. Counterexample
+feedback disables models before future planning. This demonstration and Python
+planner are not yet connected to the website or the English question adapter.
