@@ -284,3 +284,30 @@ It also checks the fieldwise baseline's failure, context rejection, goal composi
 and nonlinear-pattern rejection. No fitting happens on the test states. The small
 synthetic benchmark cannot establish natural-language understanding, perception,
 causal discovery, unrestricted generalization or universal intelligence.
+
+### Versioned training datasets
+
+Run the offline dataset pipeline (no API key or LLM calls):
+
+```bash
+cd b-stae
+python dataset.py examples/inventory-dataset.jsonl
+# Preserve model evidence and evaluation reports in SQLite:
+python dataset.py examples/inventory-dataset.jsonl --database dataset-memory.db
+```
+
+Each JSONL line contains `version: 1`, a unique `id`, `episode_id`, a timezone-aware
+ISO `timestamp`, `uncertainty` in [0,1], explicit `split` (training/validation/test),
+and the existing `before`, `after`, `action`, `context`, `relationships`, `outcome`,
+`source` observation fields. The example is synthetic inventory data.
+
+The current exact numeric learner requires zero declared uncertainty, one matching
+context/action/relationship gate, and one int64 field schema. Supply 3–32 training,
+1–16 validation, and 1–16 test records. Vary input fields independently to identify
+coupled coefficients. Record IDs, input states, and episodes cannot leak across
+splits. A whole episode belongs to one split. Test outcomes never enter fitting;
+a failed test disables the hypothesis. Reports include a reproducible dataset
+fingerprint and are saved with successful fits when a database path is provided.
+CLI exit status is zero only when every test prediction passes. This supports
+bounded numeric transition learning; arbitrary knowledge and noisy observations
+require additional learning methods.
