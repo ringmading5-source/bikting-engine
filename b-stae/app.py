@@ -19,6 +19,19 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='representation_example':
+            from representation_demo import demo_request
+            return demo_request()
+        if action=='representation_demo':
+            from representation_demo import demo_request
+            return self.dispatch(demo_request())
+        if action=='represent':
+            from representation import represent
+            return represent(payload.get('state'))
+        if action=='representation_transition':
+            return self.engine.representations.transition(payload.get('state'),payload.get('steps'),payload.get('max_steps',16))
+        if action=='representation_trajectory':
+            return self.engine.representations.get(payload.get('trajectory_id'))
         if action=='capability_inventory':return {'capabilities':self.engine.capabilities.inventory()}
         if action=='capability_execute':
             return self.engine.capabilities.execute(payload.get('request'),payload.get('values'),payload.get('title','B-STAE graph'))
