@@ -1,6 +1,6 @@
-# B-STAE deterministic byte-interaction prototype
+# B-STAE byte executor and learned vector prototype
 
-A working local prototype of recognized inputs, typed binary states, stored byte relationships, bounded transition composition, verified execution and decoded outputs. Python 3.10+, standard library only. No LLM calls.
+A working local prototype of recognized inputs, typed binary states, stored byte relationships, bounded transition composition, verified execution and decoded outputs. Python 3.10+. The byte core uses the standard library; optional scraper, plotting, and vector modules require `requirements.txt`. No LLM calls.
 
 ## Start here
 
@@ -375,3 +375,7 @@ Example: request `add 2 to every value then graph the result`, input `[2,5,3]`, 
 Pipeline memory is promoted only after the entire plan succeeds. It retains the full input, parameterized action sequence, final numeric state, versions and output hash. Reuse re-executes and re-verifies the chain. Single plotting requests preserve the previous API and memory behavior. `word_execute` and the computational graph panel expose mixed plans; users may also register equivalent child/terminal sequences explicitly.
 
 Validation: 203 tests pass, including ordinary request → recursive stabilization → transformed bytes → plot, exact operand encoding, adjacent state equality, multiple/decimal additions, restart/reverification, preflight bounds, bad-transform rejection without promotion, incompatible order and ambiguous providers. Single plotting was verified on Render with live coordinates `[2,5,3]`; the mixed-chain release still needs its own deployment verification.
+
+## Trainable vector model
+
+See [VECTOR_MODEL.md](VECTOR_MODEL.md) for the learned dynamics model, held-out benchmark, bounded planner, app API, and its limits. Run `python vector_experiment.py` from this directory.
