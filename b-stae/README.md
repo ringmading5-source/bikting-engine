@@ -166,3 +166,33 @@ Type-changing plans are preflighted and then executed with matching state hashes
 Tests cover new compositions, memory reuse with zero LLM calls, Unicode, invalid
 input types, overflow, division conditions, corruption and rejected goals.
 This expands a bounded behavior library; it does not demonstrate general AI.
+
+## Goal-directed planning milestone
+
+`goal_execute` accepts `value` and `goal`, with optional explicit `candidates`
+and `max_depth` (default 4, max 8), `max_nodes` and `max_frontier` (default 128,
+max 512). It performs breadth-first search across applicable installed behaviors,
+checks every transition, deduplicates typed states, executes the selected plan,
+and independently checks the resulting goal before storing a hash-checked plan.
+Reused plans are re-executed and reverified. No Gemini/model calls are made.
+
+Supported contracts:
+
+- `{"all":["trimmed","uppercase"]}` preserves text under only those transforms.
+- `{"all":["sorted_ascending"]}` checks order AND preserves the original multiset.
+- Other properties: `lowercase`, `sorted_descending`, `sum_of_input`, `count_of_input`.
+- `{"equals":8}` retains exact-result goals for experiments/tests.
+
+Parameterized behavior candidates must be provided explicitly; parameters are
+not guessed. Example: input `[3,-2,3]`, goal `{"equals":8}`, candidates
+`[{"operation":"multiply","amount":2}]` discovers sum -> multiply.
+Text cleaning input `"  hello world  "` with trim+uppercase properties discovers
+a two-step plan without an expected answer or supplied step sequence.
+
+`fulfilled` means verified under this goal contract; `bounded` means a search
+budget stopped exploration; `unsolved` means the permitted state graph was
+exhausted. Neither failure proves there is no solution outside the given library.
+Conflicting/unsupported predicates require clarification. The app includes a
+“Plan from a goal” panel with text-cleaning and sorting examples.
+This is bounded planning and compositional reuse, not training, open-ended
+language understanding, or evidence of universal intelligence.

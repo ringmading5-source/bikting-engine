@@ -16,6 +16,8 @@ class Application:
         self.gemini=GeminiAdapter(engine)
         from task_runtime import TaskRuntime
         self.tasks=TaskRuntime(engine,self.gemini)
+        from goal_planner import GoalPlanner
+        self.goals=GoalPlanner(self.tasks)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -23,6 +25,7 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='goal_execute':return self.goals.execute(payload.get('value'),payload.get('goal'),payload.get('candidates'),payload.get('max_depth',4),payload.get('max_nodes',128),payload.get('max_frontier',128))
         if action=='behavior_inventory':return {'behaviors':self.tasks.behaviors.inventory()}
         if action=='task_execute':return self.tasks.execute(payload.get('text'),payload.get('value'),payload.get('goal'),payload.get('output_code','101'),payload.get('max_actions',16),payload.get('use_gemini',False))
         if action=='input_decode':return {'value':self.tasks.input(payload.get('value'))}
