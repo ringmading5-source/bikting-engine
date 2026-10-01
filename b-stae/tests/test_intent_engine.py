@@ -2,7 +2,6 @@ import unittest
 from engine import Engine
 from app import Application
 
-def data():return {'training':[{'before':3,'after':5},{'before':7,'after':9}],'validation':[{'before':11,'after':13}]}
 class IntentTests(unittest.TestCase):
     def setUp(self):self.e=Engine(database=':memory:')
     def tearDown(self):self.e.close()
@@ -11,13 +10,13 @@ class IntentTests(unittest.TestCase):
         for value,intent,expected in cases:
             result=self.e.intents.execute(value,intent);self.assertEqual(result['decoded'],expected);self.assertTrue(result['verified'])
     def test_memory_composition_and_cache(self):
-        model=self.e.modalities.observe(data())['model']
+        model=self.e.modalities.register(3,'add 2','test:explicit-add')['program']
         result=self.e.intents.execute(100,'add 4')
         self.assertEqual(result['source'],'memory_search');self.assertEqual(len(result['trace']),2)
         self.assertEqual(result['trace'][0]['program'],model)
         self.assertEqual(self.e.intents.execute(100,'add 4')['source'],'persistent_memory')
     def test_depth_and_wrong_outcome(self):
-        self.e.modalities.observe(data())
+        self.e.modalities.register(3,'add 2','test:explicit-add')
         self.assertEqual(self.e.intents.execute(100,'add 4',max_depth=1)['source'],'registered_operation')
         self.assertEqual(self.e.intents.execute(100,'add 3')['decoded'],103)
     def test_rejection(self):

@@ -122,7 +122,12 @@ class RelationshipEngine:
             self.db.execute('INSERT INTO byte_relationships VALUES (?,?,?)',(relationship.id,raw,hashlib.sha256(raw).hexdigest()))
     def load(self):
         rules={}
+        # Old inferred rules stay inspectable but cannot participate in execution.
+        inferred=set()
+        if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='learned_relationships'").fetchone():
+            inferred={row[0] for row in self.db.execute('SELECT relationship_id FROM learned_relationships')}
         for row in self.db.execute('SELECT id,rule,sha256 FROM byte_relationships ORDER BY id'):
+            if row[0] in inferred:continue
             raw=bytes(row[1])
             if hashlib.sha256(raw).hexdigest()!=row[2]:raise ValueError('relationship integrity failure')
             rule=Relationship.decode(raw)

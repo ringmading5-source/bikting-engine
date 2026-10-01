@@ -49,15 +49,16 @@ export function verifyResult(step, result) {
 export function summarizeUsage(semantic, execution, request = {}) {
   const gemini = semantic.context?.modelUsage ?? null;
   const worker = execution.map((result) => result.modelUsage).filter(Boolean);
-  const costs = [gemini, ...worker].filter((usage) => usage?.calls > 0).map((usage) => usage.estimatedCostUsd);
-  const cacheHit = Boolean(request.modelCacheHit);
+  const interpretationHit = Boolean(request.modelCacheHit);
+  const costs = [interpretationHit ? null : gemini, ...worker].filter((usage) => usage?.calls > 0).map((usage) => usage.estimatedCostUsd);
+  const cacheHit = interpretationHit || worker.some(usage => usage.cacheHit);
   return {
-    modelCalls: cacheHit ? 0 : (gemini?.calls ?? 0) + worker.reduce((sum, usage) => sum + (usage.calls ?? 0), 0),
-    inputTokens: cacheHit ? 0 : (gemini?.inputTokens ?? 0) + worker.reduce((sum, usage) => sum + (usage.inputTokens ?? 0), 0),
-    outputTokens: cacheHit ? 0 : (gemini?.outputTokens ?? 0) + worker.reduce((sum, usage) => sum + (usage.outputTokens ?? 0), 0),
+    modelCalls: (interpretationHit ? 0 : (gemini?.calls ?? 0)) + worker.reduce((sum, usage) => sum + (usage.calls ?? 0), 0),
+    inputTokens: (interpretationHit ? 0 : (gemini?.inputTokens ?? 0)) + worker.reduce((sum, usage) => sum + (usage.inputTokens ?? 0), 0),
+    outputTokens: (interpretationHit ? 0 : (gemini?.outputTokens ?? 0)) + worker.reduce((sum, usage) => sum + (usage.outputTokens ?? 0), 0),
     cacheHit,
     deterministicToolCalls: execution.filter((result) => result.metadata?.kind === 'tool' && result.source?.deterministic && result.status === 'completed').length,
     // Prices depend on model and billing plan; do not invent a dollar amount.
-    estimatedCostUsd: cacheHit ? 0 : costs.length && costs.every((value) => value != null) ? costs.reduce((sum, value) => sum + value, 0) : null,
+    estimatedCostUsd: !costs.length ? (cacheHit ? 0 : null) : costs.length && costs.every((value) => value != null) ? costs.reduce((sum, value) => sum + value, 0) : null,
   };
 }

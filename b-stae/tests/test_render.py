@@ -31,13 +31,10 @@ class RenderHTTPTests(unittest.TestCase):
     def test_token_gate_and_authorized_api(self):
         with self.assertRaises(urllib.error.HTTPError) as error:self.request('/api',{'action':'status'})
         self.assertEqual(error.exception.code,401)
-        with self.request('/api',{'action':'examples'},self.token) as r:self.assertEqual(json.load(r)['status'],'loaded')
-        with self.request('/api',{'action':'predict','inputs':'{"1":"New"}'},self.token) as r:self.assertEqual(json.load(r)['trace'][-1]['decoded']['1'],'New!')
-    def test_behavior_sequence_routes(self):
-        with self.request('/api',{'action':'sequence_example'},self.token) as r:
-            self.assertEqual(json.load(r)['status'],'validated_on_sequences')
-        body={'action':'behavior_predict','inputs':'{"25":{"position":[100,0,0]}}','event':{'name':'advance','duration':1}}
-        with self.request('/api',body,self.token) as r:self.assertEqual(json.load(r)['decoded']['25'],[102,0,0])
+        with self.request('/api',{'action':'intent_execute','value':3,'intent':'add 2'},self.token) as r:self.assertEqual(json.load(r)['decoded'],5)
+    def test_removed_training_routes_are_rejected(self):
+        with self.assertRaises(urllib.error.HTTPError) as error:self.request('/api',{'action':'vector_train'},self.token)
+        self.assertEqual(error.exception.code,400)
     def test_cross_origin_rejected(self):
         with self.assertRaises(urllib.error.HTTPError) as error:self.request('/api',{'action':'status'},self.token,'https://other.example')
         self.assertEqual(error.exception.code,403)

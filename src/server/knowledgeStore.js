@@ -19,12 +19,18 @@ export function createKnowledgeStore({ filePath, ttlMs = 86_400_000, maxEntries 
     })();
     return loaded;
   };
-  const persist = async () => {
-    if (!filePath) return;
-    await mkdir(dirname(filePath), { recursive: true });
-    const temporary = `${filePath}.tmp`;
-    await writeFile(temporary, JSON.stringify([...entries.values()].slice(-maxEntries)), 'utf8');
-    await rename(temporary, filePath);
+  let persistence = Promise.resolve();
+  const persist = () => {
+    if (!filePath) return Promise.resolve();
+    const snapshot = JSON.stringify([...entries.values()].slice(-maxEntries));
+    const write = persistence.then(async () => {
+      await mkdir(dirname(filePath), { recursive: true });
+      const temporary = `${filePath}.tmp`;
+      await writeFile(temporary, snapshot, 'utf8');
+      await rename(temporary, filePath);
+    });
+    persistence = write.catch(() => {});
+    return write;
   };
   return {
     mode: 'ephemeral_file',

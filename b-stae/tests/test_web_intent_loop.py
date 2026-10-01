@@ -12,7 +12,7 @@ class LoopTests(unittest.TestCase):
     def source(self,bad=False,prose=False):
         if prose:data='Ordinary prose about increase';mime='text/plain'
         else:
-            data=json.dumps({'word_relationships':[{'text':'increase','intent':{'operation':'add','amount':2},'training':[{'before':3,'after':5},{'before':7,'after':9}],'validation':[{'before':11,'after':14 if bad else 13}]}]});mime='application/json'
+            data=json.dumps({'word_relationships':[{'text':'increase','intent':{'operation':'add','amount':2},'observations':[{'before':3,'after':5},{'before':7,'after':9},{'before':11,'after':14 if bad else 13}]}]});mime='application/json'
         sid=self.e.knowledge.ingest(parse_source(data,mime,'https://example.org/source'));self.e.encode_source(sid);return sid
     def test_search_ground_execute_next(self):
         web=FakeWeb(self.source());loop=WebIntentLoop(self.e,web);job=loop.start(['increase','increase'],100)

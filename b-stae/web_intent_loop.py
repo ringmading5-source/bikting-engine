@@ -21,23 +21,19 @@ class WebIntentLoop:
         self.db.execute('SAVEPOINT web_words')
         try:
             for item in entries:
-                if not isinstance(item,dict) or set(item) not in ({'text','intent','training','validation'},{'text','children','training','validation'}):raise ValueError('relationship definition and train/validation evidence required')
+                if not isinstance(item,dict) or set(item) not in ({'text','intent','observations'},{'text','children','observations'}):raise ValueError('explicit relationship and verification observations required')
                 self.engine.words.register(item['text'],children=item.get('children'),intent=item.get('intent'),commit=False)
             for item in entries:
-                inputs={};context=None
-                for split,minimum in [('training',2),('validation',1)]:
-                    examples=item[split]
-                    if not isinstance(examples,list) or not minimum<=len(examples)<=10:raise ValueError('two training and one held-out example required')
-                    inputs[split]=set()
-                    for example in examples:
-                        if not isinstance(example,dict) or set(example)!={'before','after'}:raise ValueError('before/after required')
-                        a,ca=self.engine.modalities.recognize(example['before']);b,cb=self.engine.modalities.recognize(example['after'])
-                        if context is None:context=ca
-                        if ca!=context or cb!=context:raise ValueError('observation context differs')
-                        inputs[split].add(a.state.encode())
-                        result=self.engine.words.resolve(item['text'],example['before'],persist=False)
-                        if result['status']!='stabilized' or result['coherence']['target_hex']!=b.state.encode().hex():raise ValueError('web relationship fails grounded observation')
-                if len(inputs['training'])<2 or inputs['training']&inputs['validation']:raise ValueError('held-out observations required')
+                examples=item['observations']
+                if not isinstance(examples,list) or not 1<=len(examples)<=20:raise ValueError('1..20 verification observations required')
+                context=None
+                for example in examples:
+                    if not isinstance(example,dict) or set(example)!={'before','after'}:raise ValueError('before/after required')
+                    a,ca=self.engine.modalities.recognize(example['before']);b,cb=self.engine.modalities.recognize(example['after'])
+                    if context is None:context=ca
+                    if ca!=context or cb!=context:raise ValueError('observation context differs')
+                    result=self.engine.words.resolve(item['text'],example['before'],persist=False)
+                    if result['status']!='stabilized' or result['coherence']['target_hex']!=b.state.encode().hex():raise ValueError('web relationship fails grounded observation')
             self.db.execute('INSERT OR REPLACE INTO web_word_provenance VALUES (?,?,?)',(sid,row['sha256'],json.dumps(entries)))
             self.db.execute('RELEASE web_words')
             return {'status':'registered','relationships':len(entries),'source_id':sid}

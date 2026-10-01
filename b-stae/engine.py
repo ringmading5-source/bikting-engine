@@ -14,8 +14,6 @@ class Engine(BinaryEngine):
         self.db = self.knowledge.db
         self.db.execute('''CREATE TABLE IF NOT EXISTS binary_sources (
             source_id INTEGER PRIMARY KEY, state BLOB NOT NULL, state_sha256 TEXT NOT NULL)''')
-        from vector_model import VectorModel
-        self.vector_model = VectorModel(self.db)
         self.paths = PathMemory(self.db)
         from byte_relationships import RelationshipEngine
         self.relationships = RelationshipEngine(self.db)
@@ -23,12 +21,6 @@ class Engine(BinaryEngine):
         self.bound_relationships = BoundResolver(self.relationships)
         from relationship_sources import RelationshipSources
         self.relationship_sources = RelationshipSources(self)
-        from learning import Learner
-        self.learner = Learner(self)
-        from sequences import SequenceExtractor
-        self.sequences = SequenceExtractor(self)
-        from image_memory import ImageMemory
-        self.images = ImageMemory(self)
         from modality_memory import ModalityMemory
         self.modalities = ModalityMemory(self)
         from intent_engine import IntentEngine

@@ -67,7 +67,7 @@ class IntentEngine:
         recognized,context=self.engine.modalities.recognize(value)
         entry=recognized.state;target,primitive=self.boundary(entry,intent)
         candidates=[]
-        for row in self.db.execute('SELECT fingerprint,program,program_hash FROM modality_programs WHERE context=? ORDER BY fingerprint LIMIT 101',(context,)):
+        for row in self.db.execute('SELECT fingerprint,program,program_hash FROM stored_modality_programs WHERE context=? ORDER BY fingerprint LIMIT 101',(context,)):
             raw=bytes(row['program'])
             if hashlib.sha256(raw).hexdigest()!=row['program_hash']:continue
             candidates.append((row['fingerprint'],Relationship.decode(raw)))
@@ -114,18 +114,13 @@ class IntentEngine:
             wav,_=render(Recognized(state,'pcm16',recognized.metadata));result['wav_base64']=base64.b64encode(wav).decode()
         return result
     def image(self,image,request):
-        from image_memory import image_state
+        from image_format import image_state
         intent=self.parse(request)
         if intent['operation']!='brighten':raise ValueError('image intent currently supports brighten N')
         w,h,raw=image_state(image);amount=intent['amount']
         target=bytes(x+amount for x in raw) # Out-of-range values reject; never silently clip.
-        for row in self.db.execute('SELECT fingerprint FROM image_programs ORDER BY fingerprint LIMIT 100'):
-            try:result=self.engine.images.transform(image,row[0])
-            except (ValueError,OverflowError):continue
-            if bytes.fromhex(result['image']['rgb_hex'])==target:
-                return dict(result,status='fulfilled',intent=intent,source='image_memory',verified=True)
         _,rule=self.boundary(BinaryState((Record(1,RGB,raw[:3]),)),intent)
-        from image_memory import pixel
+        from image_format import pixel
         output=b''.join(rule.apply(pixel(raw[i:i+3])).get(1).payload for i in range(0,len(raw),3))
         if output!=target:raise ValueError('image target verification failed')
         return {'status':'fulfilled','intent':intent,'source':'registered_operation','verified':True,

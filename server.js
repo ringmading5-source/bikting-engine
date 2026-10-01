@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual, randomUUID } from 'node:crypto';
 import { createBiktingRuntime } from './src/runtime/BiktingRuntime.js';
 import { createGeminiInterpreter } from './src/server/geminiInterpreter.js';
 import { createDefaultRegistries } from './src/bikting/core/registry/createDefaultRegistries.js';
@@ -15,6 +15,10 @@ import { createKnowledgeStore } from './src/server/knowledgeStore.js';
 import { createPostgresKnowledgeStore } from './src/server/postgresKnowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
 import { createLiveCostBridge } from './src/server/liveCostBridge.js';
+import { runProjectAgent } from './src/server/projectAgent.js';
+import { proposeCode } from './src/server/codingProposal.js';
+import { runCodingAgent, readCodingSnapshot } from './src/server/codingAgent.js';
+import { createRelationalMemory } from './src/server/relationalMemory.js';
 import { createGeminiTextTool } from './src/server/geminiTextTool.js';
 
 const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
@@ -29,20 +33,37 @@ export function createBiktingServer({ env = process.env, rootDir = root, logger 
   const defaults = createDefaultRegistries();
   const ttlMs = Number(env.KNOWLEDGE_CACHE_TTL_MS ?? 86_400_000);
   const knowledgeStore = env.DATABASE_URL ? createPostgresKnowledgeStore({ connectionString: env.DATABASE_URL, ttlMs }) : createKnowledgeStore({ filePath: env.KNOWLEDGE_STORE_PATH ?? resolve(rootDir, 'data/knowledge-cache.json'), ttlMs });
+  const relationalMemory = createRelationalMemory({ knowledgeStore });
   const providers = createProviderConnections({ env });
   const costBridge = createLiveCostBridge({ knowledgeStore, tools: defaults.tools, env, fetchImpl });
-  if (geminiEnabled) defaults.tools.register(createGeminiTextTool({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
+  if (geminiEnabled) defaults.tools.register(createGeminiTextTool({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall, knowledgeStore, onMemoryHit: () => costBridge.telemetry.recordResolution('cache') }));
   const models = new ModelRegistry();
   if (geminiEnabled) models.register(createModelAdapter({
     id: 'gemini.interpretation-text', name: 'Gemini interpretation text', domain: 'language', modalities: ['text'], capabilities: ['text.generate'],
-    metadata: { provider: 'gemini' }, methods: { async generate(semantic) { return { type: 'explanation', text: semantic.context.geminiExplanation || 'The request was interpreted, but no explanation was returned.' }; } }
+    metadata: { provider: 'gemini' }, methods: { async generate(semantic) { return { type: 'explanation', text: semantic.context.geminiExplanation || 'The request was interpreted, but no explanation was returned.', ...(semantic.context.memoryEvidence ? { source: { type: 'memory', id: 'relational_memory', deterministic: true }, memoryEvidence: semantic.context.memoryEvidence, memoryVerification: semantic.context.memoryConflict ? 'conflict' : 'operator_approved' } : {}) }; } }
   }));
   for (const model of defaults.models.list()) models.register(model);
-  const interpret = geminiEnabled ? createGeminiInterpreter({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', knowledgeStore, executeWebsite: costBridge.executeWebsite, onModelCall: costBridge.recordModelCall, fetchImpl }) : mockSemanticInterpreter;
+  const providerInterpret = geminiEnabled ? createGeminiInterpreter({ apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', knowledgeStore, executeWebsite: costBridge.executeWebsite, onModelCall: costBridge.recordModelCall, fetchImpl }) : mockSemanticInterpreter;
+  const interpret = async request => {
+    if (geminiEnabled && request.knowledgeMode !== 'web' && !request.projectContext && !request.sketch) {
+      const baseline = await mockSemanticInterpreter(request);
+      if (!baseline.context.task && ['unknown', 'explain'].includes(baseline.intent)) {
+        const answer = await relationalMemory.answer({ query: request.text, context: { language: request.language ?? 'und' } });
+        if (answer.status === 'conflict') {
+          return { ...baseline, intent: 'unknown', requestedOutputs: ['explanation'], context: { ...baseline.context, geminiExplanation: 'Stored sources conflict. Review the memory records before using this answer.', memoryConflict: true, memoryEvidence: answer.candidates.map(({ record }) => ({ id: record.id, source: record.source })), modelUsage: { calls: 0, inputTokens: 0, outputTokens: 0, estimatedCostUsd: 0 } } };
+        }
+        if (answer.status === 'resolved') {
+          costBridge.telemetry.recordResolution('search');
+          return { ...baseline, intent: 'explain', requestedOutputs: ['explanation'], context: { ...baseline.context, geminiExplanation: answer.text, memoryEvidence: answer.evidence, modelUsage: { calls: 0, inputTokens: 0, outputTokens: 0, estimatedCostUsd: 0 } }, provenance: [{ source: 'relational_memory', method: 'exact_approved_fact' }] };
+        }
+      }
+    }
+    return providerInterpret(request);
+  };
   const runtime = createBiktingRuntime({ interpret, tools: defaults.tools, models });
-  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore });
+  const handler = createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory, fetchImpl });
   const server = createServer(handler);
-  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge, knowledgeStore };
+  return { server, host: env.HOST ?? '0.0.0.0', port: Number(env.PORT ?? 8000), interpreter: geminiEnabled ? 'gemini' : 'mock', costBridge, knowledgeStore, relationalMemory };
 }
 
 export function startBiktingServer(options = {}) {
@@ -54,7 +75,8 @@ export function startBiktingServer(options = {}) {
   return composed;
 }
 
-function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore }) {
+function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, interpret, geminiEnabled, testToken, providers, costBridge, knowledgeStore, relationalMemory, fetchImpl }) {
+  let agentQueue = Promise.resolve();
   return async (request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -72,6 +94,73 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
         }
         const result = await costBridge.run(runtime, { type: 'text', ...normalized, source: 'browser' });
         return send(response, result.status === 'error' ? 502 : 200, result);
+      }
+      if (pathname === '/api/agent/propose') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE || !env.GEMINI_API_KEY) return send(response, 503, { error: 'Coding workspace and attached model are required.' });
+        const input = await readInput(request);
+        try {
+          const snapshot = await readCodingSnapshot({ workspace: env.BIKTING_AGENT_WORKSPACE, path: input?.path });
+          return send(response, 200, await proposeCode({ snapshot, instruction: input?.instruction, apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
+        } catch (error) { return send(response, error instanceof TypeError ? 400 : 502, { error: error.message }); }
+      }
+      if (pathname === '/api/agent/project') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE) return send(response, 503, { error: 'Coding workspace is not configured.' });
+        let testFiles;
+        try { testFiles = JSON.parse(env.BIKTING_AGENT_TEST_FILES ?? '[]'); if (!Array.isArray(testFiles)) throw Error(); }
+        catch { return send(response, 503, { error: 'Registered test configuration is invalid.' }); }
+        const input = await readInput(request);
+        const work = agentQueue.then(async () => {
+          for (const record of [
+            { id: 'builtin:project-apply', tool: 'project.apply', preconditions: { filesMatch: false }, effects: { filesMatch: true } },
+            { id: 'builtin:project-syntax', tool: 'project.syntax', preconditions: { filesMatch: true }, effects: { syntaxValid: true } },
+            { id: 'builtin:project-tests', tool: 'project.tests', preconditions: { filesMatch: true, syntaxValid: true }, effects: { testsPassed: true } },
+          ]) await relationalMemory.put({ ...record, kind: 'procedure', text: record.tool, queries: [], source: 'builtin:project-agent-v1', review: 'approved', context: { agent: 'coding-project-v1' }, expiresAt: Date.now() + 86400000 });
+          const runId = randomUUID();
+          const result = await runProjectAgent({ ...(input ?? {}), workspace: env.BIKTING_AGENT_WORKSPACE, memory: relationalMemory, testFiles,
+            onVerified: async evidence => knowledgeStore.set(`agent-evidence:${randomUUID()}`, { ...evidence, runId, verification: 'observed_step', recordedAt: new Date().toISOString() }) });
+          await knowledgeStore.set(`agent-run:${runId}`, { ...result, runId, recordedAt: new Date().toISOString() });
+          return { ...result, runId };
+        });
+        agentQueue = work.catch(() => {});
+        try { return send(response, 200, await work); }
+        catch (error) { return send(response, error instanceof TypeError ? 400 : 409, { error: error.message }); }
+      }
+      if (pathname === '/api/agent/code') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE) return send(response, 503, { error: 'Coding workspace is not configured.' });
+        const input = await readInput(request);
+        const work = agentQueue.then(async () => {
+          for (const record of [
+            { id: 'builtin:file-replace', tool: 'file.replace', preconditions: { fileMatches: false }, effects: { fileMatches: true } },
+            { id: 'builtin:file-syntax', tool: 'file.syntax-check', preconditions: { fileMatches: true }, effects: { syntaxValid: true } },
+          ]) await relationalMemory.put({ ...record, kind: 'procedure', text: record.tool, queries: [], source: 'builtin:coding-agent-v1', review: 'approved', context: { agent: 'coding-v1' }, expiresAt: Date.now() + 86400000 });
+          return runCodingAgent({ ...(input ?? {}), workspace: env.BIKTING_AGENT_WORKSPACE, memory: relationalMemory, onVerified: async evidence => knowledgeStore.set(`agent-evidence:${randomUUID()}`, { ...evidence, path: input?.path, recordedAt: new Date().toISOString(), verification: 'observed' }) });
+        });
+        agentQueue = work.catch(() => {});
+        try { return send(response, 200, await work); }
+        catch (error) { return send(response, error instanceof TypeError ? 400 : 409, { error: error.message }); }
+      }
+      if (['/api/memory/records', '/api/memory/retrieve', '/api/memory/answer', '/api/memory/plan'].includes(pathname)) {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST' && !(pathname === '/api/memory/records' && request.method === 'DELETE')) return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        const input = await readInput(request);
+        try {
+          const operation = request.method === 'DELETE' ? 'remove' : pathname.split('/').at(-1);
+          const result = await relationalMemory[operation === 'records' ? 'put' : operation](input ?? {});
+          return send(response, 200, result);
+        } catch (error) {
+          if (error instanceof TypeError || error instanceof RangeError) return send(response, 400, { error: error.message });
+          return send(response, 503, { error: 'Memory storage unavailable.' });
+        }
       }
       if (pathname === '/health') {
         try { await knowledgeStore.ready(); }
