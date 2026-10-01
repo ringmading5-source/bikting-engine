@@ -311,3 +311,21 @@ fingerprint and are saved with successful fits when a database path is provided.
 CLI exit status is zero only when every test prediction passes. This supports
 bounded numeric transition learning; arbitrary knowledge and noisy observations
 require additional learning methods.
+
+### Text questions using a learned inventory model
+
+After fitting the example dataset into `dataset-memory.db`, use its reported model ID:
+
+```bash
+python text_transition.py --database dataset-memory.db --model-id MODEL_ID 'I have seven items and receive nine more. How many now?'
+```
+
+The answer is generated from stored learned coefficients without LLM calls. This
+adapter uses an explicit English grammar and supports digits or number words
+zero through ninety-nine, including twenty-one. It handles `receive`/`get` item
+questions and `Current stock is 8 and incoming units are 4.` statements. It rejects
+unsupported language, mixed units, wrong model context, disabled hypotheses and
+inputs outside the model's observed range. The numeric transformation is learned;
+the language grammar and output sentence are programmed. Image recognition and
+learned general text understanding remain future work. This CLI is not yet exposed
+in the web interface.
