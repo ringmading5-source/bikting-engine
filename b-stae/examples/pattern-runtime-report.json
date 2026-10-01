@@ -1,0 +1,287 @@
+{
+  "composition_cases": [
+    {
+      "input": [
+        20,
+        23
+      ],
+      "target": [
+        42,
+        48
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        21,
+        24
+      ],
+      "target": [
+        44,
+        50
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        22,
+        25
+      ],
+      "target": [
+        46,
+        52
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        23,
+        26
+      ],
+      "target": [
+        48,
+        54
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        24,
+        27
+      ],
+      "target": [
+        50,
+        56
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        25,
+        28
+      ],
+      "target": [
+        52,
+        58
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        26,
+        29
+      ],
+      "target": [
+        54,
+        60
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        27,
+        30
+      ],
+      "target": [
+        56,
+        62
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        28,
+        31
+      ],
+      "target": [
+        58,
+        64
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        29,
+        32
+      ],
+      "target": [
+        60,
+        66
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        30,
+        33
+      ],
+      "target": [
+        62,
+        68
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        31,
+        34
+      ],
+      "target": [
+        64,
+        70
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        32,
+        35
+      ],
+      "target": [
+        66,
+        72
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        33,
+        36
+      ],
+      "target": [
+        68,
+        74
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        34,
+        37
+      ],
+      "target": [
+        70,
+        76
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        35,
+        38
+      ],
+      "target": [
+        72,
+        78
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        36,
+        39
+      ],
+      "target": [
+        74,
+        80
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        37,
+        40
+      ],
+      "target": [
+        76,
+        82
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        38,
+        41
+      ],
+      "target": [
+        78,
+        84
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    },
+    {
+      "input": [
+        39,
+        42
+      ],
+      "target": [
+        80,
+        86
+      ],
+      "status": "predicted_goal_matched",
+      "steps": 2,
+      "passed": true
+    }
+  ],
+  "passed": 20,
+  "total": 20,
+  "feedback": [
+    {
+      "outcome": 1,
+      "prediction_matched": false,
+      "goal_matched": false,
+      "program_id": "0be967ba4715bbb68a8afb8c1fbd5b9b952a1a3c3959687ed8bc2261d298e494",
+      "evidence_retained": true,
+      "scope": "Comparison to supplied outcome; its source is not independently verified."
+    },
+    {
+      "outcome": 2,
+      "prediction_matched": true,
+      "goal_matched": true,
+      "program_id": "0be967ba4715bbb68a8afb8c1fbd5b9b952a1a3c3959687ed8bc2261d298e494",
+      "evidence_retained": true,
+      "scope": "Comparison to supplied outcome; its source is not independently verified."
+    }
+  ],
+  "retained_outcomes": 2,
+  "model_calls": 0,
+  "scope": "Synthetic sequence composition. Targets supplied; no external task execution or universal intelligence claim."
+}

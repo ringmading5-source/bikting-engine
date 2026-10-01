@@ -1,0 +1,62 @@
+{
+  "cases": [
+    {
+      "request": "reverse these new letters",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "reverse these new letters",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "reverse these new letters",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "reverse these new image pixels",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "amplify these new audio samples",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "reverse these new image pixels",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "amplify these new audio samples",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "reverse these new image pixels",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    },
+    {
+      "request": "amplify these new audio samples",
+      "passed": true,
+      "routing": "routed",
+      "prediction": "predicted"
+    }
+  ],
+  "passed": 9,
+  "total": 9,
+  "model_calls": 0,
+  "scope": "Synthetic lexical routing and signal transformations. No speech, object recognition, or broad semantic understanding."
+}

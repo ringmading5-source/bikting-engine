@@ -16,6 +16,16 @@ class Engine(BinaryEngine):
             source_id INTEGER PRIMARY KEY, state BLOB NOT NULL, state_sha256 TEXT NOT NULL)''')
         from representation import RepresentationMemory
         self.representations = RepresentationMemory(self)
+        from pattern_memory import PatternMemory
+        self.patterns = PatternMemory(self)
+        from relationship_discovery import RelationshipDiscovery
+        self.discovery_patterns = RelationshipDiscovery(self)
+        from pattern_runtime import PatternRuntime
+        self.pattern_runtime = PatternRuntime(self)
+        from learned_request_router import LearnedRequestRouter
+        self.request_patterns = LearnedRequestRouter(self)
+        from multimodal_patterns import MultimodalPatterns
+        self.multimodal_patterns = MultimodalPatterns(self)
         self.paths = PathMemory(self.db)
         from byte_relationships import RelationshipEngine
         self.relationships = RelationshipEngine(self.db)

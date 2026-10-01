@@ -431,3 +431,202 @@ with zero LLM calls. These are reproducible synthetic results for exact affine
 patterns with explicit action/context labels, not evidence of general language
 understanding or universal intelligence. The benchmark uses temporary memory;
 it does not install these models in a deployed application's database.
+
+### Connected pattern memory (idea shift)
+
+`Engine.patterns` retains original observations, including competing evidence,
+with source/context provenance. `observe_text` links byte, Unicode character,
+word/punctuation and sentence sequences to one observation. All contiguous
+subsequences remain queryable by start/end positions; overlapping pieces share
+the original sequence instead of being expanded into quadratic copies.
+This retains observed evidence, not every possible abstraction or combination.
+Boundary adapters are explicit; discovering boundaries is future work.
+
+Run `python pattern_memory_demo.py` for unseen-prefix continuation, an unseen
+copying analogy, and conflicting predictions retained together. Run
+`python -m unittest discover -s tests` for regression tests.
+
+The existing `/api` dispatcher supports `pattern_observe` (text/source/context),
+`pattern_find` and `pattern_complete` (units/level/context), `pattern_learn_pair`
+(before/after/level/source/context), `pattern_predict` (units/level/context),
+and `pattern_stats`. This addition does not replace existing numeric learners.
+
+`predict` transfers equality/copy/reordering structure from paired demonstrations.
+It returns every distinct supported candidate and reports ambiguity rather than
+deleting a conflicting example. Predictions are unverified hypotheses.
+`complete` returns continuation evidence from all matching suffixes, ranked by
+match length and support. Neither method learns meaning or answers arbitrary
+questions. Retrieval currently scans sequences; large datasets need indexing.
+Training requires no neural network, GPU, or LLM calls for this experiment.
+
+### Relationship discovery experiment
+
+`Engine.discovery_patterns` now synthesizes candidate programs from stored
+input/output observations. There is no task-name switch for reverse, rotate,
+duplicate, etc. The implementation supplies a small hypothesis language:
+concatenate slices (including backward traversal and strides), observed literal
+units, and fitted numeric polynomials of degree up to two.
+Examples determine programs; the language, endpoint vocabulary, and search
+limits remain programmed assumptions. This cannot discover arbitrary behavior.
+
+Use `pattern_learn_pair` to store demonstrations, `relationship_discover`
+(level/context/max_programs/max_parts/max_stride/endpoint_radius) to search, `relationship_inventory` to
+inspect all generated programs with supporting/conflicting example IDs, and
+`relationship_predict` (units/level/context) to obtain candidate outputs.
+Programs remain persisted after contradictions. At least two distinct inputs
+of two different lengths must support a program before prediction uses it.
+This eligibility heuristic is not a correctness guarantee. Unsupported and
+ineligible hypotheses stay in inventory. Candidate ordering uses support count;
+it does not erase alternatives. No success/failure feedback learner is claimed.
+
+Run `python relationship_discovery_demo.py`. Its three training lengths and
+three test lengths differ, and test symbols are withheld. Independent oracles
+only generate observations and score outputs, never executable learner rules.
+Search reports truncation when its program/expansion bounds are reached.
+Each example searches up to 100,000 fragment expansions. Stored observations
+are not truncated. Inventory currently recomputes evidence by scanning examples.
+
+
+Expanded discovery supports strides up to four and endpoint offsets up to three
+by default, configurable up to sixteen and eight respectively. Up to three
+parts can be concatenated (`max_parts=3`; default remains two). Numeric
+coefficients are fitted using exact rational arithmetic from aligned numeric
+observations, with a fixed maximum polynomial degree of two. Predictions with
+fractional values are converted to floating point, so output precision remains
+limited. Numeric programs reject nonnumeric inputs. Type/overflow rejection
+leaves programs stored. This does not yet learn comparisons, arbitrary loops,
+semantics, or arbitrary mathematical functions. Increasing search bounds may
+cost more CPU and produce more hypotheses, not necessarily better answers.
+
+### End-to-end pattern runtime
+
+The Connected pattern learning panel now exposes example ingestion, discovery,
+prediction, target selection, multi-context composition, and outcome feedback.
+Run `python app.py` from `b-stae` and open its printed local URL. The panel's
+examples demonstrate two isolated numeric relationships; the combined solution
+is not included in training. Its context names are user labels, not inferred
+intent. No external actions are performed by this experimental runtime.
+
+API actions:
+- `pattern_select`: units/level/context/optional goal array.
+- `pattern_plan`: units/target/level/contexts array; optional max_depth/max_nodes/max_units.
+- `pattern_feedback`: units/actual/program/level/source/context/optional goal.
+- `pattern_outcomes`: level/context.
+
+Feedback remains append-only with source, input, predicted output, actual output,
+and target evidence. Observations can conflict without erasing each other.
+Accuracy evidence is evaluated against every hypothesis in the same explicit
+context, so equivalent programs cannot escape a counterexample merely by
+having a different encoding. Goal outcome evidence applies only to the attempted
+program and exact target. Sources and supplied outcomes are not independently
+verified. Ranking uses evidence counts, not calibrated probabilities.
+
+Planning composes best-scoring eligible programs per context in a bounded
+breadth-first search. Other programs remain in inventory; search failure does
+not prove the goal impossible. Every returned step includes its program and
+supporting/conflicting example IDs. Target equality is verified computationally;
+real-world outcome success remains unverified. Search defaults: depth four,
+256 states, maximum 128 units per state. It searches at most eight transitions
+when configured; these bounds are computational limits, not knowledge deletion.
+
+Run `python pattern_runtime_demo.py` for twenty unseen composite targets, with
+independent oracle checks and contradictory feedback retained together.
+Run `python -m unittest discover -s tests` from `b-stae` for the full suite.
+Remaining research: learned context/intent, broader program languages, real
+corpora, grounded image/audio learning, scalable indexing, and calibration.
+
+### Learned requests and modality adapters
+
+The Learn a request and its behavior panel stores request-to-context examples
+and input/output observations. `request_pattern_learn` accepts text/context/source;
+`request_pattern_route` accepts text. Routing derives unigram/bigram evidence
+from supplied examples, without an installed mapping from command words to
+operations. Labels remain supplied by the user; scores are uncalibrated.
+Shared/conflicting request features remain and may yield ambiguity. Unseen
+synonyms, negation, or complex instructions are not reliably understood.
+
+The same sequence discovery/runtime operates on Unicode characters, packed
+RGB pixels, and PCM16 samples. Actions `multimodal_pattern_learn` accept
+before/after/context/source; `multimodal_pattern_discover` and
+`multimodal_pattern_predict` accept value/context; `multimodal_pattern_request`
+accepts text/value and routes to a learned context. Formats:
+
+- Text: a JSON string.
+- Image: `{"image":{"width":2,"height":1,"rgb_hex":"ff00000000ff"}}`.
+- Audio: `{"audio":{"samples":[100,-100,200],"sample_rate":16000}}`.
+
+Adapters enforce image dimensions, valid pixels and PCM16 range. Training pairs
+must share format and dimensions; examples can vary dimensions across pairs.
+Predicted image size is preserved, and unsupported sizes/values are rejected
+without deleting the hypothesis. Audio format context includes sample rate;
+the experiment supports at most 4096 samples, not complete speech recordings.
+The interface renders pixel outputs and provides manual playback of generated
+PCM WAV output. Those decoders/renderers are installed code, not learned meaning.
+No text-to-speech, speech recognition, object recognition, or unrestricted
+semantic understanding is claimed. Current tests are synthetic, not real-world
+accuracy estimates. Run `python multimodal_learning_demo.py` for nine held-out
+request/signal cases. All request phrases and tested signal sequences differ
+from training, but share learned words or transformation structure.
+
+Selection now prefers fewer program parts when evidence scores tie. This is
+a parsimony heuristic, not proof of correctness, and all alternatives remain
+visible. Contradictions and failure evidence remain append-only.
+
+### Dataset import and held-out evaluation
+
+`pattern_dataset.py` imports JSONL with explicit splits. A 76-record synthetic
+starter dataset is included at `examples/pattern-starter.jsonl`, reproducible
+with `python examples/build-pattern-dataset.py`. It contains 25 training records,
+15 validation records, and 36 test records, including one unscored raw-text test.
+This is pipeline validation, not a real-world accuracy benchmark.
+
+From the `b-stae` directory:
+
+```sh
+python pattern_dataset.py examples/pattern-starter.jsonl --database my-pattern-memory.sqlite3 --name starter-v1 --report starter-report.json
+```
+
+The local interface also accepts a JSONL file and displays import/evaluation
+reports. It supports files up to 900 KB, subject to the existing 1 MB API request
+limit. CLI imports are limited to 16 MiB and 10,000 records for this experiment.
+Neither limit is a tested production capacity. Discovery can be costly as stored
+examples grow; begin with small batches.
+
+Every record needs `id`, `episode_id`, `split` (`training`, `validation`, `test`),
+`kind`, `source`, and `context`. Kind-specific fields:
+
+| Kind | Fields | What it teaches |
+|---|---|---|
+| sequence | before/after arrays and level | Sequence/numeric transformations |
+| request | text | Request-to-context associations |
+| multimodal | before/after supported values | Character, RGB pixel, PCM transformations |
+| raw_text | text | Observation patterns only; no answer target |
+
+Example sequence record:
+
+```json
+{"id":"train-1","episode_id":"episode-1","split":"training","kind":"sequence","source":"my-observation","context":"task-a","level":"number","before":[1,3,5],"after":[2,6,10]}
+```
+
+Keep related examples in one split via their episode IDs. Exact inputs cannot
+cross splits, including prior dataset imports and already learned input/output
+examples. Request input checks normalize case and whitespace. Multimodal input
+checks use its underlying sequence representation. These checks do not detect
+all paraphrase/semantic leakage. Tests never supply their answer as a selection
+goal and never update feedback or learner memory. Later direct learning of a
+held-out input causes evaluation to fail rather than report contaminated scores.
+
+Validation and test rows stay in a separate staging table. Only training rows
+reach learners. Complete batches validate before writes, and failed imports
+restore an SQLite backup, including any intermediate learner writes. Identical
+reimports under the same name do not repeat training; changed content requires
+a new name and still passes split checks. Original source/context evidence stays.
+Backups incur additional memory cost on larger databases.
+
+Reports include exact-output accuracy, alternatives/ambiguity, expected-answer presence among candidates,
+elapsed time, records/cases per second, Python allocation peak, process lifetime
+peak RSS where supported, and SQLite allocated size. Python tracing excludes
+some native allocations; RSS is a process peak, not incremental training memory.
+SQLite size excludes filesystem sidecars. A raw-text row has no prediction
+oracle and is explicitly unscored. Learned formats and hypothesis limits still
+apply; arbitrary books, images, or speech do not automatically teach semantics.

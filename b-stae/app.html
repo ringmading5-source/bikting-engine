@@ -1,5 +1,49 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B-STAE knowledge and procedures</title><style>body{background:#111826;color:#e8eef9;font:16px system-ui;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:#1b293c;border:1px solid #314156;border-radius:12px;padding:20px;margin:20px 0}label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:6px}input,textarea{box-sizing:border-box;width:100%;background:#111b2b;color:#fff;border:1px solid #52647b}textarea{min-height:70px}button{background:#72dbbf;border:0;margin-top:12px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#adc0d8}</style></head><body><main>
 <h1>B-STAE knowledge and procedures</h1><p>Store source knowledge and explicit procedures. Retrieve applicable procedures, compose bounded paths, and verify execution against the supplied target.</p><label for="token">Access token (for hosted deployments)</label><input id="token" type="password" autocomplete="off">
+<section><h2>Import a pattern dataset</h2>
+<p>Use JSONL records with explicit training, validation, and test splits. Only training records teach the model.</p>
+<label for="dataset-name">Dataset name</label><input id="dataset-name" value="my-first-dataset">
+<label for="dataset-file">JSONL dataset (up to 900 KB in this interface)</label><input id="dataset-file" type="file" accept=".jsonl,application/x-ndjson,text/plain">
+<button id="dataset-import">Import and learn</button><button id="dataset-evaluate">Evaluate held-out records</button>
+<p id="dataset-note" aria-live="polite">Keep related examples in the same episode and split. Larger files can use the command-line importer.</p>
+<details><summary>Import and accuracy report</summary><pre id="dataset-result"></pre></details>
+</section>
+<section><h2>Learn a request and its behavior</h2>
+<p>Pair request examples with observed transformations, then try a new request and input.</p>
+<label for="grounded-data">Examples</label><textarea id="grounded-data" style="min-height:180px">[
+ {"request":"reverse these letters","context":"letters","before":"ab","after":"ba"},
+ {"request":"reverse the word","context":"letters","before":"cde","after":"edc"},
+ {"request":"read backwards","context":"letters","before":"fghij","after":"jihgf"}
+]</textarea><button id="grounded-train">Learn requests and transformations</button>
+<label for="grounded-request">New request</label><input id="grounded-request" value="reverse this new word">
+<label for="grounded-value">Input (JSON)</label><textarea id="grounded-value">"klmnop"</textarea><button id="grounded-run">Predict the output</button>
+<p id="grounded-note" aria-live="polite">Text is represented as characters. Images use packed RGB pixels; audio uses PCM16 samples. This does not recognize speech or objects.</p>
+<div id="grounded-output"></div><details><summary>Request evidence and output candidates</summary><pre id="grounded-result"></pre></details>
+<small>Image input: {"image":{"width":2,"height":1,"rgb_hex":"ff00000000ff"}}. Audio input: {"audio":{"samples":[100,-100,200],"sample_rate":16000}}. Train corresponding pairs before prediction.</small>
+</section>
+<section><h2>Connected pattern learning</h2>
+<p>Learn relationships from examples, try new inputs, and retain outcome evidence.</p>
+<label for="pattern-level">Unit level</label><input id="pattern-level" value="number">
+<label for="pattern-data">Examples: input, output, and context</label><textarea id="pattern-data" style="min-height:180px">[
+ {"before":[1,3,5],"after":[2,4,6],"context":"increment"},
+ {"before":[2,4,6,8],"after":[3,5,7,9],"context":"increment"},
+ {"before":[1,3,5],"after":[2,6,10],"context":"double"},
+ {"before":[2,4,6,8],"after":[4,8,12,16],"context":"double"}
+]</textarea><button id="pattern-train">Learn these examples</button>
+<label for="pattern-input">New input (array)</label><input id="pattern-input" value="[20,30]">
+<label for="pattern-context">Context for prediction (JSON)</label><input id="pattern-context" value='"increment"'>
+<label for="pattern-target">Desired output (array; optional for prediction)</label><input id="pattern-target" value="[42,62]">
+<button id="pattern-predict">Predict in this context</button><button id="pattern-select">Compare with desired output</button>
+<label for="pattern-contexts">Contexts available for a combined solution (array)</label><input id="pattern-contexts" value='["increment","double"]'>
+<button id="pattern-compose">Find a combined solution</button>
+<p id="pattern-note" aria-live="polite">Examples do not include the combined solution. Predicted target matches are not observed outcomes.</p>
+<label for="pattern-actual">Actual observed output (array)</label><input id="pattern-actual" value="[21,31]">
+<label for="pattern-source">Outcome source</label><input id="pattern-source" placeholder="Where did you observe this outcome?">
+<button id="pattern-feedback" disabled>Record outcome for the last prediction</button>
+<button id="pattern-evidence">Inspect retained outcomes</button>
+<details><summary>Results and supporting patterns</summary><pre id="pattern-result"></pre></details>
+<small>Supports sequence operations and fitted numeric polynomials. Context labels are supplied. General language, image, and voice understanding are not established.</small>
+</section>
 <section><h2>Shared text, voice and visual states</h2><p>Encode structured inputs and execute verified transitions with one shared timeline.</p><label for="representation-request">Transition request (JSON)</label><textarea id="representation-request" style="min-height:240px" placeholder='{"action":"representation_transition","state":{},"steps":[]}'></textarea><button id="representation-demo">Load and run example</button><button id="representation-run">Execute request</button><button id="representation-play" disabled>Play verified output</button><p id="representation-note">The example uses three PCM samples to test the audio path. Supply recorded PCM audio for speech; this does not generate speech.</p><div id="representation-output" aria-live="polite"></div><pre id="representation-result"></pre></section>
 <section><h2>Learn sentence patterns from examples</h2><p>Pair sentences with labeled states. B-STAE learns which quantities fill each field and their order in the sentence.</p><button id="text-learning-example">Load labeled text examples</button><label for="text-learning-data">Training and separate validation examples</label><textarea id="text-learning-data" style="min-height:200px"></textarea><button id="text-learning-run">Learn and validate sentence patterns</button><p id="text-learning-note" aria-live="polite"></p><label for="text-learning-id">Learned text model ID</label><input id="text-learning-id"><label for="text-learning-number-id">Numeric transition model ID (from the coupled inventory example)</label><input id="text-learning-number-id"><label for="text-learning-question">Test a new quantity or word order</label><input id="text-learning-question" value="nine arrived; I already had seven."><button id="text-learning-parse">Read the state</button><button id="text-learning-answer">Answer with both learned models</button><p id="text-learning-summary" aria-live="polite"></p><details><summary>Learning and prediction details</summary><pre id="text-learning-result"></pre></details><small>Sentence frames are induced from supplied labels. New quantities can match learned frames; unfamiliar sentence structures need more examples. Number-word decoding is installed code. This does not establish general language understanding.</small></section>
 <section><h2>Solve an unseen combination</h2><p>Learn receiving and selling from separate simulated observations, then search for steps to reach your target.</p><button id="learned-prepare">Learn the two demo behaviors</button><p id="learned-ready" aria-live="polite">Prepare the demo before planning.</p><label for="learned-stock">Starting stock</label><input id="learned-stock" type="number" min="0" max="20" step="1" value="10"><label for="learned-incoming">Incoming units</label><input id="learned-incoming" type="number" min="0" max="20" step="1" value="5"><label for="learned-outgoing">Outgoing units</label><input id="learned-outgoing" type="number" min="0" max="20" step="1" value="3"><label for="learned-target">Target stock</label><input id="learned-target" type="number" step="1" value="12"><button id="learned-run" disabled>Find a plan</button><div id="learned-summary" aria-live="polite"></div><ol id="learned-steps"></ol><details><summary>Planning details</summary><pre id="learned-result"></pre></details><small>Synthetic inventory example. No action sequence is supplied. Predictions use learned hypotheses; no warehouse action is performed. Search stops at fixed limits.</small></section>
@@ -139,4 +183,119 @@ bind('execute','procedure-result',()=>({action:'intent_execute',value:JSON.parse
 bind('word-register','word-result',()=>({...JSON.parse(el('definition').value),action:'word_register',text:el('word').value}));
 bind('word-execute','word-result',()=>({action:'word_execute',text:el('word').value,value:JSON.parse(el('value').value)}));
 bind('status','status-result',()=>({action:'status'}));
+
+let patternAttempt=null;
+const patternJSON=id=>JSON.parse(el(id).value);
+function showPattern(result){el('pattern-result').textContent=JSON.stringify(result,null,2);el('pattern-note').textContent=result.status||'Evidence recorded.';}
+function resetPattern(){patternAttempt=null;el('pattern-feedback').disabled=true;}
+el('pattern-train').onclick=async()=>{
+ resetPattern();el('pattern-train').disabled=true;
+ try{
+  const examples=patternJSON('pattern-data');if(!Array.isArray(examples)||!examples.length)throw Error('Enter an array of examples.');
+  const contexts=new Map();const level=el('pattern-level').value;
+  for(const example of examples){
+   await call({action:'pattern_learn_pair',...example,level,source:example.source||'user:pattern-panel'});
+   contexts.set(JSON.stringify(example.context??null),example.context??null);
+  }
+  const reports=[];for(const context of contexts.values()){
+   const result=await call({action:'relationship_discover',level,context});
+   reports.push({context,generated:result.generated,search_limited:result.search_limited});
+  }
+  showPattern({status:'Examples stored and relationships searched.',reports});
+ }catch(error){el('pattern-note').textContent=error.message}finally{el('pattern-train').disabled=false}
+};
+async function selectPattern(withGoal){
+ resetPattern();
+ try{
+  const request={action:'pattern_select',units:patternJSON('pattern-input'),level:el('pattern-level').value,context:patternJSON('pattern-context')};
+  if(withGoal&&el('pattern-target').value.trim())request.goal=patternJSON('pattern-target');
+  const result=await call(request);showPattern(result);
+  if(result.status==='selected'){
+   const hypotheses=result.preferred[0].hypotheses;
+   hypotheses.sort((a,b)=>b.score-a.score||a.complexity-b.complexity);
+   patternAttempt={...request,program:hypotheses[0].program};el('pattern-feedback').disabled=false;
+  }
+ }catch(error){el('pattern-note').textContent=error.message}
+}
+el('pattern-predict').onclick=()=>selectPattern(false);
+el('pattern-select').onclick=()=>selectPattern(true);
+el('pattern-compose').onclick=async()=>{
+ resetPattern();try{showPattern(await call({action:'pattern_plan',units:patternJSON('pattern-input'),target:patternJSON('pattern-target'),level:el('pattern-level').value,contexts:patternJSON('pattern-contexts')}))}catch(error){el('pattern-note').textContent=error.message}
+};
+el('pattern-feedback').onclick=async()=>{
+ if(!patternAttempt)return;
+ try{const source=el('pattern-source').value.trim();if(!source)throw Error('Enter the source of the observed output.');
+  showPattern(await call({...patternAttempt,action:'pattern_feedback',actual:patternJSON('pattern-actual'),source}));resetPattern();
+ }catch(error){el('pattern-note').textContent=error.message}
+};
+el('pattern-evidence').onclick=async()=>{
+ try{showPattern(await call({action:'pattern_outcomes',level:el('pattern-level').value,context:patternJSON('pattern-context')}))}catch(error){el('pattern-note').textContent=error.message}
+};
+
+el('grounded-train').onclick=async()=>{
+ el('grounded-train').disabled=true;
+ try{
+  const examples=JSON.parse(el('grounded-data').value);if(!Array.isArray(examples)||!examples.length)throw Error('Enter an array of examples.');
+  const representatives=new Map();
+  for(const example of examples){
+   const source=example.source||'user:grounded-panel';
+   await call({action:'multimodal_pattern_learn',before:example.before,after:example.after,context:example.context,source});
+   await call({action:'request_pattern_learn',text:example.request,context:example.context,source});
+   const format=typeof example.before==='string'?'text':example.before?.image?'image':JSON.stringify(example.before?.audio?.sample_rate);
+   representatives.set(JSON.stringify([example.context,format]),example);
+  }
+  const reports=[];for(const example of representatives.values()){
+   const report=await call({action:'multimodal_pattern_discover',value:example.before,context:example.context});
+   reports.push({context:example.context,generated:report.generated,search_limited:report.search_limited});
+  }
+  el('grounded-result').textContent=JSON.stringify(reports,null,2);el('grounded-note').textContent='Examples retained. Try a request and input not used above.';
+ }catch(error){el('grounded-note').textContent=error.message}finally{el('grounded-train').disabled=false}
+};
+let groundedAudioURL=null;
+el('grounded-run').onclick=async()=>{
+ el('grounded-run').disabled=true;el('grounded-output').replaceChildren();
+ if(groundedAudioURL){URL.revokeObjectURL(groundedAudioURL);groundedAudioURL=null;}
+ try{
+  const result=await call({action:'multimodal_pattern_request',text:el('grounded-request').value,value:JSON.parse(el('grounded-value').value)});
+  el('grounded-result').textContent=JSON.stringify(result,null,2);
+  const prediction=result.prediction;el('grounded-note').textContent=prediction?.status||result.status;
+  if(prediction?.status==='predicted'){
+   const output=prediction.preferred[0].output;
+   if(typeof output==='string'){const node=document.createElement('p');node.textContent=output;el('grounded-output').append(node);}
+   else if(output.image){
+    const {width,height,rgb_hex}=output.image;const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+    canvas.style.maxWidth='100%';canvas.style.width=Math.min(width*20,600)+'px';canvas.style.imageRendering='pixelated';
+    const ctx=canvas.getContext('2d');const pixels=ctx.createImageData(width,height);
+    for(let i=0;i<width*height;i++){for(let c=0;c<3;c++)pixels.data[4*i+c]=parseInt(rgb_hex.slice(6*i+2*c,6*i+2*c+2),16);pixels.data[4*i+3]=255;}
+    ctx.putImageData(pixels,0,0);el('grounded-output').append(canvas);
+   }else if(output.audio){
+    const {samples,sample_rate}=output.audio;const bytes=new ArrayBuffer(44+2*samples.length);const view=new DataView(bytes);
+    function tag(offset,value){for(let i=0;i<value.length;i++)view.setUint8(offset+i,value.charCodeAt(i));}
+    tag(0,'RIFF');view.setUint32(4,36+2*samples.length,true);tag(8,'WAVE');tag(12,'fmt ');view.setUint32(16,16,true);
+    view.setUint16(20,1,true);view.setUint16(22,1,true);view.setUint32(24,sample_rate,true);view.setUint32(28,2*sample_rate,true);
+    view.setUint16(32,2,true);view.setUint16(34,16,true);tag(36,'data');view.setUint32(40,2*samples.length,true);
+    samples.forEach((sample,index)=>view.setInt16(44+2*index,sample,true));
+    groundedAudioURL=URL.createObjectURL(new Blob([bytes],{type:'audio/wav'}));const player=document.createElement('audio');player.controls=true;player.src=groundedAudioURL;el('grounded-output').append(player);
+   }
+  }
+ }catch(error){el('grounded-note').textContent=error.message}finally{el('grounded-run').disabled=false}
+};
+
+el('dataset-import').onclick=async()=>{
+ el('dataset-import').disabled=true;el('dataset-note').textContent='Validating and learning the training split…';
+ try{
+  const file=el('dataset-file').files[0];if(!file)throw Error('Select a JSONL file first.');if(file.size>900000)throw Error('Use the command-line importer for files over 900 KB.');
+  const records=(await file.text()).split(/\r?\n/).filter(line=>line.trim()).map((line,index)=>{try{return JSON.parse(line)}catch(error){throw Error('Invalid JSON on nonempty line '+(index+1))}});
+  const payload={action:'pattern_dataset_import',name:el('dataset-name').value.trim(),records};
+  if(new TextEncoder().encode(JSON.stringify(payload)).length>1000000)throw Error('Request exceeds the interface limit; use the command-line importer.');
+  const result=await call(payload);el('dataset-result').textContent=JSON.stringify(result,null,2);el('dataset-note').textContent=result.status;
+ }catch(error){el('dataset-note').textContent=error.message}finally{el('dataset-import').disabled=false}
+};
+el('dataset-evaluate').onclick=async()=>{
+ el('dataset-evaluate').disabled=true;el('dataset-note').textContent='Scoring validation and test records without learning updates…';
+ try{
+  const result=await call({action:'pattern_dataset_evaluate',name:el('dataset-name').value.trim()});
+  el('dataset-result').textContent=JSON.stringify(result,null,2);el('dataset-note').textContent='Evaluation finished. Ambiguous answers are not counted as correct.';
+ }catch(error){el('dataset-note').textContent=error.message}finally{el('dataset-evaluate').disabled=false}
+};
 </script></body></html>

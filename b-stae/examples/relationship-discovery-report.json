@@ -1,0 +1,468 @@
+{
+  "cases": [
+    {
+      "task": "reverse",
+      "input": "klmn",
+      "expected": [
+        "n",
+        "m",
+        "l",
+        "k"
+      ],
+      "top_candidate": [
+        "n",
+        "m",
+        "l",
+        "k"
+      ],
+      "top_correct": true,
+      "candidate_count": 3,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "reverse",
+      "input": "opqrst",
+      "expected": [
+        "t",
+        "s",
+        "r",
+        "q",
+        "p",
+        "o"
+      ],
+      "top_candidate": [
+        "t",
+        "s",
+        "r",
+        "q",
+        "p",
+        "o"
+      ],
+      "top_correct": true,
+      "candidate_count": 4,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "reverse",
+      "input": "uvwxyza",
+      "expected": [
+        "a",
+        "z",
+        "y",
+        "x",
+        "w",
+        "v",
+        "u"
+      ],
+      "top_candidate": [
+        "a",
+        "z",
+        "y",
+        "x",
+        "w",
+        "v",
+        "u"
+      ],
+      "top_correct": true,
+      "candidate_count": 4,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "duplicate",
+      "input": "klmn",
+      "expected": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "top_candidate": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "k",
+        "l",
+        "m",
+        "n"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "duplicate",
+      "input": "opqrst",
+      "expected": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t"
+      ],
+      "top_candidate": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "duplicate",
+      "input": "uvwxyza",
+      "expected": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a"
+      ],
+      "top_candidate": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "drop_first",
+      "input": "klmn",
+      "expected": [
+        "l",
+        "m",
+        "n"
+      ],
+      "top_candidate": [
+        "l",
+        "m",
+        "n"
+      ],
+      "top_correct": true,
+      "candidate_count": 5,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "drop_first",
+      "input": "opqrst",
+      "expected": [
+        "p",
+        "q",
+        "r",
+        "s",
+        "t"
+      ],
+      "top_candidate": [
+        "p",
+        "q",
+        "r",
+        "s",
+        "t"
+      ],
+      "top_correct": true,
+      "candidate_count": 6,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "drop_first",
+      "input": "uvwxyza",
+      "expected": [
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a"
+      ],
+      "top_candidate": [
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a"
+      ],
+      "top_correct": true,
+      "candidate_count": 6,
+      "status": "ambiguous",
+      "search_limited": false
+    },
+    {
+      "task": "append_first",
+      "input": "klmn",
+      "expected": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "k"
+      ],
+      "top_candidate": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "k"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "append_first",
+      "input": "opqrst",
+      "expected": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o"
+      ],
+      "top_candidate": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "append_first",
+      "input": "uvwxyza",
+      "expected": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u"
+      ],
+      "top_candidate": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "rotate",
+      "input": "klmn",
+      "expected": [
+        "l",
+        "m",
+        "n",
+        "k"
+      ],
+      "top_candidate": [
+        "l",
+        "m",
+        "n",
+        "k"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "rotate",
+      "input": "opqrst",
+      "expected": [
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o"
+      ],
+      "top_candidate": [
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "o"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "rotate",
+      "input": "uvwxyza",
+      "expected": [
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u"
+      ],
+      "top_candidate": [
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "u"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "insert",
+      "input": "klmn",
+      "expected": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "!"
+      ],
+      "top_candidate": [
+        "k",
+        "l",
+        "m",
+        "n",
+        "!"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "insert",
+      "input": "opqrst",
+      "expected": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "!"
+      ],
+      "top_candidate": [
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "!"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    },
+    {
+      "task": "insert",
+      "input": "uvwxyza",
+      "expected": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "!"
+      ],
+      "top_candidate": [
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z",
+        "a",
+        "!"
+      ],
+      "top_correct": true,
+      "candidate_count": 1,
+      "status": "predicted",
+      "search_limited": false
+    }
+  ],
+  "top_correct": 18,
+  "total": 18,
+  "model_calls": 0,
+  "scope": "Synthetic sequences; predefined slice/literal language, learned programs; no language semantics."
+}

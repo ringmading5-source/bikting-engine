@@ -35,6 +35,27 @@ class RenderHTTPTests(unittest.TestCase):
     def test_removed_training_routes_are_rejected(self):
         with self.assertRaises(urllib.error.HTTPError) as error:self.request('/api',{'action':'vector_train'},self.token)
         self.assertEqual(error.exception.code,400)
+    def test_connected_pattern_workflow_over_http(self):
+        def call(payload):
+            with self.request('/api',payload,self.token) as response:return json.load(response)
+        for context,multiplier,offset in [('http:increment',1,1),('http:double',2,0)]:
+            for units in ([1,3,5],[2,4,6,8]):
+                call({'action':'pattern_learn_pair','before':units,'after':[multiplier*x+offset for x in units],
+                      'level':'http:number','context':context,'source':'http:test'})
+            call({'action':'relationship_discover','level':'http:number','context':context})
+        result=call({'action':'pattern_plan','units':[20,30],'target':[42,62],'level':'http:number',
+                     'contexts':['http:increment','http:double'],'max_depth':2})
+        self.assertEqual(result['status'],'predicted_goal_matched')
+        self.assertEqual(len(result['plan']),2)
+        self.assertFalse(result['outcome_verified'])
+        selected=call({'action':'pattern_select','units':[20,30],'level':'http:number','context':'http:increment','goal':[21,31]})
+        program=selected['preferred'][0]['hypotheses'][0]['program']
+        feedback=call({'action':'pattern_feedback','units':[20,30],'actual':[99,99],'program':program,
+                       'level':'http:number','context':'http:increment','goal':[21,31],'source':'http:contradiction'})
+        self.assertFalse(feedback['prediction_matched'])
+        self.assertEqual(len(call({'action':'pattern_outcomes','level':'http:number','context':'http:increment'})['outcomes']),1)
+        with self.request('/') as response:self.assertIn(b'Connected pattern learning',response.read())
+
     def test_cross_origin_rejected(self):
         with self.assertRaises(urllib.error.HTTPError) as error:self.request('/api',{'action':'status'},self.token,'https://other.example')
         self.assertEqual(error.exception.code,403)

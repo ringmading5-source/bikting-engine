@@ -1,0 +1,860 @@
+{
+  "cases": [
+    {
+      "task": "stride_two",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        30,
+        32,
+        34
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 4,
+      "search_limited": false
+    },
+    {
+      "task": "stride_two",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        30,
+        32,
+        34,
+        36
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 9,
+      "search_limited": false
+    },
+    {
+      "task": "stride_two",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        30,
+        32,
+        34,
+        36,
+        38
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 4,
+      "search_limited": false
+    },
+    {
+      "task": "stride_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        30,
+        33
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 3,
+      "search_limited": false
+    },
+    {
+      "task": "stride_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        30,
+        33,
+        36
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 4,
+      "search_limited": false
+    },
+    {
+      "task": "stride_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        30,
+        33,
+        36
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 4,
+      "search_limited": false
+    },
+    {
+      "task": "stride_four",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        30,
+        34
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "stride_four",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        30,
+        34
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "stride_four",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        30,
+        34,
+        38
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 2,
+      "search_limited": false
+    },
+    {
+      "task": "drop_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        33,
+        34,
+        35
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "drop_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 3,
+      "search_limited": false
+    },
+    {
+      "task": "drop_three",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 3,
+      "search_limited": false
+    },
+    {
+      "task": "three_parts",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        30,
+        35,
+        31,
+        32,
+        33,
+        34
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": true
+    },
+    {
+      "task": "three_parts",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        30,
+        37,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 3,
+      "search_limited": true
+    },
+    {
+      "task": "three_parts",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        30,
+        38,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "ambiguous",
+      "candidate_count": 3,
+      "search_limited": true
+    },
+    {
+      "task": "shift",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "shift",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "shift",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "scale",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        90,
+        93,
+        96,
+        99,
+        102,
+        105
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "scale",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        90,
+        93,
+        96,
+        99,
+        102,
+        105,
+        108,
+        111
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "scale",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        90,
+        93,
+        96,
+        99,
+        102,
+        105,
+        108,
+        111,
+        114
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "affine",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        55,
+        57,
+        59,
+        61,
+        63,
+        65
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "affine",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        55,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "affine",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        55,
+        57,
+        59,
+        61,
+        63,
+        65,
+        67,
+        69,
+        71
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "square",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        900,
+        961,
+        1024,
+        1089,
+        1156,
+        1225
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "square",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        900,
+        961,
+        1024,
+        1089,
+        1156,
+        1225,
+        1296,
+        1369
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "square",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        900,
+        961,
+        1024,
+        1089,
+        1156,
+        1225,
+        1296,
+        1369,
+        1444
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "quadratic",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        1714,
+        1833,
+        1956,
+        2083,
+        2214,
+        2349
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "quadratic",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        1714,
+        1833,
+        1956,
+        2083,
+        2214,
+        2349,
+        2488,
+        2631
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "quadratic",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        1714,
+        1833,
+        1956,
+        2083,
+        2214,
+        2349,
+        2488,
+        2631,
+        2778
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "fraction",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35
+      ],
+      "expected": [
+        15.0,
+        15.5,
+        16.0,
+        16.5,
+        17.0,
+        17.5
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "fraction",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "expected": [
+        15.0,
+        15.5,
+        16.0,
+        16.5,
+        17.0,
+        17.5,
+        18.0,
+        18.5
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    },
+    {
+      "task": "fraction",
+      "input": [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ],
+      "expected": [
+        15.0,
+        15.5,
+        16.0,
+        16.5,
+        17.0,
+        17.5,
+        18.0,
+        18.5,
+        19.0
+      ],
+      "top_correct": true,
+      "correct_candidate_present": true,
+      "status": "predicted",
+      "candidate_count": 1,
+      "search_limited": false
+    }
+  ],
+  "total": 33,
+  "top_correct": 33,
+  "correct_candidate_present": 33,
+  "model_calls": 0,
+  "scope": "Synthetic tests within a programmed sequence/polynomial hypothesis language."
+}

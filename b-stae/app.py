@@ -33,6 +33,48 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='pattern_dataset_import':
+            from pattern_dataset import PatternDataset
+            return PatternDataset(self.engine).ingest(payload.get('name'),payload.get('records'))
+        if action=='pattern_dataset_evaluate':
+            from pattern_dataset import PatternDataset
+            return PatternDataset(self.engine).evaluate(payload.get('name'))
+        if action=='request_pattern_learn':
+            return self.engine.request_patterns.learn(payload.get('text'),payload.get('context'),payload.get('source'))
+        if action=='request_pattern_route':return self.engine.request_patterns.route(payload.get('text'))
+        if action=='multimodal_pattern_learn':
+            return self.engine.multimodal_patterns.learn(payload.get('before'),payload.get('after'),payload.get('context'),payload.get('source'))
+        if action=='multimodal_pattern_discover':
+            return self.engine.multimodal_patterns.discover(payload.get('value'),payload.get('context'))
+        if action=='multimodal_pattern_predict':
+            return self.engine.multimodal_patterns.predict(payload.get('value'),payload.get('context'))
+        if action=='multimodal_pattern_request':
+            return self.engine.multimodal_patterns.request(payload.get('text'),payload.get('value'))
+        if action=='pattern_select':
+            return self.engine.pattern_runtime.select(payload.get('units'),payload.get('level'),payload.get('context'),payload.get('goal'))
+        if action=='pattern_feedback':
+            return self.engine.pattern_runtime.feedback(payload.get('units'),payload.get('actual'),payload.get('program'),payload.get('level'),payload.get('source'),payload.get('context'),payload.get('goal'))
+        if action=='pattern_outcomes':
+            return {'outcomes':self.engine.pattern_runtime.outcomes(payload.get('level'),payload.get('context'))}
+        if action=='pattern_plan':
+            return self.engine.pattern_runtime.plan(payload.get('units'),payload.get('target'),payload.get('level'),payload.get('contexts'),payload.get('max_depth',4),payload.get('max_nodes',256),payload.get('max_units',128))
+        if action=='relationship_discover':
+            return self.engine.discovery_patterns.discover(payload.get('level'),payload.get('context'),payload.get('max_programs',512),payload.get('max_parts',2),payload.get('max_stride',4),payload.get('endpoint_radius',3))
+        if action=='relationship_predict':
+            return self.engine.discovery_patterns.predict(payload.get('units'),payload.get('level'),payload.get('context'))
+        if action=='relationship_inventory':
+            return {'hypotheses':self.engine.discovery_patterns.inventory(payload.get('level'),payload.get('context'))}
+        if action=='pattern_observe':
+            return self.engine.patterns.observe_text(payload.get('text'),payload.get('source'),payload.get('context'))
+        if action=='pattern_find':
+            return {'matches':self.engine.patterns.find(payload.get('units'),payload.get('level'),payload.get('context'))}
+        if action=='pattern_complete':
+            return self.engine.patterns.complete(payload.get('units'),payload.get('level'),payload.get('context'))
+        if action=='pattern_learn_pair':
+            return {'example':self.engine.patterns.learn_pair(payload.get('before'),payload.get('after'),payload.get('level'),payload.get('source'),payload.get('context'))}
+        if action=='pattern_predict':
+            return self.engine.patterns.predict(payload.get('units'),payload.get('level'),payload.get('context'))
+        if action=='pattern_stats':return self.engine.patterns.stats()
         if action=='text_learning_example':
             from text_learning_demo import example
             return dict(example(),action='text_pattern_learn')
