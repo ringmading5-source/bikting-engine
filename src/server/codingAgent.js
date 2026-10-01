@@ -45,7 +45,7 @@ export async function runCodingAgent({ workspace, memory, path, content, expecte
       const temporary = resolve(dirname(target), `.bstae-${randomUUID()}${extname(target)}`);
       try {
         await writeFile(temporary, content, { flag: 'wx', mode: originalMode });
-        await exec(process.execPath, ['--check', temporary], { timeout: 5000, maxBuffer: 16000 });
+        await exec(process.execPath, ['--check', temporary], { timeout: 5000, maxBuffer: 16000, env: { PATH: process.env.PATH ?? '/usr/bin:/bin' } });
         if (fileHash(await read()) !== expectedHash) throw new Error('Concurrent file change; edit stopped.');
         await rename(temporary, target);
       } finally { await unlink(temporary).catch(error => { if (error.code !== 'ENOENT') throw error; }); }
@@ -53,7 +53,7 @@ export async function runCodingAgent({ workspace, memory, path, content, expecte
     } }],
     ['file.syntax-check', { async execute() {
       const hash = fileHash(await read());
-      await exec(process.execPath, ['--check', target], { timeout: 5000, maxBuffer: 16000 });
+      await exec(process.execPath, ['--check', target], { timeout: 5000, maxBuffer: 16000, env: { PATH: process.env.PATH ?? '/usr/bin:/bin' } });
       if (fileHash(await read()) !== hash) throw new Error('File changed during syntax checking.');
       checkedHash = hash;
       return { check: 'node --check', sha256: hash };

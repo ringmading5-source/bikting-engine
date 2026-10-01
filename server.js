@@ -15,6 +15,7 @@ import { createKnowledgeStore } from './src/server/knowledgeStore.js';
 import { createPostgresKnowledgeStore } from './src/server/postgresKnowledgeStore.js';
 import { createProviderConnections } from './src/server/providerConnections.js';
 import { createLiveCostBridge } from './src/server/liveCostBridge.js';
+import { runProjectAgent } from './src/server/projectAgent.js';
 import { proposeCode } from './src/server/codingProposal.js';
 import { runCodingAgent, readCodingSnapshot } from './src/server/codingAgent.js';
 import { createRelationalMemory } from './src/server/relationalMemory.js';
@@ -104,6 +105,31 @@ function createRequestHandler({ env, rootDir, plotlyBundle, defaults, runtime, i
           const snapshot = await readCodingSnapshot({ workspace: env.BIKTING_AGENT_WORKSPACE, path: input?.path });
           return send(response, 200, await proposeCode({ snapshot, instruction: input?.instruction, apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL || 'gemini-2.5-flash', fetchImpl, onModelCall: costBridge.recordModelCall }));
         } catch (error) { return send(response, error instanceof TypeError ? 400 : 502, { error: error.message }); }
+      }
+      if (pathname === '/api/agent/project') {
+        if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);
+        if (request.method !== 'POST') return send(response, 405, null);
+        if (request.headers['content-type']?.split(';')[0] !== 'application/json') return send(response, 415, null);
+        if (!env.BIKTING_AGENT_WORKSPACE) return send(response, 503, { error: 'Coding workspace is not configured.' });
+        let testFiles;
+        try { testFiles = JSON.parse(env.BIKTING_AGENT_TEST_FILES ?? '[]'); if (!Array.isArray(testFiles)) throw Error(); }
+        catch { return send(response, 503, { error: 'Registered test configuration is invalid.' }); }
+        const input = await readInput(request);
+        const work = agentQueue.then(async () => {
+          for (const record of [
+            { id: 'builtin:project-apply', tool: 'project.apply', preconditions: { filesMatch: false }, effects: { filesMatch: true } },
+            { id: 'builtin:project-syntax', tool: 'project.syntax', preconditions: { filesMatch: true }, effects: { syntaxValid: true } },
+            { id: 'builtin:project-tests', tool: 'project.tests', preconditions: { filesMatch: true, syntaxValid: true }, effects: { testsPassed: true } },
+          ]) await relationalMemory.put({ ...record, kind: 'procedure', text: record.tool, queries: [], source: 'builtin:project-agent-v1', review: 'approved', context: { agent: 'coding-project-v1' }, expiresAt: Date.now() + 86400000 });
+          const runId = randomUUID();
+          const result = await runProjectAgent({ ...(input ?? {}), workspace: env.BIKTING_AGENT_WORKSPACE, memory: relationalMemory, testFiles,
+            onVerified: async evidence => knowledgeStore.set(`agent-evidence:${randomUUID()}`, { ...evidence, runId, verification: 'observed_step', recordedAt: new Date().toISOString() }) });
+          await knowledgeStore.set(`agent-run:${runId}`, { ...result, runId, recordedAt: new Date().toISOString() });
+          return { ...result, runId };
+        });
+        agentQueue = work.catch(() => {});
+        try { return send(response, 200, await work); }
+        catch (error) { return send(response, error instanceof TypeError ? 400 : 409, { error: error.message }); }
       }
       if (pathname === '/api/agent/code') {
         if (!testToken || !validToken(request.headers['x-bikting-test-token'], testToken)) return send(response, 401, null);

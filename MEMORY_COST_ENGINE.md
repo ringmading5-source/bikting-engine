@@ -124,8 +124,58 @@ apply it under hash and syntax checks. Source inputs for proposals are limited
 to 6000 characters, instructions to 2000, and generation to 2000 output tokens.
 File replacement is limited to 100000 bytes. Only .js, .mjs and .cjs are supported.
 
-This is an initial coding agent with observable file and syntax results. Syntax
-success does not prove behavioral correctness. It does not yet execute project
-test suites, create new files, edit multiple files, repair failed code automatically,
-or expose an MCP server. Verified evidence persists separately from approved
+The single-file endpoint reports observable file and syntax results. Syntax
+success does not prove behavioral correctness. The project endpoint described
+below adds multiple files and registered checks. Automatic repair and MCP serving
+remain unimplemented. Verified evidence persists separately from approved
 procedure definitions; neither proposals nor predicted effects are auto-approved.
+
+## Project change sets and registered checks
+
+`POST /api/agent/project` extends execution to 1–8 existing or new JavaScript
+files. Supply `changes`, each containing path, complete content, and expectedHash.
+Use `expectedHash: null` only when a new file must not already exist. Parent
+directories must exist. Changes are bounded to 100000 bytes each and 200000 bytes
+total. Example:
+
+```json
+{
+  "changes": [
+    { "path": "value.mjs", "content": "export const value = 2;\n", "expectedHash": "<current SHA-256>" },
+    { "path": "new.mjs", "content": "export const ready = true;\n", "expectedHash": null }
+  ],
+  "maxSteps": 6
+}
+```
+
+The endpoint requires the token and BIKTING_AGENT_WORKSPACE. Configure
+`BIKTING_AGENT_TEST_FILES` as a JSON array of at most eight relative test paths,
+for example `["tests/value.test.mjs"]`. Clients cannot replace this configuration
+with arbitrary commands or test paths. A change set cannot edit its registered
+check files. Registered checks run with `node --test`, a ten-second timeout and
+bounded output; candidate and final syntax checks use `node --check`. Child
+processes receive a minimal PATH environment rather than application credentials,
+Node preloads, or inherited test-runner mode. These are trusted project checks,
+not a sandbox for hostile code. Use an isolated, controlled coding workspace.
+
+All candidates are staged and syntax-checked before any destination is changed.
+Existing files require observed hashes; new files use exclusive creation.
+Observed file hashes invalidate syntax/test receipts when files change. A task
+is completed only after the configured checks succeed. Without registered tests,
+completion covers file equality and syntax only; the response states which checks
+were configured and passed. Registered test hashes are checked before/after
+execution so altered check code does not establish success.
+
+Failed execution, failed checks or an exhausted task budget trigger rollback of
+changes owned by this run. Created files are removed and replacements restored
+only while their current hashes match this run's content. Concurrent edits are
+preserved and reported as rollback conflicts. Multi-file replacement is not an
+atomic filesystem transaction. Step evidence remains historical evidence of that
+step, while a separate run record preserves the final failure/rollback or success.
+The HTTP handler serializes single-file and project runs together.
+
+This increment supports multi-file changes, new files in existing directories,
+and registered JavaScript project checks. It does not yet generate complete
+change sets autonomously, repair failures, delete requested files, create
+directories, or serve MCP. The earlier single-file proposal endpoint remains
+available for unfamiliar code.
