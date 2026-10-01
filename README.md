@@ -1,5 +1,7 @@
 # Bikting Engine
 
+B-STAE is a knowledge and procedure memory layer attached to an LLM to reduce repeated model work. Its direction is source-backed storage, retrieval, applicability checks, bounded composition, deterministic execution, and LLM fallback for unresolved requests. It does not train prediction weights or infer transformation rules from training examples. See [MEMORY_COST_ENGINE.md](MEMORY_COST_ENGINE.md) for the implemented memory APIs and limits.
+
 The core [intent direction](docs/intent-direction.md) treats action words, sentence relationships, project references, and requests such as animation as one language-neutral meaning frame. Current deterministic phrase handling is English-specific; other languages require validated adapters or model interpretation.
 
 A small, dependency-free browser prototype of Bikting as a modular interaction and orchestration system. The current vertical slice accepts text, interprets a request, creates a plan, routes it to a domain module, and delivers structured explanation, visual state, and narration to a workspace.

@@ -12,7 +12,7 @@ class SoupTests(unittest.TestCase):
         self.assertEqual(record['title'],'Example');self.assertIn('Body',record['text']);self.assertNotIn('bad()',record['text']);self.assertNotIn('noise',record['text'])
         self.assertEqual(record['relationship_links'],['https://example.org/rules.json'])
     def test_scrape_to_grounded_loop(self):
-        data={'word_relationships':[{'text':'increase','intent':{'operation':'add','amount':2},'training':[{'before':3,'after':5},{'before':7,'after':9}],'validation':[{'before':11,'after':13}]}]}
+        data={'word_relationships':[{'text':'increase','intent':{'operation':'add','amount':2},'observations':[{'before':3,'after':5},{'before':7,'after':9},{'before':11,'after':13}]}]}
         html='<main>Observed behavior</main><script type="application/json">'+json.dumps(data)+'</script>'
         class Fixture(SoupScraper):
             def scrape(self,url):return self.parse_page(html,'text/html',url)

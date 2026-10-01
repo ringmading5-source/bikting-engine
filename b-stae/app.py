@@ -3,31 +3,22 @@ import argparse
 from http.server import BaseHTTPRequestHandler,HTTPServer
 import json
 from pathlib import Path
-import secrets
 import os
+import secrets
 from urllib.parse import urlsplit
 from engine import Engine
-from knowledge import parse_source
 from core import BinaryState,decode_outputs
 
 class Application:
     def __init__(self,engine):
-        self.engine=engine;self.pending={}
+        self.engine=engine
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
         self.discovery=WebIntentLoop(engine,self.web)
-        self.engine.db.execute('''CREATE TABLE IF NOT EXISTS outcome_feedback (
-            id INTEGER PRIMARY KEY,decision TEXT NOT NULL,input_state BLOB NOT NULL,
-            output_state BLOB NOT NULL,relationships TEXT NOT NULL)''')
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
-        if action=='vector_train':return self.engine.vector_model.train(payload['name'],payload['training'],payload['validation'])
-        if action=='vector_predict':return self.engine.vector_model.predict(payload['name'],payload['state'],payload['relation'],payload['behavior'],payload['context'])
-        if action=='vector_plan':return self.engine.vector_model.plan(payload['name'],payload['state'],payload['goal'],payload['actions'],payload.get('max_depth',5),payload.get('max_expansions',1000),output_code=payload.get('output_code','111'))
-        if action=='vector_verify':return self.engine.vector_model.verify(payload['name'],payload['state'],payload['contract'],payload['observed'])
-        if action=='vector_model':return self.engine.vector_model.load(payload['name'])
         if action=='capability_inventory':return {'capabilities':self.engine.capabilities.inventory()}
         if action=='capability_execute':
             return self.engine.capabilities.execute(payload.get('request'),payload.get('values'),payload.get('title','B-STAE graph'))
@@ -65,72 +56,17 @@ class Application:
             return self.engine.intents.execute(payload.get('value'),payload.get('intent'),payload.get('max_depth',3))
         if action=='image_intent':
             return self.engine.intents.image(payload.get('image'),payload.get('intent'))
-        if action=='modality_observe':
-            return self.engine.modalities.observe(payload.get('observations'))
+        if action=='modality_register':
+            return self.engine.modalities.register(payload.get('value'),payload.get('intent'),payload.get('source'))
         if action=='modality_transform':
-            return self.engine.modalities.transform(payload.get('value'),payload.get('model'))
-        if action=='modality_models':
-            return {'models':self.engine.modalities.models()}
-        if action=='image_observe':
-            return self.engine.images.observe(payload.get('observations'))
-        if action=='image_transform':
-            return self.engine.images.transform(payload.get('image'),payload.get('model'))
-        if action=='sequence_example':
-            row=self.engine.db.execute('SELECT report FROM behavior_models WHERE relationship_id=600').fetchone()
-            if row:return json.loads(row[0])
-            sid=self.engine.ingest_file(Path(__file__).parent/'examples'/'position-sequences.json')
-            return self.engine.sequences.learn_source(sid,600)
-        if action=='sequence_learn':
-            data=payload.get('sequences')
-            if not isinstance(data,dict):raise ValueError('sequence source object required')
-            sid=self.engine.knowledge.ingest(parse_source(json.dumps(data),'application/json','local-sequences:'+secrets.token_hex(8)))
-            self.engine.encode_source(sid)
-            return self.engine.sequences.learn_source(sid,payload['relationship_id'])
-        if action=='behavior_predict':
-            from session import participants
-            return self.engine.sequences.predict(participants(payload['inputs']),payload.get('event'))
+            return self.engine.modalities.transform(payload.get('value'),payload.get('program'))
+        if action=='modality_programs':
+            return {'programs':self.engine.modalities.programs()}
         if action=='research':
             try:return self.web.research(payload.get('query'),payload.get('url'))
             except Exception as error:return {'status':'web_error','reason':str(error),'sources':[]}
-        if action=='learn':
-            training=payload.get('training');validation=payload.get('validation')
-            data={'training':training,'validation':validation}
-            sid=self.engine.knowledge.ingest(parse_source(json.dumps(data,ensure_ascii=False),'application/json','local-observations:'+secrets.token_hex(8)))
-            self.engine.encode_source(sid)
-            return self.engine.learner.learn_source(sid,payload['relationship_id'])
-        if action=='examples':
-            results=[]
-            for name,rid in [('observations.json',200),('color-observations.json',201)]:
-                if rid in self.engine.relationships.load():
-                    results.append({'relationship_id':rid,'status':'already_registered'});continue
-                sid=self.engine.ingest_file(Path(__file__).parent/'examples'/name)
-                results.append(self.engine.learner.learn_source(sid,rid))
-            return {'status':'loaded','results':results}
-        if action=='predict':
-            from session import participants
-            inputs=participants(payload['inputs'])
-            status,result=self.engine.learner.predict(inputs)
-            if result is not None and result.accepted:
-                token=secrets.token_hex(16)
-                self.pending[token]=(result.snapshots[0],result.snapshots[-1],status['evidence'])
-                if len(self.pending)>100:self.pending.pop(next(iter(self.pending)))
-                status.update(token=token,trace=[{'decoded':decode_outputs(BinaryState.decode(raw)),
-                    'records':[{'entity':r.entity,'type':r.kind,'payload_hex':r.payload[:128].hex(' '),'byte_count':len(r.payload)} for r in BinaryState.decode(raw).records]} for raw in result.snapshots],resolution=result.source)
-            return status
-        if action=='feedback':
-            decision=payload.get('decision')
-            if decision not in ('accept','reject'):raise ValueError('accept/reject required')
-            token=payload.get('token')
-            if token not in self.pending:raise ValueError('unknown or already reviewed outcome')
-            before,after,evidence=self.pending[token]
-            with self.engine.db:
-                self.engine.db.execute('INSERT INTO outcome_feedback(decision,input_state,output_state,relationships) VALUES (?,?,?,?)',
-                    (decision,before,after,json.dumps(evidence)))
-            del self.pending[token]
-            return {'status':'recorded','decision':decision}
         if action=='status':
-            return {'relationships':list(self.engine.relationships.load()),'opcode_memory':self.engine.paths.stats(),
-                    'feedback':self.engine.db.execute('SELECT COUNT(*) FROM outcome_feedback').fetchone()[0]}
+            return {'relationships':list(self.engine.relationships.load()),'opcode_memory':self.engine.paths.stats()}
         raise ValueError('unsupported app action')
 
 
@@ -150,7 +86,7 @@ def serve(engine,port,host='127.0.0.1'):
             return self.headers.get('Host') in known
         def do_GET(self):
             if self.path=='/health':
-                self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'vector-model-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
+                self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'knowledge-retrieval-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
             if not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
             if self.path!='/':self.reply(404,b'Not found','text/plain');return
             self.reply(200,Path(__file__).with_name('app.html').read_bytes(),'text/html; charset=utf-8')

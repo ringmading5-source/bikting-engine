@@ -1,38 +1,21 @@
-# Deploy this folder on Render
+# Deploy the Python knowledge and procedure service
 
-Create a **new Web Service** from `ringmading5-source/bikting-engine`.
+Use repository ringmading5-source/bikting-engine with root directory b-stae,
+Python 3, build command `pip install -r requirements.txt && python -m unittest discover -s tests -q`,
+start command `python app.py --host 0.0.0.0`, and health check /health.
+Configure BSTAE_ACCESS_TOKEN as a random secret of at least 16 characters.
+Render supplies PORT and RENDER_EXTERNAL_HOSTNAME. Enter the token in the page;
+the browser does not persist it. No LLM key is required for this Python service.
+The Node service has separate Gemini and memory API configuration.
 
-| Setting | Value |
-|---|---|
-| Branch | `main` |
-| Root Directory | `b-stae` |
-| Language | Python 3 |
-| Build Command | `python -m unittest discover -s tests -q` |
-| Start Command | `python app.py --host 0.0.0.0` |
-| Health Check Path | `/health` |
-| Environment variable | `BSTAE_ACCESS_TOKEN`: your own random secret, at least 16 characters |
+Use b-stae/render.yaml for a Blueprint. Persistent storage needs a mounted disk
+and BSTAE_DB_PATH pointing to its SQLite file. Without persistent storage,
+redeployment can lose knowledge and stored paths. This is a single-process
+prototype, not a multi-user production deployment.
 
-Render sets PORT and RENDER_EXTERNAL_HOSTNAME automatically. The app uses them. Enter your secret in the page's **Access token** input; it is used for API access and is not stored by the browser. No LLM key is required. Generate a secret locally with `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Keep it in Render's Environment settings, never in GitHub.
+After deployment, use Source-backed knowledge to retrieve evidence. In Explicit
+procedure, enter a JSON value, a supported operation such as add 2, and a source
+reference; store it and execute it. Stored composition accepts explicit phrase
+intents or registered child phrases. There are no training or prediction controls.
 
-Alternatively create a Blueprint and specify **Blueprint Path** `b-stae/render.yaml`. Do not select the root `render.yaml`, which belongs to the existing Node Bikting service.
-
-This configuration is a free prototype service using SQLite. Its memory is ephemeral on a free service: redeploys/restarts can lose observations and paths. To preserve memory, use a paid service, attach a persistent disk at `/var/data`, and set `BSTAE_DB_PATH=/var/data/knowledge.sqlite3`. This app uses one SQLite database and serves requests serially; it is not a multi-user production deployment.
-
-After deployment:
-
-1. Open the generated Render URL.
-2. Enter your access token.
-3. Click **Load example observations**.
-4. Try text `New` or color `#102030`.
-
-The push prepares deployment; it does not create or deploy the Render service.
-
-Official references: https://render.com/docs/web-services and https://render.com/docs/disks.
-
-## Web lookup update
-
-Redeploy the latest `main` commit, then refresh the page. Enter the existing access token, type `ball`, and click **Look up on web**. A blank source URL selects Wikipedia's API; an explicit public URL selects robots-aware page scraping. No new environment variable or search API key is required. Source retrieval depends on the deployed service's outbound network and the provider allowing the request. Errors are displayed rather than replaced with invented knowledge.
-
-## Behavior sequences update
-
-Deploy the latest main commit and refresh. In **Behavior sequences**, click **Learn position sequence example**, then **Predict next behavior state**. The default input position [100,0,0] advances to [102,0,0] for the learned `advance` event with duration 1. The byte-change report is displayed below. Custom sources need frames/events and separate training/validation sequences; they can be pasted in the sequence-source form. This is observation-based model inference, not automatically inferred meaning for an arbitrary typed word.
+Code publication alone does not deploy a Render service.

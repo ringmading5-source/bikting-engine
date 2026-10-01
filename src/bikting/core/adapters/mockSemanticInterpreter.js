@@ -66,7 +66,7 @@ export async function mockSemanticInterpreter(request) {
   } else if (/\bplot\b|\bgraph\b/i.test(text)) {
     intent = 'plot'; domain = 'mathematics'; requestedOutputs = ['graph', 'structured_scene'];
     const equation = /([a-z_]\w*\s*=\s*[^,?.!]+)/i.exec(text)?.[1]?.trim().replaceAll('²', '^2');
-    equations = [equation ?? 'y = x^2']; concepts = ['function'];
+    equations = equation ? [equation] : []; concepts = ['function'];
     variables = { xMin: -10, xMax: 10, sampleCount: 41 };
   } else if (relationalAction) {
     intent = relationalAction.definition.id; requestedOutputs = ['visual'];
@@ -82,7 +82,7 @@ export async function mockSemanticInterpreter(request) {
   } else if (/\bimage\b|\bphoto\b|\bpicture\b/i.test(text) || modality === 'vision') {
     intent = 'interpret_visual'; domain = 'vision'; modality = 'vision'; concepts = ['image']; requestedOutputs = ['visual_semantics'];
   } else if (/python|function|code/i.test(text)) {
-    intent = 'write_code'; domain = 'coding'; concepts = ['compound_interest']; requestedOutputs = ['code', 'explanation'];
+    intent = 'write_code'; domain = 'coding'; concepts = []; requestedOutputs = ['code', 'explanation'];
   } else if (/dataset|trend|data/i.test(text)) {
     intent = 'analyze_dataset'; domain = 'statistics'; concepts = ['dataset_trend']; requestedOutputs = ['trend_analysis', 'explanation'];
   } else if (/\bcalculate\b|\bcompute\b|\bsolve\b/i.test(text)) {

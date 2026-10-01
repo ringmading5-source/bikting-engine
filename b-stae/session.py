@@ -4,10 +4,8 @@ import shlex
 from core import BinaryState,decode_outputs
 
 HELP='''Commands:
-  learn file PATH       ingest a structured relationship source and validate/import it
-  learn web URL         fetch a JSON relationship source and validate/import it
-  observe PATH ID       infer a rule from training/validation observations
-  predict JSON          select a unique applicable relationship outcome
+  import file PATH       ingest a structured relationship source and validate/import it
+  import web URL         fetch a JSON relationship source and validate/import it
   recognize JSON        recognize an ordinary JSON value (quote text)
   interact JSON -> JSON match participants, compose relationships, verify target
   rules                 list stored relationship definitions and source references
@@ -32,20 +30,9 @@ def command(engine,line):
     if line=='rules':
         return {'rules':[json.loads(r.encode()[9:]) for r in engine.relationships.load().values()],
                 'provenance':engine.relationship_sources.provenance()}
-    if line.startswith('observe '):
+    if line.startswith('import '):
         args=shlex.split(line)
-        if len(args)!=3:raise ValueError('observe PATH RELATIONSHIP_ID')
-        sid=engine.ingest_file(args[1])
-        return engine.learner.learn_source(sid,int(args[2]))
-    if line.startswith('predict '):
-        status,result=engine.learner.predict(participants(line[len('predict '):]))
-        if result is not None and result.accepted:
-            status['decoded']=decode_outputs(BinaryState.decode(result.snapshots[-1]))
-            status['resolution']=result.source
-        return status
-    if line.startswith('learn '):
-        args=shlex.split(line)
-        if len(args)!=3 or args[1] not in ('file','web'):raise ValueError('learn file PATH or learn web URL')
+        if len(args)!=3 or args[1] not in ('file','web'):raise ValueError('import file PATH or import web URL')
         sid=engine.ingest_file(args[2]) if args[1]=='file' else engine.ingest_web(args[2])
         return {'source_id':sid,'imported':engine.relationship_sources.import_source(sid)}
     if line.startswith('recognize '):

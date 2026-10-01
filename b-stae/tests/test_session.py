@@ -8,8 +8,8 @@ class SessionTests(unittest.TestCase):
     def tearDown(self):self.e.close()
     def test_complete_flow_and_idempotent_import(self):
         path=Path(__file__).resolve().parents[1]/'examples/byte-relationships.json'
-        self.assertEqual(command(self.e,'learn file '+str(path))['imported'],[100,101])
-        self.assertEqual(command(self.e,'learn file '+str(path))['imported'],[100,101])
+        self.assertEqual(command(self.e,'import file '+str(path))['imported'],[100,101])
+        self.assertEqual(command(self.e,'import file '+str(path))['imported'],[100,101])
         line='interact {"20":1,"30":"#000000","40":"Ready"} -> {"20":1,"30":"#ff0000","40":"Ready!"}'
         result=command(self.e,line)
         self.assertTrue(result['accepted']);self.assertEqual(len(result['path']),2)
