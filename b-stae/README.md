@@ -1,6 +1,9 @@
-# B-STAE deterministic byte-interaction prototype
+Warning: truncated output (original token count: 12517)
+Total output lines: 381
 
-A working local prototype of recognized inputs, typed binary states, stored byte relationships, bounded transition composition, verified execution and decoded outputs. Python 3.10+, standard library only. No LLM calls.
+# B-STAE byte executor and learned vector prototype
+
+A working local prototype of recognized inputs, typed binary states, stored byte relationships, bounded transition composition, verified execution and decoded outputs. Python 3.10+. The byte core uses the standard library; optional scraper, plotting, and vector modules require `requirements.txt`. No LLM calls.
 
 ## Start here
 
@@ -252,17 +255,7 @@ The Image bytes in memory panel decodes uploaded images in the browser, composit
 
 `engine.images.observe({"training": [...], "validation": [...]})` returns a content-addressed model. Each pair has `before` and `after` images with `width`, `height`, `rgb_hex`. The program is inferred from pixel states using the existing byte-fragment engine; every supplied output pixel must match exactly. Validation requires a separate image and at least one unseen pixel input. Duplicate sources reuse the model. The database retains supplied observation bytes, program bytes, hashes and validation report.
 
-`engine.images.transform(image, model)` executes that stored program independently on every pixel. The browser renders returned pixel bytes as the resulting image. Dimension mismatch, invalid bytes, guard failure, corrupted program or arithmetic overflow rejects the operation. API actions are `image_observe` and `image_transform`.
-
-Scope: uniform RGB channel permutations, fixed channel arithmetic or XOR supported by the bounded inference class. This does not learn spatial motion, object identity, arbitrary image edits or behavior from prose. Held-out checks support a hypothesis; they do not prove all unseen outputs correct. Models persist with SQLite; the browser's current model selection lasts for the page session. Image previews and uploads have not received live browser QA; Python routes, persistence and program rejection behavior are covered by tests.
-
-### Automatic memory for other input modalities
-
-`engine.modalities` extends the image observation workflow to UTF-8 text, signed INT64 integers, RGB colors, POSITION3 coordinates and mono PCM16 audio. Ordinary JSON values are recognized through the existing adapters. The app's **Other modalities in memory** panel automatically extracts, validates and stores a program when an observation file arrives or valid edited observations are submitted after a short input debounce. Choosing an example immediately runs the same process on explicitly synthetic fixtures. No acceptance step is required for learning.
-
-Observation sources contain `training` and `validation` arrays of `{before, after}` values (not participant maps). At least two distinct training inputs and disjoint validation input states are required. All observations must retain the same representation and format context. Every observed output must be reproduced before atomic promotion. Supported hypotheses remain copy/insert, block reorder, fixed typed word deltas and XOR; arbitrary semantics or program synthesis are not implemented.
-
-API: `modality_observe` accepts `observations`; `modality_models` lists persisted reports; `modality_transform` accepts `value` and `model`. Programs are content-addressed, integrity-checked and retain the supplied observation source plus format context. The explicit model selection prevents unrelated rules from silently competing. Inputs are bounded to 16384 payload bytes and each split to 20 pairs. Numeric overflow, unsupported bytes, guard failures and format mismatch reject execution.
+`engine.images.transform(image, model)` executes that stored program independently on every pixel. The browser renders returned pixel bytes as the resulting image. Dimension mismatch, invalid bytes, guard failure, corrupted program or arithmetic overflow rejects the operation. API actions are `i…517 tokens truncated…lit to 20 pairs. Numeric overflow, unsupported bytes, guard failures and format mismatch reject execution.
 
 The app displays decoded outputs and before/after byte previews; colors include swatches. Audio includes playable WAV output. A mono PCM16 WAV upload can populate the current audio value without resampling; observations can be supplied as JSON sample arrays. Sample rate and channel count are binding context, not guessed from sample bytes. This is sample transformation, not transcription, speech understanding or unrestricted voice generation. Coordinate units remain adapter-defined. Text transformations are structural byte operations, not language comprehension.
 
@@ -375,3 +368,7 @@ Example: request `add 2 to every value then graph the result`, input `[2,5,3]`, 
 Pipeline memory is promoted only after the entire plan succeeds. It retains the full input, parameterized action sequence, final numeric state, versions and output hash. Reuse re-executes and re-verifies the chain. Single plotting requests preserve the previous API and memory behavior. `word_execute` and the computational graph panel expose mixed plans; users may also register equivalent child/terminal sequences explicitly.
 
 Validation: 203 tests pass, including ordinary request → recursive stabilization → transformed bytes → plot, exact operand encoding, adjacent state equality, multiple/decimal additions, restart/reverification, preflight bounds, bad-transform rejection without promotion, incompatible order and ambiguous providers. Single plotting was verified on Render with live coordinates `[2,5,3]`; the mixed-chain release still needs its own deployment verification.
+
+## Trainable vector model
+
+See [VECTOR_MODEL.md](VECTOR_MODEL.md) for the learned dynamics model, held-out benchmark, bounded planner, app API, and its limits. Run `python vector_experiment.py` from this directory.

@@ -23,6 +23,11 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='vector_train':return self.engine.vector_model.train(payload['name'],payload['training'],payload['validation'])
+        if action=='vector_predict':return self.engine.vector_model.predict(payload['name'],payload['state'],payload['relation'],payload['behavior'],payload['context'])
+        if action=='vector_plan':return self.engine.vector_model.plan(payload['name'],payload['state'],payload['goal'],payload['actions'],payload.get('max_depth',5),payload.get('max_expansions',1000),output_code=payload.get('output_code','111'))
+        if action=='vector_verify':return self.engine.vector_model.verify(payload['name'],payload['state'],payload['contract'],payload['observed'])
+        if action=='vector_model':return self.engine.vector_model.load(payload['name'])
         if action=='capability_inventory':return {'capabilities':self.engine.capabilities.inventory()}
         if action=='capability_execute':
             return self.engine.capabilities.execute(payload.get('request'),payload.get('values'),payload.get('title','B-STAE graph'))
