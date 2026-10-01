@@ -15,6 +15,8 @@ from recognition import recognize, recognize_bytes
 class TaskRuntime:
     def __init__(self, engine, gemini):
         self.engine, self.db, self.gemini = engine, engine.db, gemini
+        from behavior_library import BehaviorLibrary
+        self.behaviors=BehaviorLibrary(engine)
         self.db.execute('CREATE TABLE IF NOT EXISTS verified_task_plans (id TEXT PRIMARY KEY, actions TEXT NOT NULL, uses INTEGER NOT NULL)')
         self.db.execute('CREATE TABLE IF NOT EXISTS workspace_artifacts (id TEXT PRIMARY KEY, name TEXT NOT NULL, mime TEXT NOT NULL, content BLOB NOT NULL)')
 
@@ -29,13 +31,14 @@ class TaskRuntime:
             if value['format']=='ppm' and result.representation=='ppm-rgb24':
                 return {'width':result.metadata['width'],'height':result.metadata['height'],'rgb_hex':b''.join(r.payload for r in result.state.records).hex()}
             raise ValueError('declared input format differs from bytes')
-        recognize(value)
+        from behavior_library import typed
+        typed(value)
         return value
 
     def key(self,text,value):
         # Definitions and adapter version invalidate prior plans when context changes.
         definitions=[tuple(r) for r in self.db.execute('SELECT id,definition FROM word_relations ORDER BY id')]
-        return hashlib.sha256(canonical({'version':1,'text':text,'value':value,'definitions':definitions})).hexdigest()
+        return hashlib.sha256(canonical({'version':2,'library':self.behaviors.fingerprint(),'text':text,'value':value,'definitions':definitions})).hexdigest()
 
     def plan(self,text,value,max_actions=16,use_gemini=False):
         if not isinstance(text,str) or not 1<=len(text)<=2000 or type(max_actions)is not int or not 1<=max_actions<=32 or type(use_gemini)is not bool:
@@ -48,9 +51,9 @@ class TaskRuntime:
             return {'status':'planned','actions':actions,'source':'verified_memory','model_calls':0,'key':key}
         actions=[];trace=[]
         # Conjunction is explicit; quoted strings are parsed as one operation first.
-        try: actions=[self.engine.intents.parse(text)]
+        try: actions=[self.behaviors.parse(text)]
         except ValueError:
-            resolution=self.engine.words.resolve(text,value,max_actions=max_actions,persist=False)
+            resolution=({'status':'unknown'} if isinstance(value,list) else self.engine.words.resolve(text,value,max_actions=max_actions,persist=False))
             trace=resolution.get('trace',[])
             if resolution.get('reason')=='ungrounded fixed point': return dict(resolution,status='cycle')
             if resolution['status']=='stabilized': actions=resolution['actions']
@@ -61,9 +64,9 @@ class TaskRuntime:
                 for clause in clauses:
                     match=re.fullmatch(r'\s*(?:please\s+)?(?:increase|raise)(?:\s+(?:it|the number|this number))?\s+by\s+([+-]?\d+)\s*',clause,re.I)
                     try:
-                        intent={'operation':'add','amount':int(match[1])} if match else self.engine.intents.parse(clause)
+                        intent={'operation':'add','amount':int(match[1])} if match else self.behaviors.parse(clause)
                     except ValueError:
-                        result=self.engine.words.resolve(clause,value,max_actions=max_actions,persist=False)
+                        result=({'status':'unknown'} if isinstance(value,list) else self.engine.words.resolve(clause,value,max_actions=max_actions,persist=False))
                         if result['status']=='stabilized': actions.extend(result['actions']);continue
                         if result['status']!='unknown':return result
                         if not use_gemini or len(clauses)!=1:return {'status':'needs_clarification','reason':'Register the unresolved phrase or use a supported explicit operation.','model_calls':0}
@@ -80,24 +83,24 @@ class TaskRuntime:
         value=self.input(value)
         plan=self.plan(text,value,max_actions,use_gemini)
         if plan['status']!='planned':return plan
-        recognized=recognize(value);state=recognized.state
+        decoded=value;preflight=[]
         for action in plan['actions']:
-            # Preflight every action and exact goal before any execution/publication.
-            state,_=self.engine.intents.boundary(state,action)
-        decoded=decode_outputs(state)[1]
-        if recognized.representation=='pcm16': decoded={'audio':{'samples':decoded,'sample_rate':recognized.metadata['sample_rate']}}
-        elif recognized.representation=='position3':decoded={'position':decoded}
-        elif recognized.representation=='rgb24':decoded=decoded['hex']
+            decoded,check=self.behaviors.apply(decoded,action)
+            preflight.append(check)
         if canonical(decoded)!=canonical(goal['equals']):return {'status':'goal_mismatch','expected':goal['equals'],'proposed':decoded,'verified':False,'model_calls':plan['model_calls']}
-        result=self.engine.recursion.execute_actions({'actions':plan['actions']},value)
-        if not result['verified'] or result['target_hex']!=state.encode().hex():raise ValueError('task outcome verification failed')
+        observed=value;execution=[]
+        for index,action in enumerate(plan['actions']):
+            observed,check=self.behaviors.apply(observed,action)
+            if check!=preflight[index]:raise ValueError('execution differs from preflight state')
+            execution.append(dict(check,action=action))
+        if canonical(observed)!=canonical(goal['equals']):raise ValueError('observed task goal mismatch')
         narration='Verified result: '+json.dumps(decoded,ensure_ascii=False)
         outputs=[];code=int(output_code,2)
         if code&1:outputs.append({'modality':'text','value':narration,'start_ms':0,'duration_ms':4000})
         if code&2:outputs.append({'modality':'voice','text':narration,'adapter':'browser_speech_synthesis','start_ms':0,'duration_ms':4000})
         if code&4:outputs.append({'modality':'visual','value':decoded,'adapter':'structured_result','start_ms':0,'duration_ms':4000})
         with self.db:self.db.execute('INSERT INTO verified_task_plans VALUES (?,?,1) ON CONFLICT(id) DO UPDATE SET uses=uses+1',(plan['key'],json.dumps(plan['actions'],sort_keys=True)))
-        return {'status':'fulfilled','verified':True,'result':decoded,'plan':plan,'goal':goal,'outputs':outputs,'execution':result['execution'],'verification_scope':'supplied exact goal and executed state; grammar/relationships are bounded, model interpretation is not proven'}
+        return {'status':'fulfilled','verified':True,'result':decoded,'plan':plan,'goal':goal,'outputs':outputs,'execution':execution,'verification_scope':'supplied exact goal and executed state; grammar/relationships are bounded, model interpretation is not proven'}
 
     def artifact(self,name,content,mime='text/plain'):
         if not isinstance(name,str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]{0,100}',name) or mime not in ('text/plain','application/json','image/svg+xml') or not isinstance(content,str) or len(content.encode())>200000:

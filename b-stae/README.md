@@ -138,3 +138,31 @@ to overwrite an existing destination. To restore, stop the service, set its
 `BSTAE_DB_PATH` to the verified checkpoint on persistent storage, and restart.
 Backups include knowledge and workspace data; they are not exposed by the HTTP API.
 A restart test verifies that a backed-up plan can be reused and reverified.
+
+## Executable behavior library
+
+`behavior_library.py` registers eleven versioned behavior contracts in SQLite.
+Each stores input/output types, effect, bounds, verifier, provenance, and an
+implementation reference. Execution selects the exact operation and checks its
+input type and parameters; stored data cannot introduce executable Python code.
+Canonical specification hashes detect corruption and invalidate request plans
+when behavior definitions change. Implementations remain installed Python code,
+so exporting a descriptor alone is not a standalone executable.
+
+Supported requests, composed with `then`:
+
+- `multiply by N`, `divide exactly by N` (int64; division requires zero remainder)
+- `uppercase`, `lowercase`, `trim`, `replace "old" with "new"`
+- `count characters` (Unicode code points, not grapheme clusters)
+- `sort ascending`, `sort descending`, `sum values`, `count values`
+
+Numeric series accept 1..512 int64 entries. Sorting verifies order and multiset
+preservation; arithmetic checks range and identities; text behaviors validate
+bounded output and operation properties. The independently supplied final goal
+is still mandatory. `behavior_inventory` lists stored contracts in the app.
+Examples: `multiply by 3 then add 2`, input `4`, goal `14`; or
+`sort ascending then sum values then multiply by 2`, input `[3,-2,3]`, goal `8`.
+Type-changing plans are preflighted and then executed with matching state hashes.
+Tests cover new compositions, memory reuse with zero LLM calls, Unicode, invalid
+input types, overflow, division conditions, corruption and rejected goals.
+This expands a bounded behavior library; it does not demonstrate general AI.
