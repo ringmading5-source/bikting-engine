@@ -18,6 +18,8 @@ class Application:
         self.tasks=TaskRuntime(engine,self.gemini)
         from goal_planner import GoalPlanner
         self.goals=GoalPlanner(self.tasks)
+        from transition_learning import TransitionLearning
+        self.transitions=TransitionLearning(engine)
         from web_knowledge import WebKnowledge
         self.web=WebKnowledge(engine)
         from web_intent_loop import WebIntentLoop
@@ -25,6 +27,12 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='transition_example':
+            from transition_demo import example
+            return example()
+        if action=='transition_learn':return self.transitions.learn(payload.get('examples'),payload.get('validation'))
+        if action=='transition_predict':return self.transitions.predict(payload.get('model_id'),payload.get('state'),payload.get('transition_action'),payload.get('context'),payload.get('relationships'),payload.get('allow_extrapolation',False))
+        if action=='transition_feedback':return self.transitions.feedback(payload.get('model_id'),payload.get('observation'))
         if action=='behavior_learn':return self.goals.learning.learn(payload.get('examples'),payload.get('validation'),payload.get('source'))
         if action=='behavior_hypotheses':return {'hypotheses':self.goals.learning.inventory()}
         if action=='behavior_feedback':return self.goals.learning.feedback(payload.get('hypothesis_id'),payload.get('example'))

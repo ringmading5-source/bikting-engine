@@ -223,3 +223,37 @@ Repeating the original evidence does not reactivate a rejected hypothesis.
 The app includes training, validation, inspection and feedback controls.
 No LLM calls are made by this learning subsystem. Open-ended perception,
 new algorithm discovery, causal learning and universal intelligence remain research goals.
+
+## Context-aware transition learning (research prototype)
+
+`transition_learn` accepts 3..32 training `examples` and 1..16 separate
+`validation` observations. Each observation includes named int64 `before` and
+`after` state fields, an `action` label, explicit string `context`, relationship
+triplets (`from`, `kind`, `to`), `outcome: "observed"`, and a `source` reference.
+The subsystem learns a fieldwise affine hypothesis `after[field] = a*before[field]+b`
+using exact rational arithmetic, then validates all training and held-out pairs.
+Each field must vary in training. Contexts, actions, relationships and field schemas
+must agree across observations; fit separate models for separate conditions.
+Nonlinear or coupled-field patterns are outside this model class.
+
+`transition_predict` requires a model ID, new `state`, `transition_action`, context
+and relationships. The gate must match the recorded conditions exactly. Predictions
+outside each field's observed training range require `allow_extrapolation: true`.
+Fractional or overflowing state results reject. An inverse consistency check is
+reported when the learned transition is invertible. It checks algebraic consistency,
+not correctness in the real world. `verified_outcome` is always false for a prediction;
+new observations are required to establish whether it occurred.
+
+`transition_feedback` records a complete new observation. Contradictions disable
+the hypothesis persistently; different contexts do not invalidate the original
+context's model. Reusing original evidence never reactivates a disabled hypothesis.
+Models and evidence survive SQLite checkpoints and are checked against content hashes.
+
+The app's context-transition panel loads a synthetic inventory simulation. A
+receive-five action changes stock and received totals. It predicts a withheld
+state only under the same warehouse, batch and relationship conditions.
+This is observational transition fitting, not causal discovery. Context and
+relationships are supplied labels; the system does not discover their semantics.
+No physical action or external tool is executed by this learner, and these models
+are not automatically added to the task planner's executable behavior registry.
+No LLM calls, neural training or universal intelligence claim is involved.
