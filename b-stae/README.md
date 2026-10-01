@@ -196,3 +196,30 @@ Conflicting/unsupported predicates require clarification. The app includes a
 “Plan from a goal” panel with text-cleaning and sorting examples.
 This is bounded planning and compositional reuse, not training, open-ended
 language understanding, or evidence of universal intelligence.
+
+## Research milestone: bounded hypothesis learning
+
+`behavior_learn` accepts at least three distinct `examples` input/output pairs,
+one or more separate `validation` pairs and an evidence `source`. It infers
+parameters only within installed templates: integer addition/multiplication,
+text uppercase/lowercase/trim/append, and integer-series sorting/sum/count.
+Exactly one hypothesis must fit the training set before held-out validation.
+Ambiguity, unsupported patterns, shared train/validation inputs and contradictory
+validation do not promote a hypothesis. This is small template induction, not
+unrestricted behavior invention, statistical confidence estimation or neural training.
+
+Saved evidence is hash-checked, version-bound and visible through
+`behavior_hypotheses`. Active hypotheses become candidate actions for goal search;
+they never bypass type checks, behavior verification or final goal verification.
+Example: observations `1->2`, `2->4`, `3->6`, held-out `4->8`, support multiply by 2.
+Search can then apply it to unseen input `7` with goal `14`, or compose series sum
+and multiply on `[1,2,4]`. The latter demonstrates limited compositional transfer.
+Finite examples do not establish correctness for every future input.
+
+`behavior_feedback` accepts a hypothesis ID and observed input/output pair.
+Feedback is recorded persistently; contradictory feedback disables the hypothesis
+and changes planner candidates so prior goal-plan memory cannot reuse it.
+Repeating the original evidence does not reactivate a rejected hypothesis.
+The app includes training, validation, inspection and feedback controls.
+No LLM calls are made by this learning subsystem. Open-ended perception,
+new algorithm discovery, causal learning and universal intelligence remain research goals.

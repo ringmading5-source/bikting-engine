@@ -25,6 +25,9 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='behavior_learn':return self.goals.learning.learn(payload.get('examples'),payload.get('validation'),payload.get('source'))
+        if action=='behavior_hypotheses':return {'hypotheses':self.goals.learning.inventory()}
+        if action=='behavior_feedback':return self.goals.learning.feedback(payload.get('hypothesis_id'),payload.get('example'))
         if action=='goal_execute':return self.goals.execute(payload.get('value'),payload.get('goal'),payload.get('candidates'),payload.get('max_depth',4),payload.get('max_nodes',128),payload.get('max_frontier',128))
         if action=='behavior_inventory':return {'behaviors':self.tasks.behaviors.inventory()}
         if action=='task_execute':return self.tasks.execute(payload.get('text'),payload.get('value'),payload.get('goal'),payload.get('output_code','101'),payload.get('max_actions',16),payload.get('use_gemini',False))

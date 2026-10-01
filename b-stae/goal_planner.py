@@ -14,6 +14,8 @@ PREDICATES={'sorted_ascending','sorted_descending','trimmed','uppercase','lowerc
 class GoalPlanner:
     def __init__(self,tasks):
         self.tasks,self.db,self.library=tasks,tasks.db,tasks.behaviors
+        from behavior_learning import BehaviorLearning
+        self.learning=BehaviorLearning(self.library)
         self.db.execute('CREATE TABLE IF NOT EXISTS goal_plans (id TEXT PRIMARY KEY, actions TEXT NOT NULL, digest TEXT NOT NULL, uses INTEGER NOT NULL)')
     def validate_goal(self,goal):
         if not isinstance(goal,dict) or len(goal)!=1:raise ValueError('one explicit goal contract required')
@@ -44,6 +46,7 @@ class GoalPlanner:
         return all(checks)
     def candidates(self,supplied):
         base=[{'operation':p} for p in ('trim','uppercase','lowercase','text_length','sort_ascending','sort_descending','series_sum','series_count')]
+        base.extend(self.learning.candidates())
         if supplied is not None:
             if not isinstance(supplied,list) or len(supplied)>16:raise ValueError('at most 16 explicit candidate operations allowed')
             for action in supplied:
