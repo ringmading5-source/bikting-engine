@@ -50,18 +50,25 @@ class TextGapLearning:
         return Counter({r['token']:r['n'] for r in self.db.execute('''SELECT token,count(*) n FROM gap_occurrences
              WHERE context=? AND left_units='[]' AND right_units='[]' GROUP BY token''',(encoded(context),))})
 
-    def predict(self,text,context=None,window=3):
+    def predict(self,text,context=None,window=3,first_word=False):
         if not isinstance(text,str) or text.casefold().count('<mask>')!=1 or len(text)>20000:
             raise ValueError('one <mask> and up to 20000 characters required')
         if type(window) is not int or not 1<=window<=6:raise ValueError('window must be 1..6')
         left,right=text.casefold().split('<mask>');left,right=tokens(left),tokens(right)
+        if first_word and (left or not right):raise ValueError('first-word prediction requires <mask> at the beginning and following text')
+        document_tokens={}
         evidence=[]
         for a in range(min(len(left),window)+1):
             for b in range(min(len(right),window)+1):
                 if a+b==0:continue
-                for row in self.db.execute('''SELECT g.*,d.source,d.observation FROM gap_occurrences g
+                for row in self.db.execute('''SELECT g.*,d.source,d.observation,d.text FROM gap_occurrences g
                     JOIN gap_documents d ON d.id=g.document WHERE g.context=? AND left_units=? AND right_units=?''',
                     (encoded(context),encoded(left[-a:] if a else []),encoded(right[:b]))):
+                    if first_word:
+                        if row['document'] not in document_tokens:document_tokens[row['document']]=tokens(row['text'])
+                        preceding=document_tokens[row['document']][:row['position']]
+                        while preceding and preceding[-1] in ('\"', '“', '”', '‘', '’', '\''):preceding.pop()
+                        if preceding and preceding[-1] not in ('.','!','?'):continue
                     evidence.append({'token':row['token'],'matched_units':a+b,'left_units':a,'right_units':b,
                                      'document':row['document'],'position':row['position'],'source':row['source'],
                                      'observation':row['observation']})
@@ -76,6 +83,13 @@ class TextGapLearning:
         return {'status':'predicted' if len(preferred)==1 else 'ambiguous' if preferred else 'unknown',
                 'preferred':preferred,'candidates':candidates,'verified':False,
                 'scope':'Observed word-context counts; case-insensitive, one missing word, no semantic guarantees.'}
+
+    def predict_first(self,following_text,context=None,window=3):
+        if not isinstance(following_text,str) or not following_text.strip() or '<mask>' in following_text.casefold():
+            raise ValueError('nonempty following text without <mask> required')
+        result=self.predict('<mask> '+following_text,context,window,first_word=True)
+        result['scope']='Sentence-initial word prediction from observed right contexts; punctuation-based boundaries, no semantic guarantees.'
+        return result
 
     def baseline(self,context=None):
         counts=self.vocabulary(context)

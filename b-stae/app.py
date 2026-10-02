@@ -47,6 +47,8 @@ class Application:
         if action=='text_memory_express':return self.engine.text_memory.express(payload.get('record'),payload.get('context'),payload.get('level','byte'))
         if action=='memory_logic_learn':return self.engine.memory_logic.learn(payload.get('examples'),payload.get('context'))
         if action=='memory_logic_predict':return self.engine.memory_logic.predict(payload.get('record'),payload.get('context'))
+        if action=='text_transform_learn':return self.engine.text_transforms.learn(payload.get('examples'),payload.get('validation'),payload.get('context'))
+        if action=='text_transform_predict':return self.engine.text_transforms.predict(payload.get('text'),payload.get('context'))
         if action=='text_relation_learn':return self.engine.text_relations.learn(payload.get('examples'),payload.get('context'))
         if action=='text_relation_transform':return self.engine.text_relations.transform(payload.get('statement'),payload.get('context'))
         if action=='text_relation_answer':return self.engine.text_relations.answer(payload.get('statement'),payload.get('question'),payload.get('context'))
@@ -59,6 +61,8 @@ class Application:
             return self.engine.text_gaps.learn(payload.get('text'),payload.get('source'),payload.get('context'),payload.get('window',3))
         if action=='text_gap_predict':
             return self.engine.text_gaps.predict(payload.get('text'),payload.get('context'),payload.get('window',3))
+        if action=='text_first_predict':
+            return self.engine.text_gaps.predict_first(payload.get('text'),payload.get('context'),payload.get('window',3))
         if action=='text_gap_evaluate':return self.engine.text_gaps.evaluate(payload.get('cases'),payload.get('context'))
         if action=='text_gap_baseline':return self.engine.text_gaps.baseline(payload.get('context'))
         if action=='pattern_dataset_import':

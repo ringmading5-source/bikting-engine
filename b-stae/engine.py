@@ -32,6 +32,8 @@ class Engine(BinaryEngine):
         self.sentences = SentenceLearning(self)
         from text_relationship_learning import TextRelationshipLearning
         self.text_relations = TextRelationshipLearning(self)
+        from text_transform_learning import TextTransformLearning
+        self.text_transforms = TextTransformLearning(self)
         from memory_logic import MemoryLogic
         self.memory_logic = MemoryLogic(self)
         from text_memory_bridge import TextMemoryBridge

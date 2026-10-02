@@ -899,3 +899,41 @@ configured database). Frame context names are carrying/giving/finding/liking/
 using/holding; call `meaning_run` with the corresponding context and no action
 label. This learns role extraction and round-trip wording within supplied
 frames, not physical consequences or unrestricted language understanding.
+
+### Predict a sentence's first word
+
+`text_first_predict` accepts `text` containing the words following the missing
+first word, plus optional `context` and `window` (1–6). It uses the observations
+from `text_gap_learn`, restricting candidates to document beginnings or words
+following `.`, `!`, or `?` (with optional quotation marks). These are simple
+punctuation boundaries, so abbreviations may be interpreted as sentence ends.
+
+Example request: `{"action":"text_first_predict","text":"studies matter during experiments."}`.
+After learning `Chemistry studies matter in laboratories.`, the candidate is
+`chemistry`. This new complete sentence reuses observed local right contexts.
+Tied candidates return `ambiguous`; unmatched contexts return `unknown`.
+No LLM is called, and prediction does not update training memory. This is local
+context generalization, not evidence of universal meaning or unseen knowledge.
+
+### Learned text transformations with example-free inference
+
+`text_transform_learn` accepts 3–32 `examples` and 1–100 `validation` pairs,
+each containing `input` and `output`, plus optional `context`. Generic sequence
+alignment learns fixed words, variable spans and output ordering. Validation
+inputs must differ from training inputs; all validation pairs must pass before
+the model is saved. Validation demonstrates only the tested structural transfer.
+
+For example, train on Chemistry/Biology/Physics pairs of the form `Chemistry
+studies matter.` → `Chemistry is the study of matter.` and validate on `Astronomy
+studies celestial bodies.` → `Astronomy is the study of celestial bodies.`.
+Then `text_transform_predict` with `text: "Geology studies rocks."` generates
+`geology is the study of rocks.` using the fitted template and current input.
+
+Inference selects only fitted parameters from storage, never training examples.
+`TextTransformModel.export()` also supports a fresh standalone model containing
+only those parameters, with no database. The test removes audit training records
+and verifies generation still works. Conflicting models remain ambiguous;
+unmatched inputs remain unknown. All text is case-folded. This supervised
+hypothesis language is programmed, while its specific templates are fitted from
+examples. It does not learn facts about geology from the grammar or answer
+`What is geology?` without supplied knowledge. It uses no LLM.
