@@ -26,6 +26,20 @@ class Engine(BinaryEngine):
         self.request_patterns = LearnedRequestRouter(self)
         from multimodal_patterns import MultimodalPatterns
         self.multimodal_patterns = MultimodalPatterns(self)
+        from text_gap_learning import TextGapLearning
+        self.text_gaps = TextGapLearning(self)
+        from sentence_learning import SentenceLearning
+        self.sentences = SentenceLearning(self)
+        from text_relationship_learning import TextRelationshipLearning
+        self.text_relations = TextRelationshipLearning(self)
+        from memory_logic import MemoryLogic
+        self.memory_logic = MemoryLogic(self)
+        from text_memory_bridge import TextMemoryBridge
+        self.text_memory = TextMemoryBridge(self)
+        from numeric_text import NumericText
+        self.numeric_text = NumericText(self)
+        from meaning_memory import MeaningMemory
+        self.meaning_memory = MeaningMemory(self)
         self.paths = PathMemory(self.db)
         from byte_relationships import RelationshipEngine
         self.relationships = RelationshipEngine(self.db)

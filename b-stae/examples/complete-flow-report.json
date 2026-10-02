@@ -1,0 +1,1235 @@
+{
+  "correct": 4,
+  "total": 4,
+  "cases": [
+    {
+      "input": "three rabbits",
+      "level": "byte",
+      "expected": "four rabbits",
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": "add-one-observation",
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "count": 3,
+                "entity": "rabbit"
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "multiple": true
+                    },
+                    "evidence": [
+                      {
+                        "model": 1,
+                        "examples": [
+                          1,
+                          2,
+                          3,
+                          4
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": [
+                {
+                  "action": "add-one-observation",
+                  "action_id": 10,
+                  "prediction": {
+                    "status": "predicted",
+                    "candidates": [
+                      {
+                        "record": {
+                          "count": 4,
+                          "entity": "rabbit"
+                        },
+                        "evidence": [
+                          {
+                            "model": 2,
+                            "examples": [
+                              5,
+                              6,
+                              7
+                            ],
+                            "kind": "induced"
+                          }
+                        ]
+                      }
+                    ],
+                    "search_limited": false,
+                    "verified": false
+                  }
+                }
+              ]
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              116,
+              104,
+              114,
+              101,
+              101
+            ],
+            [
+              114,
+              97,
+              98,
+              98,
+              105,
+              116,
+              115
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "count": 4,
+              "entity": "rabbit"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "four rabbits",
+                  "numbers": [
+                    102,
+                    111,
+                    117,
+                    114,
+                    32,
+                    114,
+                    97,
+                    98,
+                    98,
+                    105,
+                    116,
+                    115
+                  ],
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "record": {
+                    "multiple": true
+                  },
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 2,
+                "examples": [
+                  5,
+                  6,
+                  7
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "input": "three cafés",
+      "level": "byte",
+      "expected": "four cafés",
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": "add-one-observation",
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "count": 3,
+                "entity": "café"
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "multiple": true
+                    },
+                    "evidence": [
+                      {
+                        "model": 1,
+                        "examples": [
+                          1,
+                          2,
+                          3,
+                          4
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": [
+                {
+                  "action": "add-one-observation",
+                  "action_id": 10,
+                  "prediction": {
+                    "status": "predicted",
+                    "candidates": [
+                      {
+                        "record": {
+                          "count": 4,
+                          "entity": "café"
+                        },
+                        "evidence": [
+                          {
+                            "model": 2,
+                            "examples": [
+                              5,
+                              6,
+                              7
+                            ],
+                            "kind": "induced"
+                          }
+                        ]
+                      }
+                    ],
+                    "search_limited": false,
+                    "verified": false
+                  }
+                }
+              ]
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              116,
+              104,
+              114,
+              101,
+              101
+            ],
+            [
+              99,
+              97,
+              102,
+              195,
+              169,
+              115
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "count": 4,
+              "entity": "café"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "four cafés",
+                  "numbers": [
+                    102,
+                    111,
+                    117,
+                    114,
+                    32,
+                    99,
+                    97,
+                    102,
+                    195,
+                    169,
+                    115
+                  ],
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "record": {
+                    "multiple": true
+                  },
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 2,
+                "examples": [
+                  5,
+                  6,
+                  7
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "input": "three rabbits",
+      "level": "character",
+      "expected": "four rabbits",
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": "add-one-observation",
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "count": 3,
+                "entity": "rabbit"
+              },
+              "evidence": [
+                {
+                  "model": 2,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "multiple": true
+                    },
+                    "evidence": [
+                      {
+                        "model": 1,
+                        "examples": [
+                          1,
+                          2,
+                          3,
+                          4
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": [
+                {
+                  "action": "add-one-observation",
+                  "action_id": 10,
+                  "prediction": {
+                    "status": "predicted",
+                    "candidates": [
+                      {
+                        "record": {
+                          "count": 4,
+                          "entity": "rabbit"
+                        },
+                        "evidence": [
+                          {
+                            "model": 2,
+                            "examples": [
+                              5,
+                              6,
+                              7
+                            ],
+                            "kind": "induced"
+                          }
+                        ]
+                      }
+                    ],
+                    "search_limited": false,
+                    "verified": false
+                  }
+                }
+              ]
+            }
+          ],
+          "operating_level": "character",
+          "input_numbers": [
+            [
+              116,
+              104,
+              114,
+              101,
+              101
+            ],
+            [
+              114,
+              97,
+              98,
+              98,
+              105,
+              116,
+              115
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "count": 4,
+              "entity": "rabbit"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "four rabbits",
+                  "numbers": [
+                    102,
+                    111,
+                    117,
+                    114,
+                    32,
+                    114,
+                    97,
+                    98,
+                    98,
+                    105,
+                    116,
+                    115
+                  ],
+                  "evidence": [
+                    {
+                      "model": 2,
+                      "examples": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "character"
+            },
+            "relationships": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "record": {
+                    "multiple": true
+                  },
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 2,
+                "examples": [
+                  5,
+                  6,
+                  7
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "character",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "input": "three cafés",
+      "level": "character",
+      "expected": "four cafés",
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": "add-one-observation",
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "count": 3,
+                "entity": "café"
+              },
+              "evidence": [
+                {
+                  "model": 2,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "multiple": true
+                    },
+                    "evidence": [
+                      {
+                        "model": 1,
+                        "examples": [
+                          1,
+                          2,
+                          3,
+                          4
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": [
+                {
+                  "action": "add-one-observation",
+                  "action_id": 10,
+                  "prediction": {
+                    "status": "predicted",
+                    "candidates": [
+                      {
+                        "record": {
+                          "count": 4,
+                          "entity": "café"
+                        },
+                        "evidence": [
+                          {
+                            "model": 2,
+                            "examples": [
+                              5,
+                              6,
+                              7
+                            ],
+                            "kind": "induced"
+                          }
+                        ]
+                      }
+                    ],
+                    "search_limited": false,
+                    "verified": false
+                  }
+                }
+              ]
+            }
+          ],
+          "operating_level": "character",
+          "input_numbers": [
+            [
+              116,
+              104,
+              114,
+              101,
+              101
+            ],
+            [
+              99,
+              97,
+              102,
+              233,
+              115
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "count": 4,
+              "entity": "café"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "four cafés",
+                  "numbers": [
+                    102,
+                    111,
+                    117,
+                    114,
+                    32,
+                    99,
+                    97,
+                    102,
+                    233,
+                    115
+                  ],
+                  "evidence": [
+                    {
+                      "model": 2,
+                      "examples": [
+                        1,
+                        2,
+                        3
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "character"
+            },
+            "relationships": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "record": {
+                    "multiple": true
+                  },
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 2,
+                "examples": [
+                  5,
+                  6,
+                  7
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "character",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    }
+  ],
+  "known_state_unlearned_wording": {
+    "status": "predicted",
+    "action": "add-one-observation",
+    "input": {
+      "status": "predicted",
+      "readings": [
+        {
+          "record": {
+            "count": 4,
+            "entity": "rabbit"
+          },
+          "evidence": [
+            {
+              "model": 1,
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "kind": "induced"
+            }
+          ],
+          "relationships": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "record": {
+                  "multiple": true
+                },
+                "evidence": [
+                  {
+                    "model": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    "kind": "induced"
+                  }
+                ]
+              }
+            ],
+            "search_limited": false,
+            "verified": false
+          },
+          "predicted_changes": [
+            {
+              "action": "add-one-observation",
+              "action_id": 10,
+              "prediction": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "count": 5,
+                      "entity": "rabbit"
+                    },
+                    "evidence": [
+                      {
+                        "model": 2,
+                        "examples": [
+                          5,
+                          6,
+                          7
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              }
+            }
+          ]
+        }
+      ],
+      "operating_level": "byte",
+      "input_numbers": [
+        [
+          102,
+          111,
+          117,
+          114
+        ],
+        [
+          114,
+          97,
+          98,
+          98,
+          105,
+          116,
+          115
+        ]
+      ],
+      "verified": false,
+      "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+    },
+    "outcomes": [
+      {
+        "record": {
+          "count": 5,
+          "entity": "rabbit"
+        },
+        "expressions": {
+          "status": "unknown",
+          "candidates": [],
+          "search_limited": false,
+          "verified": false,
+          "operating_level": "byte"
+        },
+        "relationships": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "record": {
+                "multiple": true
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false
+        },
+        "evidence": [
+          {
+            "model": 2,
+            "examples": [
+              5,
+              6,
+              7
+            ],
+            "kind": "induced"
+          }
+        ]
+      }
+    ],
+    "operating_level": "byte",
+    "search_limited": false,
+    "verified": false,
+    "executed": false,
+    "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+  },
+  "unknown_expression": {
+    "status": "unknown",
+    "action": "add-one-observation",
+    "input": {
+      "status": "unknown",
+      "readings": [],
+      "operating_level": "byte",
+      "input_numbers": [
+        [
+          102,
+          105,
+          118,
+          101
+        ],
+        [
+          114,
+          97,
+          98,
+          98,
+          105,
+          116,
+          115
+        ]
+      ],
+      "verified": false,
+      "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+    },
+    "outcomes": [],
+    "operating_level": "byte",
+    "search_limited": false,
+    "verified": false,
+    "executed": false,
+    "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+  },
+  "conflicting_effects": {
+    "status": "ambiguous",
+    "action": "add-one-observation",
+    "input": {
+      "status": "predicted",
+      "readings": [
+        {
+          "record": {
+            "count": 3,
+            "entity": "rabbit"
+          },
+          "evidence": [
+            {
+              "model": 1,
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "kind": "induced"
+            }
+          ],
+          "relationships": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "record": {
+                  "multiple": true
+                },
+                "evidence": [
+                  {
+                    "model": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    "kind": "induced"
+                  }
+                ]
+              }
+            ],
+            "search_limited": false,
+            "verified": false
+          },
+          "predicted_changes": [
+            {
+              "action": "add-one-observation",
+              "action_id": 10,
+              "prediction": {
+                "status": "ambiguous",
+                "candidates": [
+                  {
+                    "record": {
+                      "count": 4,
+                      "entity": "rabbit"
+                    },
+                    "evidence": [
+                      {
+                        "model": 2,
+                        "examples": [
+                          5,
+                          6,
+                          7
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  },
+                  {
+                    "record": {
+                      "count": 2,
+                      "entity": "rabbit"
+                    },
+                    "evidence": [
+                      {
+                        "model": 3,
+                        "examples": [
+                          8,
+                          9,
+                          10
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              }
+            }
+          ]
+        }
+      ],
+      "operating_level": "byte",
+      "input_numbers": [
+        [
+          116,
+          104,
+          114,
+          101,
+          101
+        ],
+        [
+          114,
+          97,
+          98,
+          98,
+          105,
+          116,
+          115
+        ]
+      ],
+      "verified": false,
+      "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+    },
+    "outcomes": [
+      {
+        "record": {
+          "count": 4,
+          "entity": "rabbit"
+        },
+        "expressions": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "text": "four rabbits",
+              "numbers": [
+                102,
+                111,
+                117,
+                114,
+                32,
+                114,
+                97,
+                98,
+                98,
+                105,
+                116,
+                115
+              ],
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false,
+          "operating_level": "byte"
+        },
+        "relationships": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "record": {
+                "multiple": true
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false
+        },
+        "evidence": [
+          {
+            "model": 2,
+            "examples": [
+              5,
+              6,
+              7
+            ],
+            "kind": "induced"
+          }
+        ]
+      },
+      {
+        "record": {
+          "count": 2,
+          "entity": "rabbit"
+        },
+        "expressions": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "text": "two rabbits",
+              "numbers": [
+                116,
+                119,
+                111,
+                32,
+                114,
+                97,
+                98,
+                98,
+                105,
+                116,
+                115
+              ],
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false,
+          "operating_level": "byte"
+        },
+        "relationships": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "record": {
+                "multiple": true
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false
+        },
+        "evidence": [
+          {
+            "model": 3,
+            "examples": [
+              8,
+              9,
+              10
+            ],
+            "kind": "induced"
+          }
+        ]
+      }
+    ],
+    "operating_level": "byte",
+    "search_limited": false,
+    "verified": false,
+    "executed": false,
+    "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+  },
+  "prediction_writes": 0,
+  "model_calls": 0,
+  "real_actions_executed": 0,
+  "scope": "Completed bounded prototype flow; supplied whitespace boundaries, field labels, paired examples and action labels. Not raw-text semantic discovery or universal intelligence."
+}

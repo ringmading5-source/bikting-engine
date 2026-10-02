@@ -1,0 +1,303 @@
+{
+  "training": [
+    {
+      "input": {
+        "entity": "cat",
+        "count": 0
+      },
+      "output": {
+        "form": "cats",
+        "count": 0,
+        "multiple": false
+      }
+    },
+    {
+      "input": {
+        "entity": "dog",
+        "count": 1
+      },
+      "output": {
+        "form": "dogs",
+        "count": 1,
+        "multiple": false
+      }
+    },
+    {
+      "input": {
+        "entity": "horse",
+        "count": 2
+      },
+      "output": {
+        "form": "horses",
+        "count": 2,
+        "multiple": true
+      }
+    },
+    {
+      "input": {
+        "entity": "bird",
+        "count": 3
+      },
+      "output": {
+        "form": "birds",
+        "count": 3,
+        "multiple": true
+      }
+    }
+  ],
+  "learned": {
+    "status": "learned",
+    "model_id": 1,
+    "model": {
+      "rules": {
+        "form": [
+          {
+            "kind": "sequence",
+            "source": "entity",
+            "level": "character",
+            "input": [
+              {
+                "slot": 0,
+                "min_tokens": 3
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": "s"
+              }
+            ]
+          },
+          {
+            "kind": "sequence",
+            "source": "entity",
+            "level": "byte",
+            "input": [
+              {
+                "slot": 0,
+                "min_tokens": 3
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": 115
+              }
+            ]
+          }
+        ],
+        "count": [
+          {
+            "kind": "copy",
+            "source": "count"
+          }
+        ],
+        "multiple": [
+          {
+            "kind": "comparison",
+            "source": "count",
+            "operator": "gt",
+            "threshold": 1
+          }
+        ]
+      },
+      "examples": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "evidence_retained": true,
+    "supplied": "Record boundaries, field labels and example outputs.",
+    "learned": "Sequence bindings, observed literals, copy links and integer comparisons."
+  },
+  "cases": [
+    {
+      "input": {
+        "entity": "rabbit",
+        "count": 3
+      },
+      "expected": {
+        "form": "rabbits",
+        "count": 3,
+        "multiple": true
+      },
+      "result": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 3,
+              "form": "rabbits",
+              "multiple": true
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "correct": true
+    },
+    {
+      "input": {
+        "entity": "goat",
+        "count": 1
+      },
+      "expected": {
+        "form": "goats",
+        "count": 1,
+        "multiple": false
+      },
+      "result": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 1,
+              "form": "goats",
+              "multiple": false
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "correct": true
+    },
+    {
+      "input": {
+        "entity": "café",
+        "count": 5
+      },
+      "expected": {
+        "form": "cafés",
+        "count": 5,
+        "multiple": true
+      },
+      "result": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 5,
+              "form": "cafés",
+              "multiple": true
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "correct": true
+    }
+  ],
+  "correct": 3,
+  "total": 3,
+  "exceptions_retained": {
+    "status": "unsupported",
+    "model_id": 2,
+    "model": {
+      "rules": {
+        "form": [],
+        "count": [
+          {
+            "kind": "copy",
+            "source": "count"
+          }
+        ],
+        "multiple": []
+      },
+      "examples": [
+        5,
+        6,
+        7
+      ]
+    },
+    "evidence_retained": true,
+    "supplied": "Record boundaries, field labels and example outputs.",
+    "learned": "Sequence bindings, observed literals, copy links and integer comparisons."
+  },
+  "mouse_prediction": {
+    "status": "ambiguous",
+    "candidates": [
+      {
+        "record": {
+          "count": 2,
+          "form": "mice",
+          "multiple": true
+        },
+        "evidence": [
+          {
+            "example": 5,
+            "kind": "observed"
+          }
+        ]
+      },
+      {
+        "record": {
+          "count": 2,
+          "form": "mouses",
+          "multiple": true
+        },
+        "evidence": [
+          {
+            "model": 1,
+            "examples": [
+              1,
+              2,
+              3,
+              4
+            ],
+            "kind": "induced"
+          }
+        ]
+      }
+    ],
+    "search_limited": false,
+    "verified": false
+  },
+  "model_calls": 0,
+  "test_learning_updates": 0,
+  "limits": "Supplied structured labels; no raw-text parsing, acquired concept semantics, word-level induction or automatic exception routing. Character/byte bindings share a generic sequence mechanism."
+}

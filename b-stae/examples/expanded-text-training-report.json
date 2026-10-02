@@ -1,0 +1,3254 @@
+{
+  "training_examples": 36,
+  "training": [
+    {
+      "context": "carrying",
+      "examples": [
+        {
+          "text": "A robot carries tools.",
+          "record": {
+            "carrier": "robot",
+            "item": "tools"
+          }
+        },
+        {
+          "text": "A farmer carries seeds.",
+          "record": {
+            "carrier": "farmer",
+            "item": "seeds"
+          }
+        },
+        {
+          "text": "A child carries books.",
+          "record": {
+            "carrier": "child",
+            "item": "books"
+          }
+        },
+        {
+          "text": "A teacher carries papers.",
+          "record": {
+            "carrier": "teacher",
+            "item": "papers"
+          }
+        },
+        {
+          "text": "A worker carries boxes.",
+          "record": {
+            "carrier": "worker",
+            "item": "boxes"
+          }
+        },
+        {
+          "text": "A doctor carries supplies.",
+          "record": {
+            "carrier": "doctor",
+            "item": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    },
+    {
+      "context": "giving",
+      "examples": [
+        {
+          "text": "The robot gives tools.",
+          "record": {
+            "giver": "robot",
+            "gift": "tools"
+          }
+        },
+        {
+          "text": "The farmer gives seeds.",
+          "record": {
+            "giver": "farmer",
+            "gift": "seeds"
+          }
+        },
+        {
+          "text": "The child gives books.",
+          "record": {
+            "giver": "child",
+            "gift": "books"
+          }
+        },
+        {
+          "text": "The teacher gives papers.",
+          "record": {
+            "giver": "teacher",
+            "gift": "papers"
+          }
+        },
+        {
+          "text": "The worker gives boxes.",
+          "record": {
+            "giver": "worker",
+            "gift": "boxes"
+          }
+        },
+        {
+          "text": "The doctor gives supplies.",
+          "record": {
+            "giver": "doctor",
+            "gift": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    },
+    {
+      "context": "finding",
+      "examples": [
+        {
+          "text": "The robot finds tools.",
+          "record": {
+            "finder": "robot",
+            "found": "tools"
+          }
+        },
+        {
+          "text": "The farmer finds seeds.",
+          "record": {
+            "finder": "farmer",
+            "found": "seeds"
+          }
+        },
+        {
+          "text": "The child finds books.",
+          "record": {
+            "finder": "child",
+            "found": "books"
+          }
+        },
+        {
+          "text": "The teacher finds papers.",
+          "record": {
+            "finder": "teacher",
+            "found": "papers"
+          }
+        },
+        {
+          "text": "The worker finds boxes.",
+          "record": {
+            "finder": "worker",
+            "found": "boxes"
+          }
+        },
+        {
+          "text": "The doctor finds supplies.",
+          "record": {
+            "finder": "doctor",
+            "found": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    },
+    {
+      "context": "liking",
+      "examples": [
+        {
+          "text": "The robot likes tools.",
+          "record": {
+            "person": "robot",
+            "liked": "tools"
+          }
+        },
+        {
+          "text": "The farmer likes seeds.",
+          "record": {
+            "person": "farmer",
+            "liked": "seeds"
+          }
+        },
+        {
+          "text": "The child likes books.",
+          "record": {
+            "person": "child",
+            "liked": "books"
+          }
+        },
+        {
+          "text": "The teacher likes papers.",
+          "record": {
+            "person": "teacher",
+            "liked": "papers"
+          }
+        },
+        {
+          "text": "The worker likes boxes.",
+          "record": {
+            "person": "worker",
+            "liked": "boxes"
+          }
+        },
+        {
+          "text": "The doctor likes supplies.",
+          "record": {
+            "person": "doctor",
+            "liked": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    },
+    {
+      "context": "using",
+      "examples": [
+        {
+          "text": "The robot uses tools.",
+          "record": {
+            "user": "robot",
+            "used": "tools"
+          }
+        },
+        {
+          "text": "The farmer uses seeds.",
+          "record": {
+            "user": "farmer",
+            "used": "seeds"
+          }
+        },
+        {
+          "text": "The child uses books.",
+          "record": {
+            "user": "child",
+            "used": "books"
+          }
+        },
+        {
+          "text": "The teacher uses papers.",
+          "record": {
+            "user": "teacher",
+            "used": "papers"
+          }
+        },
+        {
+          "text": "The worker uses boxes.",
+          "record": {
+            "user": "worker",
+            "used": "boxes"
+          }
+        },
+        {
+          "text": "The doctor uses supplies.",
+          "record": {
+            "user": "doctor",
+            "used": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    },
+    {
+      "context": "holding",
+      "examples": [
+        {
+          "text": "The robot holds tools.",
+          "record": {
+            "holder": "robot",
+            "held": "tools"
+          }
+        },
+        {
+          "text": "The farmer holds seeds.",
+          "record": {
+            "holder": "farmer",
+            "held": "seeds"
+          }
+        },
+        {
+          "text": "The child holds books.",
+          "record": {
+            "holder": "child",
+            "held": "books"
+          }
+        },
+        {
+          "text": "The teacher holds papers.",
+          "record": {
+            "holder": "teacher",
+            "held": "papers"
+          }
+        },
+        {
+          "text": "The worker holds boxes.",
+          "record": {
+            "holder": "worker",
+            "held": "boxes"
+          }
+        },
+        {
+          "text": "The doctor holds supplies.",
+          "record": {
+            "holder": "doctor",
+            "held": "supplies"
+          }
+        }
+      ],
+      "status": "learned"
+    }
+  ],
+  "correct": 18,
+  "total": 18,
+  "cases": [
+    {
+      "context": "carrying",
+      "text": "A traveller carries maps.",
+      "expected": {
+        "carrier": "traveller",
+        "item": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "carrier": "traveller",
+                "item": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              65
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "carrier": "traveller",
+              "item": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "A traveller carries maps.",
+                  "numbers": [
+                    65,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "carrying",
+      "text": "A artist carries brushes.",
+      "expected": {
+        "carrier": "artist",
+        "item": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "carrier": "artist",
+                "item": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              65
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "carrier": "artist",
+              "item": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "A artist carries brushes.",
+                  "numbers": [
+                    65,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "carrying",
+      "text": "A pilot carries radios.",
+      "expected": {
+        "carrier": "pilot",
+        "item": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "carrier": "pilot",
+                "item": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              65
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "carrier": "pilot",
+              "item": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "A pilot carries radios.",
+                  "numbers": [
+                    65,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 1,
+                      "examples": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5,
+                  6
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "giving",
+      "text": "The traveller gives maps.",
+      "expected": {
+        "giver": "traveller",
+        "gift": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "giver": "traveller",
+                "gift": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 3,
+                  "examples": [
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              103,
+              105,
+              118,
+              101,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "giver": "traveller",
+              "gift": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The traveller gives maps.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    103,
+                    105,
+                    118,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 3,
+                      "examples": [
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 3,
+                "examples": [
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "giving",
+      "text": "The artist gives brushes.",
+      "expected": {
+        "giver": "artist",
+        "gift": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "giver": "artist",
+                "gift": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 3,
+                  "examples": [
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              103,
+              105,
+              118,
+              101,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "giver": "artist",
+              "gift": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The artist gives brushes.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    103,
+                    105,
+                    118,
+                    101,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 3,
+                      "examples": [
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 3,
+                "examples": [
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "giving",
+      "text": "The pilot gives radios.",
+      "expected": {
+        "giver": "pilot",
+        "gift": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "giver": "pilot",
+                "gift": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 3,
+                  "examples": [
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              103,
+              105,
+              118,
+              101,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "giver": "pilot",
+              "gift": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The pilot gives radios.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    103,
+                    105,
+                    118,
+                    101,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 3,
+                      "examples": [
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 3,
+                "examples": [
+                  7,
+                  8,
+                  9,
+                  10,
+                  11,
+                  12
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "finding",
+      "text": "The traveller finds maps.",
+      "expected": {
+        "finder": "traveller",
+        "found": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "finder": "traveller",
+                "found": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 5,
+                  "examples": [
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              102,
+              105,
+              110,
+              100,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "finder": "traveller",
+              "found": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The traveller finds maps.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    102,
+                    105,
+                    110,
+                    100,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 5,
+                      "examples": [
+                        13,
+                        14,
+                        15,
+                        16,
+                        17,
+                        18
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 5,
+                "examples": [
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "finding",
+      "text": "The artist finds brushes.",
+      "expected": {
+        "finder": "artist",
+        "found": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "finder": "artist",
+                "found": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 5,
+                  "examples": [
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              102,
+              105,
+              110,
+              100,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "finder": "artist",
+              "found": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The artist finds brushes.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    102,
+                    105,
+                    110,
+                    100,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 5,
+                      "examples": [
+                        13,
+                        14,
+                        15,
+                        16,
+                        17,
+                        18
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 5,
+                "examples": [
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "finding",
+      "text": "The pilot finds radios.",
+      "expected": {
+        "finder": "pilot",
+        "found": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "finder": "pilot",
+                "found": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 5,
+                  "examples": [
+                    13,
+                    14,
+                    15,
+                    16,
+                    17,
+                    18
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              102,
+              105,
+              110,
+              100,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "finder": "pilot",
+              "found": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The pilot finds radios.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    102,
+                    105,
+                    110,
+                    100,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 5,
+                      "examples": [
+                        13,
+                        14,
+                        15,
+                        16,
+                        17,
+                        18
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 5,
+                "examples": [
+                  13,
+                  14,
+                  15,
+                  16,
+                  17,
+                  18
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "liking",
+      "text": "The traveller likes maps.",
+      "expected": {
+        "person": "traveller",
+        "liked": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "person": "traveller",
+                "liked": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 7,
+                  "examples": [
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              108,
+              105,
+              107,
+              101,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "person": "traveller",
+              "liked": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The traveller likes maps.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    108,
+                    105,
+                    107,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 7,
+                      "examples": [
+                        19,
+                        20,
+                        21,
+                        22,
+                        23,
+                        24
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 7,
+                "examples": [
+                  19,
+                  20,
+                  21,
+                  22,
+                  23,
+                  24
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "liking",
+      "text": "The artist likes brushes.",
+      "expected": {
+        "person": "artist",
+        "liked": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "person": "artist",
+                "liked": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 7,
+                  "examples": [
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              108,
+              105,
+              107,
+              101,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "person": "artist",
+              "liked": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The artist likes brushes.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    108,
+                    105,
+                    107,
+                    101,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 7,
+                      "examples": [
+                        19,
+                        20,
+                        21,
+                        22,
+                        23,
+                        24
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 7,
+                "examples": [
+                  19,
+                  20,
+                  21,
+                  22,
+                  23,
+                  24
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "liking",
+      "text": "The pilot likes radios.",
+      "expected": {
+        "person": "pilot",
+        "liked": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "person": "pilot",
+                "liked": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 7,
+                  "examples": [
+                    19,
+                    20,
+                    21,
+                    22,
+                    23,
+                    24
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              108,
+              105,
+              107,
+              101,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "person": "pilot",
+              "liked": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The pilot likes radios.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    108,
+                    105,
+                    107,
+                    101,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 7,
+                      "examples": [
+                        19,
+                        20,
+                        21,
+                        22,
+                        23,
+                        24
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 7,
+                "examples": [
+                  19,
+                  20,
+                  21,
+                  22,
+                  23,
+                  24
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "using",
+      "text": "The traveller uses maps.",
+      "expected": {
+        "user": "traveller",
+        "used": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "user": "traveller",
+                "used": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 9,
+                  "examples": [
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              117,
+              115,
+              101,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "user": "traveller",
+              "used": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The traveller uses maps.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    117,
+                    115,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 9,
+                      "examples": [
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 9,
+                "examples": [
+                  25,
+                  26,
+                  27,
+                  28,
+                  29,
+                  30
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "using",
+      "text": "The artist uses brushes.",
+      "expected": {
+        "user": "artist",
+        "used": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "user": "artist",
+                "used": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 9,
+                  "examples": [
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              117,
+              115,
+              101,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "user": "artist",
+              "used": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The artist uses brushes.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    117,
+                    115,
+                    101,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 9,
+                      "examples": [
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 9,
+                "examples": [
+                  25,
+                  26,
+                  27,
+                  28,
+                  29,
+                  30
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "using",
+      "text": "The pilot uses radios.",
+      "expected": {
+        "user": "pilot",
+        "used": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "user": "pilot",
+                "used": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 9,
+                  "examples": [
+                    25,
+                    26,
+                    27,
+                    28,
+                    29,
+                    30
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              117,
+              115,
+              101,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "user": "pilot",
+              "used": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The pilot uses radios.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    117,
+                    115,
+                    101,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 9,
+                      "examples": [
+                        25,
+                        26,
+                        27,
+                        28,
+                        29,
+                        30
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 9,
+                "examples": [
+                  25,
+                  26,
+                  27,
+                  28,
+                  29,
+                  30
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "holding",
+      "text": "The traveller holds maps.",
+      "expected": {
+        "holder": "traveller",
+        "held": "maps"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "holder": "traveller",
+                "held": "maps"
+              },
+              "evidence": [
+                {
+                  "model": 11,
+                  "examples": [
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              116,
+              114,
+              97,
+              118,
+              101,
+              108,
+              108,
+              101,
+              114
+            ],
+            [
+              104,
+              111,
+              108,
+              100,
+              115
+            ],
+            [
+              109,
+              97,
+              112,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "holder": "traveller",
+              "held": "maps"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The traveller holds maps.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    116,
+                    114,
+                    97,
+                    118,
+                    101,
+                    108,
+                    108,
+                    101,
+                    114,
+                    32,
+                    104,
+                    111,
+                    108,
+                    100,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 11,
+                      "examples": [
+                        31,
+                        32,
+                        33,
+                        34,
+                        35,
+                        36
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 11,
+                "examples": [
+                  31,
+                  32,
+                  33,
+                  34,
+                  35,
+                  36
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "holding",
+      "text": "The artist holds brushes.",
+      "expected": {
+        "holder": "artist",
+        "held": "brushes"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "holder": "artist",
+                "held": "brushes"
+              },
+              "evidence": [
+                {
+                  "model": 11,
+                  "examples": [
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              97,
+              114,
+              116,
+              105,
+              115,
+              116
+            ],
+            [
+              104,
+              111,
+              108,
+              100,
+              115
+            ],
+            [
+              98,
+              114,
+              117,
+              115,
+              104,
+              101,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "holder": "artist",
+              "held": "brushes"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The artist holds brushes.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    97,
+                    114,
+                    116,
+                    105,
+                    115,
+                    116,
+                    32,
+                    104,
+                    111,
+                    108,
+                    100,
+                    115,
+                    32,
+                    98,
+                    114,
+                    117,
+                    115,
+                    104,
+                    101,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 11,
+                      "examples": [
+                        31,
+                        32,
+                        33,
+                        34,
+                        35,
+                        36
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 11,
+                "examples": [
+                  31,
+                  32,
+                  33,
+                  34,
+                  35,
+                  36
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    },
+    {
+      "context": "holding",
+      "text": "The pilot holds radios.",
+      "expected": {
+        "holder": "pilot",
+        "held": "radios"
+      },
+      "correct": true,
+      "result": {
+        "status": "predicted",
+        "action": null,
+        "input": {
+          "status": "predicted",
+          "readings": [
+            {
+              "record": {
+                "holder": "pilot",
+                "held": "radios"
+              },
+              "evidence": [
+                {
+                  "model": 11,
+                  "examples": [
+                    31,
+                    32,
+                    33,
+                    34,
+                    35,
+                    36
+                  ],
+                  "kind": "induced"
+                }
+              ],
+              "relationships": {
+                "status": "unknown",
+                "candidates": [],
+                "search_limited": false,
+                "verified": false
+              },
+              "predicted_changes": []
+            }
+          ],
+          "operating_level": "byte",
+          "input_numbers": [
+            [
+              84,
+              104,
+              101
+            ],
+            [
+              112,
+              105,
+              108,
+              111,
+              116
+            ],
+            [
+              104,
+              111,
+              108,
+              100,
+              115
+            ],
+            [
+              114,
+              97,
+              100,
+              105,
+              111,
+              115,
+              46
+            ]
+          ],
+          "verified": false,
+          "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+        },
+        "outcomes": [
+          {
+            "record": {
+              "holder": "pilot",
+              "held": "radios"
+            },
+            "expressions": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "text": "The pilot holds radios.",
+                  "numbers": [
+                    84,
+                    104,
+                    101,
+                    32,
+                    112,
+                    105,
+                    108,
+                    111,
+                    116,
+                    32,
+                    104,
+                    111,
+                    108,
+                    100,
+                    115,
+                    32,
+                    114,
+                    97,
+                    100,
+                    105,
+                    111,
+                    115,
+                    46
+                  ],
+                  "evidence": [
+                    {
+                      "model": 11,
+                      "examples": [
+                        31,
+                        32,
+                        33,
+                        34,
+                        35,
+                        36
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false,
+              "operating_level": "byte"
+            },
+            "relationships": {
+              "status": "unknown",
+              "candidates": [],
+              "search_limited": false,
+              "verified": false
+            },
+            "evidence": [
+              {
+                "model": 11,
+                "examples": [
+                  31,
+                  32,
+                  33,
+                  34,
+                  35,
+                  36
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "operating_level": "byte",
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Read-only symbolic prediction through numerical sequence models; supplied boundaries and labels, no physical action execution."
+      }
+    }
+  ],
+  "unlearned_wording": [
+    {
+      "text": "A traveller carried maps.",
+      "status": "unknown"
+    },
+    {
+      "text": "A young traveller carries maps.",
+      "status": "unknown"
+    },
+    {
+      "text": "Maps are carried by a traveller.",
+      "status": "unknown"
+    }
+  ],
+  "test_learning_updates": 0,
+  "model_calls": 0,
+  "scope": "Six separately labeled fixed sentence frames. No raw-text meaning discovery, automatic frame routing or unrestricted grammar."
+}

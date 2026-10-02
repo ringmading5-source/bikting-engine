@@ -1,5 +1,299 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B-STAE knowledge and procedures</title><style>body{background:#111826;color:#e8eef9;font:16px system-ui;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:#1b293c;border:1px solid #314156;border-radius:12px;padding:20px;margin:20px 0}label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:6px}input,textarea{box-sizing:border-box;width:100%;background:#111b2b;color:#fff;border:1px solid #52647b}textarea{min-height:70px}button{background:#72dbbf;border:0;margin-top:12px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#adc0d8}</style></head><body><main>
 <h1>B-STAE knowledge and procedures</h1><p>Store source knowledge and explicit procedures. Retrieve applicable procedures, compose bounded paths, and verify execution against the supplied target.</p><label for="token">Access token (for hosted deployments)</label><input id="token" type="password" autocomplete="off">
+<section><h2>B-STAE connected prototype</h2>
+<p>Connect paired expressions, labeled state relationships, and observed before/after records.</p>
+<label for="meaning-context">Meaning context (JSON)</label><input id="meaning-context" value='"animals"'>
+<label for="meaning-training">Training examples</label><textarea id="meaning-training" style="min-height:220px">{
+ "expression_batches": [
+  [
+   {
+    "text": "two cats",
+    "record": {
+     "entity": "cat",
+     "count": 2
+    }
+   },
+   {
+    "text": "three dogs",
+    "record": {
+     "entity": "dog",
+     "count": 3
+    }
+   },
+   {
+    "text": "four horses",
+    "record": {
+     "entity": "horse",
+     "count": 4
+    }
+   }
+  ],
+  [
+   {
+    "text": "one cat",
+    "record": {
+     "entity": "cat",
+     "count": 1
+    }
+   },
+   {
+    "text": "one dog",
+    "record": {
+     "entity": "dog",
+     "count": 1
+    }
+   },
+   {
+    "text": "one horse",
+    "record": {
+     "entity": "horse",
+     "count": 1
+    }
+   }
+  ]
+ ],
+ "relations": [
+  {
+   "input": {
+    "entity": "cat",
+    "count": 0
+   },
+   "output": {
+    "multiple": false
+   }
+  },
+  {
+   "input": {
+    "entity": "dog",
+    "count": 1
+   },
+   "output": {
+    "multiple": false
+   }
+  },
+  {
+   "input": {
+    "entity": "horse",
+    "count": 2
+   },
+   "output": {
+    "multiple": true
+   }
+  },
+  {
+   "input": {
+    "entity": "bird",
+    "count": 3
+   },
+   "output": {
+    "multiple": true
+   }
+  }
+ ],
+ "changes": [
+  {
+   "input": {
+    "entity": "cat",
+    "count": 1
+   },
+   "output": {
+    "entity": "cat",
+    "count": 2
+   }
+  },
+  {
+   "input": {
+    "entity": "dog",
+    "count": 2
+   },
+   "output": {
+    "entity": "dog",
+    "count": 3
+   }
+  },
+  {
+   "input": {
+    "entity": "horse",
+    "count": 4
+   },
+   "output": {
+    "entity": "horse",
+    "count": 5
+   }
+  }
+ ],
+ "label": "add-one-observation"
+}</textarea><button id="meaning-learn">Learn these connections</button>
+<label for="meaning-text">Unseen expression</label><input id="meaning-text" value="three rabbits"><button id="meaning-inspect">Inspect relationships and consequences</button>
+<label for="meaning-action">Learned change label (leave blank to read the current state)</label><input id="meaning-action" value="add-one-observation"><button id="meaning-run">Run connected prediction</button>
+<p id="meaning-summary" aria-live="polite">Train the examples above, then run an unseen expression. Outputs are predictions; no real-world action is performed.</p>
+<label for="meaning-field">Field to query</label><input id="meaning-field" value="count"><button id="meaning-read">Read this field</button>
+<p id="meaning-note" aria-live="polite">Labels and examples supply the grounding. Predictions are unverified expectations, not real-world actions.</p>
+<details><summary>Linked evidence and predictions</summary><pre id="meaning-result"></pre></details></section>
+<section><h2>Numerical text representation</h2>
+<p>Encode text as sentence and word IDs linked to ordered Unicode characters and UTF-8 bytes.</p>
+<label for="numeric-text-input">Text to encode</label><textarea id="numeric-text-input">three rabbits</textarea><button id="numeric-text-encode">Encode and inspect links</button>
+<label for="numeric-text-id">Sentence ID from this database</label><input id="numeric-text-id" type="number" min="1"><button id="numeric-text-decode">Decode from memory</button>
+<p id="numeric-text-note" aria-live="polite">IDs identify sequences. They are not quantities or learned meanings.</p><details><summary>Ordered IDs, characters and byte links</summary><pre id="numeric-text-result"></pre></details></section>
+<section><h2>Learn text and memory connections</h2>
+<p>Learn paired text and record examples, then parse and express unseen combinations.</p>
+<label for="bridge-context">Bridge context (JSON)</label><input id="bridge-context" value='"text-quantity"'>
+<label for="bridge-examples">Training batches (one frame per batch)</label><textarea id="bridge-examples" style="min-height:200px">[
+ [
+  {
+   "text": "two cats",
+   "record": {
+    "entity": "cat",
+    "count": 2
+   }
+  },
+  {
+   "text": "three dogs",
+   "record": {
+    "entity": "dog",
+    "count": 3
+   }
+  },
+  {
+   "text": "four horses",
+   "record": {
+    "entity": "horse",
+    "count": 4
+   }
+  }
+ ],
+ [
+  {
+   "text": "one cat",
+   "record": {
+    "entity": "cat",
+    "count": 1
+   }
+  },
+  {
+   "text": "one dog",
+   "record": {
+    "entity": "dog",
+    "count": 1
+   }
+  },
+  {
+   "text": "one horse",
+   "record": {
+    "entity": "horse",
+    "count": 1
+   }
+  }
+ ]
+]</textarea>
+<button id="bridge-learn">Learn these connections</button>
+<label for="bridge-text">Unseen phrase</label><input id="bridge-text" value="three rabbits"><button id="bridge-parse">Read into memory</button>
+<label for="bridge-record">Memory record</label><textarea id="bridge-record">{"entity":"rabbit","count":3}</textarea><button id="bridge-express">Express as text</button>
+<p id="bridge-note" aria-live="polite">Examples supply the field labels and meanings. Quantity vocabulary and spelling links are learned within these frames.</p>
+<details><summary>Records and learned alignment evidence</summary><pre id="bridge-result"></pre></details></section>
+<section><h2>Learn relationships in memory</h2>
+<p>Learn transformations between labeled records. Inspect the resulting records and evidence.</p>
+<label for="logic-context">Memory context (JSON)</label><input id="logic-context" value='"quantity"'>
+<label for="logic-examples">Linked input and output records</label><textarea id="logic-examples" style="min-height:200px">[
+ {
+  "input": {
+   "entity": "cat",
+   "count": 0
+  },
+  "output": {
+   "form": "cats",
+   "count": 0,
+   "multiple": false
+  }
+ },
+ {
+  "input": {
+   "entity": "dog",
+   "count": 1
+  },
+  "output": {
+   "form": "dogs",
+   "count": 1,
+   "multiple": false
+  }
+ },
+ {
+  "input": {
+   "entity": "horse",
+   "count": 2
+  },
+  "output": {
+   "form": "horses",
+   "count": 2,
+   "multiple": true
+  }
+ },
+ {
+  "input": {
+   "entity": "bird",
+   "count": 3
+  },
+  "output": {
+   "form": "birds",
+   "count": 3,
+   "multiple": true
+  }
+ }
+]</textarea>
+<button id="logic-learn">Learn memory relationships</button>
+<label for="logic-input">Unseen input record</label><textarea id="logic-input">{"entity":"rabbit","count":3}</textarea>
+<button id="logic-predict">Predict output record</button>
+<p id="logic-note" aria-live="polite">Field labels and examples are supplied. Character and byte transformations and numerical comparisons are induced within a bounded hypothesis language.</p>
+<details><summary>Records, rules and conflicting evidence</summary><pre id="logic-result"></pre></details></section>
+<section><h2>Learn text relationships</h2>
+<p>Learn variable relationships between statements, questions, and answers. Test new subjects and answer values.</p>
+<label for="relation-context">Relationship context (JSON)</label><input id="relation-context" value='"text-relations"'>
+<label for="relation-examples">Labeled examples</label><textarea id="relation-examples" style="min-height:180px">[
+ {"statement":"The cat drinks milk.","question":"What does the cat drink?","answer":"milk","source":"user:example"},
+ {"statement":"The dog drinks water.","question":"What does the dog drink?","answer":"water","source":"user:example"},
+ {"statement":"The child drinks juice.","question":"What does the child drink?","answer":"juice","source":"user:example"}
+]</textarea><button id="relation-learn">Learn linked relationships</button>
+<label for="relation-statement">Unseen statement</label><input id="relation-statement" value="The robot drinks lemonade.">
+<label for="relation-question">Question about that statement</label><input id="relation-question" value="What does the robot drink?">
+<button id="relation-transform">Generate question and answer</button><button id="relation-answer">Answer this question</button>
+<p id="relation-note" aria-live="polite">This induces text templates from supplied labels. It does not infer arbitrary grammar or facts from raw passages.</p>
+<details><summary>Learned variables and evidence</summary><pre id="relation-result"></pre></details>
+</section>
+<section><h2>Learn phrases and sentences</h2>
+<p>Use surrounding text to retrieve an observed phrase or sentence-length span.</p>
+<label for="sentence-context">Sentence experiment context (JSON)</label><input id="sentence-context" value='"sentence-spans"'>
+<label for="sentence-training">Passages for this experiment (one per line)</label><textarea id="sentence-training" style="min-height:150px">The plant uses sunlight to make food during the day.
+The robot places the red block on the table before resting.
+First observation: the ball rolls down the hill. Next observation: the door opens.
+The child likes warm tea after dinner.
+The child likes fresh juice after dinner.</textarea><button id="sentence-learn">Learn these passages</button>
+<label for="sentence-gap">Prompt with a multiword &lt;mask&gt;</label><input id="sentence-gap" value="Today the plant &lt;mask&gt; during the day."><button id="sentence-predict">Predict missing phrase</button>
+<label for="sentence-prefix">Sentence beginning</label><input id="sentence-prefix" value="Today the plant"><button id="sentence-continue">Complete to a sentence boundary</button>
+<p id="sentence-note" aria-live="polite">Answers are observed spans selected by local context. Unknowns and conflicting alternatives remain visible.</p><details><summary>Candidate spans and source evidence</summary><pre id="sentence-result"></pre></details>
+</section>
+<section><h2>Learn missing words</h2>
+<p>Learn local word relationships from sentences and compare predictions with a most-frequent-word baseline.</p>
+<label for="gap-context">Experiment context (JSON)</label><input id="gap-context" value='"word-gaps"'>
+<label for="gap-training">Training sentences (one per line)</label><textarea id="gap-training" style="min-height:200px">The cat drinks milk.
+The dog drinks water.
+The fish swims in rivers.
+The bird can fly above trees.
+The leaves are green.
+The sky looks blue.
+The student reads books.
+The plants need light.
+The fire feels warm.
+The child likes tea.
+The child likes juice.</textarea><button id="gap-learn">Learn these sentences</button>
+<label for="gap-question">New sentence with one &lt;mask&gt;</label><input id="gap-question" value="Today the cat drinks &lt;mask&gt;."><button id="gap-predict">Predict missing word</button>
+<label for="gap-tests">Held-out text and expected word (JSON array)</label><textarea id="gap-tests" style="min-height:130px">[
+ {"text":"Today the cat drinks &lt;mask&gt;.","expected":"milk"},
+ {"text":"Sometimes the &lt;mask&gt; swims in rivers.","expected":"fish"},
+ {"text":"Today the child likes &lt;mask&gt;.","expected":"tea"},
+ {"text":"quasar &lt;mask&gt; nebula","expected":"glows"}
+]</textarea><button id="gap-evaluate">Compare with baseline</button>
+<p id="gap-note" aria-live="polite">Held-out sentences must not occur in training. This experiment uses observed local contexts and does not establish semantic understanding.</p><details><summary>Predictions and evidence</summary><pre id="gap-result"></pre></details>
+</section>
 <section><h2>Import a pattern dataset</h2>
 <p>Use JSONL records with explicit training, validation, and test splits. Only training records teach the model.</p>
 <label for="dataset-name">Dataset name</label><input id="dataset-name" value="my-first-dataset">
@@ -297,5 +591,119 @@ el('dataset-evaluate').onclick=async()=>{
   const result=await call({action:'pattern_dataset_evaluate',name:el('dataset-name').value.trim()});
   el('dataset-result').textContent=JSON.stringify(result,null,2);el('dataset-note').textContent='Evaluation finished. Ambiguous answers are not counted as correct.';
  }catch(error){el('dataset-note').textContent=error.message}finally{el('dataset-evaluate').disabled=false}
+};
+
+el('gap-learn').onclick=async()=>{
+ el('gap-learn').disabled=true;el('gap-note').textContent='Learning training sentences…';
+ try{
+  const sentences=el('gap-training').value.split(/\r?\n/).filter(line=>line.trim());if(!sentences.length)throw Error('Enter training sentences.');
+  const context=JSON.parse(el('gap-context').value);let total=0;
+  for(let index=0;index<sentences.length;index++){
+   const report=await call({action:'text_gap_learn',text:sentences[index],context,source:'user:gap-panel:'+index});total+=report.indexed_occurrences;
+  }
+  el('gap-note').textContent=sentences.length+' sentences learned. Test an unseen sentence.';el('gap-result').textContent=JSON.stringify({sentences:sentences.length,indexed_occurrences:total},null,2);
+ }catch(error){el('gap-note').textContent=error.message}finally{el('gap-learn').disabled=false}
+};
+el('gap-predict').onclick=async()=>{
+ try{const result=await call({action:'text_gap_predict',text:el('gap-question').value,context:JSON.parse(el('gap-context').value)});
+  el('gap-note').textContent=result.status+': '+result.preferred.map(c=>c.token).join(', ');el('gap-result').textContent=JSON.stringify(result,null,2);
+ }catch(error){el('gap-note').textContent=error.message}
+};
+el('gap-evaluate').onclick=async()=>{
+ try{const result=await call({action:'text_gap_evaluate',cases:JSON.parse(el('gap-tests').value),context:JSON.parse(el('gap-context').value)});
+  el('gap-note').textContent='Pattern predictor: '+result.correct+'/'+result.total+'. Baseline: '+result.baseline_correct+'/'+result.total+'.';el('gap-result').textContent=JSON.stringify(result,null,2);
+ }catch(error){el('gap-note').textContent=error.message}
+};
+
+el('sentence-learn').onclick=async()=>{
+ el('sentence-learn').disabled=true;
+ try{const context=JSON.parse(el('sentence-context').value);const passages=el('sentence-training').value.split(/\r?\n/).filter(line=>line.trim());if(!passages.length)throw Error('Enter training passages.');
+  for(let index=0;index<passages.length;index++)await call({action:'text_gap_learn',text:passages[index],source:'user:sentence-panel:'+index,context});
+  el('sentence-note').textContent=passages.length+' passages stored. Try a new prompt.';
+ }catch(error){el('sentence-note').textContent=error.message}finally{el('sentence-learn').disabled=false}
+};
+async function sentenceRequest(action,input){
+ try{const result=await call({action,text:el(input).value,context:JSON.parse(el('sentence-context').value)});
+  el('sentence-note').textContent=result.status+': '+result.preferred.map(c=>c.completed_sentence||c.text).join(' | ');el('sentence-result').textContent=JSON.stringify(result,null,2);
+ }catch(error){el('sentence-note').textContent=error.message}
+}
+el('sentence-predict').onclick=()=>sentenceRequest('sentence_predict','sentence-gap');
+el('sentence-continue').onclick=()=>sentenceRequest('sentence_continue','sentence-prefix');
+
+el('relation-learn').onclick=async()=>{
+ try{const result=await call({action:'text_relation_learn',examples:JSON.parse(el('relation-examples').value),context:JSON.parse(el('relation-context').value)});
+  el('relation-result').textContent=JSON.stringify(result,null,2);el('relation-note').textContent=result.status;
+ }catch(error){el('relation-note').textContent=error.message}
+};
+async function relationRequest(action){
+ try{const result=await call({action,statement:el('relation-statement').value,question:el('relation-question').value,context:JSON.parse(el('relation-context').value)});
+  el('relation-result').textContent=JSON.stringify(result,null,2);el('relation-note').textContent=result.status+': '+result.candidates.map(c=>c.question+' → '+c.answer).join(' | ');
+ }catch(error){el('relation-note').textContent=error.message}
+}
+el('relation-transform').onclick=()=>relationRequest('text_relation_transform');
+el('relation-answer').onclick=()=>relationRequest('text_relation_answer');
+
+async function logicRequest(learning){
+ try{const payload={action:learning?'memory_logic_learn':'memory_logic_predict',context:JSON.parse(el('logic-context').value)};
+  payload[learning?'examples':'record']=JSON.parse(el(learning?'logic-examples':'logic-input').value);
+  const result=await call(payload);el('logic-result').textContent=JSON.stringify(result,null,2);el('logic-note').textContent=result.status;
+ }catch(error){el('logic-note').textContent=error.message}
+}
+el('logic-learn').onclick=()=>logicRequest(true);
+el('logic-predict').onclick=()=>logicRequest(false);
+
+el('bridge-learn').onclick=async()=>{
+ try{const context=JSON.parse(el('bridge-context').value),results=[];
+  for(const examples of JSON.parse(el('bridge-examples').value))results.push(await call({action:'text_memory_learn',examples,context}));
+  el('bridge-result').textContent=JSON.stringify(results,null,2);el('bridge-note').textContent=results.map(r=>r.status).join(', ');
+ }catch(error){el('bridge-note').textContent=error.message}
+};
+async function bridgeRequest(parse){
+ try{const payload={action:parse?'text_memory_parse':'text_memory_express',context:JSON.parse(el('bridge-context').value)};
+  if(parse)payload.text=el('bridge-text').value;else payload.record=JSON.parse(el('bridge-record').value);
+  const result=await call(payload);el('bridge-result').textContent=JSON.stringify(result,null,2);el('bridge-note').textContent=result.status;
+  if(parse&&result.status==='predicted')el('bridge-record').value=JSON.stringify(result.candidates[0].record);
+ }catch(error){el('bridge-note').textContent=error.message}
+}
+el('bridge-parse').onclick=()=>bridgeRequest(true);
+el('bridge-express').onclick=()=>bridgeRequest(false);
+
+async function numericTextRequest(encoding){
+ try{const result=await call(encoding?{action:'numeric_text_encode',text:el('numeric-text-input').value}:{action:'numeric_text_decode',sentence_id:Number(el('numeric-text-id').value)});
+  el('numeric-text-result').textContent=JSON.stringify(result,null,2);el('numeric-text-id').value=result.sentence_id;
+  el('numeric-text-note').textContent=encoding?'Encoded with ordered links.':'Decoded: '+result.text;
+ }catch(error){el('numeric-text-note').textContent=error.message}
+}
+el('numeric-text-encode').onclick=()=>numericTextRequest(true);
+el('numeric-text-decode').onclick=()=>numericTextRequest(false);
+
+el('meaning-learn').onclick=async()=>{
+ try{const context=JSON.parse(el('meaning-context').value),training=JSON.parse(el('meaning-training').value),results=[];
+  for(const examples of training.expression_batches)results.push(await call({action:'meaning_learn_expressions',examples,context}));
+  results.push(await call({action:'meaning_learn_relations',examples:training.relations,context}));
+  results.push(await call({action:'meaning_learn_changes',examples:training.changes,label:training.label,context}));
+  el('meaning-result').textContent=JSON.stringify(results,null,2);el('meaning-note').textContent=results.map(r=>r.status).join(', ');
+ }catch(error){el('meaning-note').textContent=error.message}
+};
+async function meaningRequest(query){
+ try{const result=await call({action:query?'meaning_read_field':'meaning_inspect',text:el('meaning-text').value,field:el('meaning-field').value,context:JSON.parse(el('meaning-context').value)});
+  el('meaning-result').textContent=JSON.stringify(result,null,2);el('meaning-note').textContent=result.status+(query?': '+JSON.stringify(result.values):'');
+ }catch(error){el('meaning-note').textContent=error.message}
+}
+el('meaning-inspect').onclick=()=>meaningRequest(false);
+el('meaning-read').onclick=()=>meaningRequest(true);
+
+el('meaning-run').onclick=async()=>{
+ const button=el('meaning-run');button.disabled=true;
+ try{const result=await call({action:'meaning_run',text:el('meaning-text').value,context:JSON.parse(el('meaning-context').value),label:el('meaning-action').value||null,level:'byte'});
+  el('meaning-result').textContent=JSON.stringify(result,null,2);
+  el('meaning-summary').textContent=result.status+': '+result.outcomes.map(o=>{
+   const texts=o.expressions.candidates.map(c=>c.text).join(' | ');
+   return (texts||'No learned wording for this state')+' — '+JSON.stringify(o.record);
+  }).join(' | ');
+  if(!result.outcomes.length)el('meaning-summary').textContent=result.status+': No supported prediction for this expression or change label.';
+  el('meaning-note').textContent='Prediction complete. No real-world action executed.';
+ }catch(error){el('meaning-summary').textContent=error.message}
+ finally{button.disabled=false}
 };
 </script></body></html>

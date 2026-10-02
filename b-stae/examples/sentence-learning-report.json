@@ -1,0 +1,65 @@
+{
+  "cases": [
+    {
+      "text": "Today the plant <mask> during the day.",
+      "expected": "uses sunlight to make food",
+      "status": "predicted",
+      "preferred": [
+        "uses sunlight to make food"
+      ],
+      "correct": true,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Today the robot <mask> before resting.",
+      "expected": "places the red block on the table",
+      "status": "predicted",
+      "preferred": [
+        "places the red block on the table"
+      ],
+      "correct": true,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Today's first observation: <mask> Next observation: a new event.",
+      "expected": "the ball rolls down the hill.",
+      "status": "predicted",
+      "preferred": [
+        "the ball rolls down the hill."
+      ],
+      "correct": true,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Today the child likes <mask> after dinner.",
+      "expected": "warm tea",
+      "status": "ambiguous",
+      "preferred": [
+        "fresh juice",
+        "warm tea"
+      ],
+      "correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "quasar <mask> nebula",
+      "expected": "shines brightly",
+      "status": "unknown",
+      "preferred": [],
+      "correct": false,
+      "expected_in_candidates": false
+    }
+  ],
+  "correct": 3,
+  "total": 5,
+  "accuracy": 0.6,
+  "learning_updates": 0,
+  "scope": "Synthetic retrieval of observed phrases/sentences into unseen prompts. No unrestricted generation.",
+  "continuation": {
+    "status": "predicted",
+    "preferred": [
+      "today the plant uses sunlight to make food during the day."
+    ]
+  },
+  "model_calls": 0
+}

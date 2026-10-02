@@ -33,6 +33,34 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='meaning_run':return self.engine.meaning_memory.run(payload.get('text'),payload.get('context'),payload.get('label'),payload.get('level','byte'))
+        if action=='meaning_learn_expressions':return self.engine.meaning_memory.learn_expressions(payload.get('examples'),payload.get('context'))
+        if action=='meaning_learn_relations':return self.engine.meaning_memory.learn_relations(payload.get('examples'),payload.get('context'))
+        if action=='meaning_learn_changes':return self.engine.meaning_memory.learn_changes(payload.get('examples'),payload.get('label'),payload.get('context'))
+        if action=='meaning_inspect':return self.engine.meaning_memory.inspect(payload.get('text'),payload.get('context'))
+        if action=='meaning_read_field':return self.engine.meaning_memory.read_field(payload.get('text'),payload.get('field'),payload.get('context'))
+        if action=='numeric_text_encode':return self.engine.numeric_text.encode(payload.get('text'))
+        if action=='numeric_text_decode':return self.engine.numeric_text.decode(payload.get('sentence_id'))
+        if action=='numeric_text_decode_tokens':return {'text':self.engine.numeric_text.decode_tokens(payload.get('token_ids'))}
+        if action=='text_memory_learn':return self.engine.text_memory.learn(payload.get('examples'),payload.get('context'))
+        if action=='text_memory_parse':return self.engine.text_memory.parse(payload.get('text'),payload.get('context'),payload.get('level','byte'))
+        if action=='text_memory_express':return self.engine.text_memory.express(payload.get('record'),payload.get('context'),payload.get('level','byte'))
+        if action=='memory_logic_learn':return self.engine.memory_logic.learn(payload.get('examples'),payload.get('context'))
+        if action=='memory_logic_predict':return self.engine.memory_logic.predict(payload.get('record'),payload.get('context'))
+        if action=='text_relation_learn':return self.engine.text_relations.learn(payload.get('examples'),payload.get('context'))
+        if action=='text_relation_transform':return self.engine.text_relations.transform(payload.get('statement'),payload.get('context'))
+        if action=='text_relation_answer':return self.engine.text_relations.answer(payload.get('statement'),payload.get('question'),payload.get('context'))
+        if action=='sentence_predict':
+            return self.engine.sentences.predict(payload.get('text'),payload.get('context'),payload.get('window',3),payload.get('max_tokens',24),payload.get('sentence_end',False))
+        if action=='sentence_continue':
+            return self.engine.sentences.continue_sentence(payload.get('text'),payload.get('context'),payload.get('max_tokens',24))
+        if action=='sentence_evaluate':return self.engine.sentences.evaluate(payload.get('cases'),payload.get('context'))
+        if action=='text_gap_learn':
+            return self.engine.text_gaps.learn(payload.get('text'),payload.get('source'),payload.get('context'),payload.get('window',3))
+        if action=='text_gap_predict':
+            return self.engine.text_gaps.predict(payload.get('text'),payload.get('context'),payload.get('window',3))
+        if action=='text_gap_evaluate':return self.engine.text_gaps.evaluate(payload.get('cases'),payload.get('context'))
+        if action=='text_gap_baseline':return self.engine.text_gaps.baseline(payload.get('context'))
         if action=='pattern_dataset_import':
             from pattern_dataset import PatternDataset
             return PatternDataset(self.engine).ingest(payload.get('name'),payload.get('records'))

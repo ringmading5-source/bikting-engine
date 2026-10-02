@@ -630,3 +630,272 @@ some native allocations; RSS is a process peak, not incremental training memory.
 SQLite size excludes filesystem sidecars. A raw-text row has no prediction
 oracle and is explicitly unscored. Learned formats and hypothesis limits still
 apply; arbitrary books, images, or speech do not automatically teach semantics.
+
+### Missing-word language experiment
+
+The Learn missing words panel trains word-context counts and fills a single
+`<mask>` in a new sentence. `text_gap_learn` accepts text/source/context/window;
+`text_gap_predict` accepts text/context/window; `text_gap_baseline` accepts
+context; `text_gap_evaluate` accepts cases (text/expected) and context.
+Training text is at most 20,000 characters per call; window defaults to three
+and can be 1..6. The SQL index stores left/right context occurrences and source
+references. Original observations and conflicting alternatives remain stored.
+It is a bidirectional n-gram count experiment, not a neural language model.
+
+Candidate ranking prefers longer observed contexts, then occurrence support.
+Equal evidence remains ambiguous. Unknown contexts return unknown instead of
+inventing a word. The learner only proposes observed words/numbers, case-folds
+text, uses explicit word/punctuation boundaries, and cannot create a new
+vocabulary item or reason about meaning. Windows bound the retrieval index,
+not retention of the original text and its addressable patterns. Repeated
+training calls add observations and counts, including identical sentences.
+
+Run `python text_gap_demo.py` for the transparent synthetic benchmark: eleven
+training sentences and twelve unseen complete test sentences. Nine are answered
+correctly, one is ambiguous, and two are unknown; the most frequent training
+word baseline scores zero. These test sentences reuse observed local contexts.
+This is not evidence of general semantic understanding or real-corpus accuracy.
+Evaluation rejects test sentences that occur anywhere in a training document,
+rejects duplicate test sentences, and never updates learning or feedback.
+The existing dataset importer's raw_text kind remains observation-only; it does
+not silently train this experimental language predictor.
+
+### Passage-only question test
+
+Run `python passage_question_evaluation.py`. Two fictional passages are the only
+learning inputs; no question/answer pairs or question-to-cloze conversion rules
+are supplied to the model. Expected answers remain evaluator-only. The current
+text predictor rejects six ordinary questions because it requires a single
+mask, and the request router has no labeled request evidence in this experiment.
+Six cloze reformulations match local contexts and score correctly. A control
+changes the moved object from key to coin: the model still fills the key's
+location with drawer, although the key remained in the green box. This is a
+measured distinction between word-context matching and fact tracking. These
+results describe this implementation, not a disproof of other pattern-memory
+architectures. No LLM calls or evaluation learning updates occur.
+
+### Phrase and sentence-length prediction
+
+`SentenceLearning` reuses the passages learned by `text_gap_learn`. Instead of
+one word, it considers observed contiguous spans up to 24 tokens (configurable
+1..64). It ranks spans by adjacent matching context, then occurrence support,
+with source/document/start/end provenance. All original observations remain.
+The Learn phrases and sentences panel provides separate passage training,
+multiword masks, and continuation to an explicit punctuation boundary.
+
+API: `sentence_predict` accepts text/context/window/max_tokens/sentence_end;
+`sentence_continue` accepts text/context/max_tokens; `sentence_evaluate` accepts
+cases (text/expected) and context. Evaluation rejects already seen completed
+prompts and duplicate test prompts, and performs no learning updates.
+
+Run `python sentence_learning_demo.py`. Of five synthetic cases, three gaps are
+correct (including a complete sentence), one retains two conflicting phrases,
+and one is unknown. The completed prompts are unseen; the returned answer spans
+are observed. A new prefix also completes to a sentence. This demonstrates
+contextual span retrieval, not open-ended generation, semantic comprehension,
+or fact tracking. It currently scans stored documents, so larger corpora need
+additional indexing and retrieval benchmarks. Case-folding and simple
+punctuation tokenization remain explicit adapter assumptions.
+
+### Learned text transformations (rather than phrase lookup)
+
+`TextRelationshipLearning` induces linked templates from 3..32 labeled examples
+(statement/question/answer/source). Longest-common-subsequence alignment finds
+shared anchors; varying spans become slots. Output slots are linked to input
+slots when their values correspond across all examples. Inference binds a new
+statement's variable spans, generates a question and an answer, and checks a
+supplied question against that generated question. No installed grammar names
+specific verbs or question phrases. The generic alignment/binding language is
+still programmed; this is supervised template induction, not arbitrary grammar
+or raw-text semantic learning.
+
+API: `text_relation_learn` (examples/context), `text_relation_transform`
+(statement/context), and `text_relation_answer` (statement/question/context).
+The Learn text relationships panel exposes those steps. Text is case-folded;
+up to 64 tokens per field, 32 binding alternatives, and 10,000 binding expansions
+are supported. Search-limit results report bounded. Statements outside learned
+anchors or questions about a different bound subject return unknown.
+
+Every training example stays even when its outputs cannot be expressed through
+this hypothesis language. Multiple conflicting models remain and return
+ambiguity. Source IDs and variable bindings accompany each candidate. A learned
+frame does not independently verify labels or factual truth. There is no event
+chronology, multi-fact reasoning, or unrestricted generation here.
+
+Run `python text_relationship_demo.py`. All three unseen statements are answered,
+including unseen multiword subjects and objects. Both their generated questions
+and answer values are absent from training. Answer values come from the new
+statement, not memorized training outputs. A new verb remains unknown. Tests
+also cover changing an object's value, a different learned relationship, and
+conflicting labels. This does not establish general language understanding.
+
+### Connected structured-memory experiment
+
+`python memory_logic_demo.py` tests transfer from labeled input/output records.
+The **Learn relationships in memory** panel exposes `memory_logic_learn`
+(`examples`, `context`) and `memory_logic_predict` (`record`, `context`).
+Example input `{ "entity": "rabbit", "count": 3 }` produces
+`{ "form": "rabbits", "count": 3, "multiple": true }` after four supplied
+examples. This output record connects a learned spelling transformation with a
+learned integer comparison and a copied count. Field names have no built-in
+entity/plural semantics: renaming them preserves the experiment's behavior.
+
+The programmed hypothesis language contains whole-sequence bindings with
+observed prefixes/suffixes, aligned sequence templates, copy links and integer
+`>`/`<=` comparisons. Both UTF-8 byte and Unicode character models use the same
+binding machinery and are linked to the same training record IDs. The comparison
+threshold is selected from observed counts, and the suffix comes from observed
+outputs. Record boundaries, field labels, examples and Boolean target values are
+supplied; concept meaning and raw-text parsing are not discovered. Word/sentence
+levels are not implemented in this extension. A novel surface form is not proof
+of acquired semantic understanding.
+
+All examples and model batches persist in SQLite. Unsupported batches and
+exceptions remain as evidence; exact observations and induced predictions are
+both returned. Thus `mouse` yields conflicting `mice` and `mouses`, rather than
+silently choosing or deleting one. Exception routing is not yet learned.
+Prediction does not update memory. Inputs are limited to eight scalar fields,
+128 characters per string, 3..32 training records per batch; binding search is
+bounded and combination search returns at most 128 combinations per model.
+`search_limited` signals incomplete search. Unseen predictions remain unverified.
+
+### Learned text ↔ memory bridge
+
+`python text_memory_demo.py` tests paired text/record learning and composition
+with the structured-memory comparison learner. The **Learn text and memory
+connections** panel trains plural and singular frames in separate batches,
+parses an unseen phrase and expresses a record as text. APIs:
+`text_memory_learn` (`examples`, `context`), `text_memory_parse` (`text`,
+`context`), `text_memory_express` (`record`, `context`).
+
+Each example is `{ "text": "three dogs", "record": { "entity": "dog",
+"count": 3 } }`. Three varied entities let the engine infer a word-position
+binding and observed affix; scalar labels build a reversible observed vocabulary
+(e.g. `three` ↔ `3`). No English quantity words or plural suffix are installed.
+Three unseen tests round-trip correctly: `three rabbits`, `two cafés`, and
+`one rabbit`. Their parsed records can enter the existing memory-logic learner,
+which independently predicts the quantity relationship `multiple`.
+
+This is supervised alignment with supplied record labels and frame batches,
+not discovery of meanings from arbitrary text. Tokenization is supplied as
+whitespace boundaries. Templates require a fixed token count, string fields
+have at least three distinct training values, and string captures are single
+nonempty tokens. Numerical vocabulary is observed lookup, not extrapolation:
+`five rabbits` stays unknown until a matching vocabulary example is learned.
+Multiword entities and unrestricted grammar are unsupported. All paired
+observations remain, including unsupported batches; conflicting models return
+ambiguity. Read-only parsing/expression does not reinforce itself. No LLM is
+called. Bounds: 3..32 examples, 512 text characters, 16 tokens, 64 template
+combinations per training batch, 128 parse states per position per model.
+
+### Numerical word and sentence hierarchy
+
+The **Numerical text representation** panel and `python numeric_text_demo.py`
+show lossless sentence IDs → ordered token IDs → Unicode codepoints → UTF-8
+bytes. APIs: `numeric_text_encode` (`text`), `numeric_text_decode`
+(`sentence_id`), `numeric_text_decode_tokens` (`token_ids`). Decode reconstructs
+text from the stored links and verifies each character's UTF-8 representation;
+it does not retrieve a stored full sentence string. Whitespace and punctuation
+are tokens too, so spacing, repetition, ordering and Unicode survive exactly.
+`word_ids` excludes those separators; use `token_ids` for lossless reconstruction.
+
+IDs are categorical identifiers, stable within this database and across its
+restarts; different databases can assign different IDs. Do not apply numerical
+arithmetic to IDs to infer quantities or meanings. A new `three rabbits` sentence
+reuses the word IDs learned by encoding `three cats` and `two rabbits`. New
+text/record bridge training examples also retain sentence-ID and string-field
+links into this hierarchy. The bridge still performs supplied whitespace-token
+alignment; storing numerical links does not turn it into a byte-only semantic
+learner. Existing saved bridge examples remain compatible without migration.
+
+This is representation infrastructure, not a new learning achievement. Token
+boundaries are supplied using Unicode word/space/punctuation groups. Each input
+is treated as one sentence unit, rather than discovering sentence boundaries.
+Encode writes/reuses persistent nodes; decode is read-only. Bounds: 4096 Unicode
+characters, 512 tokens per input or decoded sequence. Unknown IDs and inconsistent
+character-byte links are rejected. No Unicode normalization is applied.
+
+### Experimental meaning memory
+
+`python meaning_demo.py` connects three explicitly supervised components:
+text/record alignment, state relationships, and labeled before/after changes.
+The **Relationships and predicted consequences** panel supplies training
+examples and inspects unseen expressions or reads a named field. APIs:
+`meaning_learn_expressions`, `meaning_learn_relations` (each `examples`,
+`context`), `meaning_learn_changes` (`examples`, `label`, `context`),
+`meaning_inspect` (`text`, `context`), `meaning_read_field` (`text`, `field`,
+`context`). Expression examples use `text`/`record`; relationships and changes
+use `input`/`output` records. Contexts isolate different interpretations.
+
+After training, unseen `three rabbits` parses to `{entity: rabbit, count: 3}`;
+the learned comparison yields `multiple: true`, and the fitted transformation
+for the supplied action label predicts `{entity: rabbit, count: 4}`. Field
+queries return `count=3` and `multiple=true` with evidence. Unknown expressions
+and missing fields remain unknown; contradictory change models remain ambiguous.
+Action labels are linked to numeric sentence IDs but their wording is not
+interpreted. No real action is executed or verified.
+
+The underlying structured learner now supports exact rational fitted numeric
+polynomials of degree 0..2 (at least three distinct integer inputs), as well as
+observed constants, copies, sequence transformations, and comparisons. These
+are programmed hypothesis classes; coefficients and constants are learned from
+outputs. A fitted relationship may extrapolate incorrectly. Numeric fitting is
+for supplied quantitative fields, never arbitrary word IDs. Read-only queries
+retain all provenance and perform no training updates.
+
+This is an operational experiment in meaning as associations and expected
+consequences, not a claim that the model discovers concept meaning unaided.
+Entity/count/multiple labels, expression frame groups, and paired action states
+are supplied by the trainer. Natural-language question interpretation, grounding
+in physical observations, raw-text semantic discovery, causal identification,
+and unrestricted reasoning remain unimplemented. Existing module bounds apply.
+
+### Connected prototype: one complete flow
+
+Run `python app.py`, open the printed local URL, and use the first panel,
+**B-STAE connected prototype**. Learn its supplied examples, enter
+`three rabbits`, leave the learned change label as `add-one-observation`, and
+click **Run connected prediction**. It parses `{entity: rabbit, count: 3}`,
+predicts `{entity: rabbit, count: 4}`, and expresses `four rabbits`. Clearing
+the change label reads and expresses the current state. This simulates a
+learned change; it performs no external action.
+
+API: `meaning_run` (`text`, `context`, optional `label`, optional `level` of
+`byte` or `character`, default `byte`). The response includes original
+readings, candidate output records, their derived relationships, expression
+candidates, numeric input/output sequences, evidence, and explicit uncertainty.
+`status` describes the predicted state candidates. Each outcome's
+`expressions.status` separately describes whether wording is available.
+Thus a predicted count of five remains visible even when the vocabulary has
+not learned `five`. Unknown inputs/actions and conflicting effects remain
+unknown/ambiguous, rather than being silently chosen.
+
+The text bridge now induces templates separately over UTF-8 integer sequences
+and Unicode codepoint integer sequences. Runtime matching, affix slicing,
+vocabulary lookup, and output assembly operate on those numbers. Decoding
+occurs at the typed-record/string and human-output boundaries. Word boundaries
+remain a supplied whitespace adapter; word and sentence IDs retain hierarchy
+links, but arbitrary ID arithmetic is never used. Older string templates are
+compiled to numeric templates in memory on reads, preserving saved evidence.
+New template search limits propagate to prediction. Existing context/data APIs
+remain compatible; `text_memory_parse` and `text_memory_express` also accept
+`level`. Inference remains read-only and uses no LLM.
+
+`python complete_flow_demo.py` is the repeatable whole-flow experiment, with
+unseen rabbit/café inputs in both numerical modes, unknown vocabulary, and
+contradictory effects. This completes the current bounded, supervised prototype;
+raw-data semantic discovery, general language understanding, learned boundaries,
+and universal intelligence remain research goals. The prototype is not a
+production-ready general AI.
+
+### Expanded labeled sentence training
+
+`python expanded_text_training.py` reproducibly trains 36 examples across six
+separately labeled frames: carries, gives, finds, likes, uses, and holds. It
+checks 18 held-out subject/object combinations and three untrained grammatical
+variants. To retain training in the local app's default database, run
+`python expanded_text_training.py --db knowledge.sqlite3` (or specify the app's
+configured database). Frame context names are carrying/giving/finding/liking/
+using/holding; call `meaning_run` with the corresponding context and no action
+label. This learns role extraction and round-trip wording within supplied
+frames, not physical consequences or unrestricted language understanding.

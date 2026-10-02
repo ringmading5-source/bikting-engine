@@ -1,0 +1,124 @@
+{
+  "training_examples": [
+    {
+      "statement": "The cat drinks milk.",
+      "question": "What does the cat drink?",
+      "answer": "milk",
+      "source": "synthetic:labeled-text"
+    },
+    {
+      "statement": "The dog drinks water.",
+      "question": "What does the dog drink?",
+      "answer": "water",
+      "source": "synthetic:labeled-text"
+    },
+    {
+      "statement": "The child drinks juice.",
+      "question": "What does the child drink?",
+      "answer": "juice",
+      "source": "synthetic:labeled-text"
+    }
+  ],
+  "learned": {
+    "status": "learned",
+    "model_id": "3e961b4585273967a9683d6d0b011327c16aacd7a4b65b6fa02fc7eb97254ccd",
+    "model": {
+      "statement": [
+        {
+          "literal": "the"
+        },
+        {
+          "slot": 0,
+          "min_tokens": 1
+        },
+        {
+          "literal": "drinks"
+        },
+        {
+          "slot": 1,
+          "min_tokens": 1
+        },
+        {
+          "literal": "."
+        }
+      ],
+      "question": [
+        {
+          "literal": "what"
+        },
+        {
+          "literal": "does"
+        },
+        {
+          "literal": "the"
+        },
+        {
+          "slot": 0
+        },
+        {
+          "literal": "drink"
+        },
+        {
+          "literal": "?"
+        }
+      ],
+      "answer": [
+        {
+          "slot": 1
+        }
+      ],
+      "examples": [
+        1,
+        2,
+        3
+      ],
+      "sources": [
+        "synthetic:labeled-text",
+        "synthetic:labeled-text",
+        "synthetic:labeled-text"
+      ]
+    },
+    "scope": "Supervised linked text templates, not raw-text semantic learning."
+  },
+  "cases": [
+    {
+      "statement": "The robot drinks lemonade.",
+      "question": "What does the robot drink?",
+      "expected": "lemonade",
+      "answer": "lemonade",
+      "status": "answered",
+      "correct": true,
+      "generated_question": "what does the robot drink?",
+      "answer_absent_from_training": true,
+      "question_absent_from_training": true
+    },
+    {
+      "statement": "The traveller drinks coffee.",
+      "question": "What does the traveller drink?",
+      "expected": "coffee",
+      "answer": "coffee",
+      "status": "answered",
+      "correct": true,
+      "generated_question": "what does the traveller drink?",
+      "answer_absent_from_training": true,
+      "question_absent_from_training": true
+    },
+    {
+      "statement": "The little brown horse drinks fresh spring water.",
+      "question": "What does the little brown horse drink?",
+      "expected": "fresh spring water",
+      "answer": "fresh spring water",
+      "status": "answered",
+      "correct": true,
+      "generated_question": "what does the little brown horse drink?",
+      "answer_absent_from_training": true,
+      "question_absent_from_training": true
+    }
+  ],
+  "correct": 3,
+  "total": 3,
+  "unseen_verb_status": "unknown",
+  "model_calls": 0,
+  "learning_updates_during_test": 0,
+  "scope": "Supervised text frame/slot transfer. New output values copied from new input; no raw-text semantic discovery or arbitrary grammar."
+}

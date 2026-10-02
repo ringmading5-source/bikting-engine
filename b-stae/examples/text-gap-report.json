@@ -1,0 +1,152 @@
+{
+  "cases": [
+    {
+      "text": "Today the cat drinks <mask>.",
+      "expected": "milk",
+      "status": "predicted",
+      "preferred": [
+        "milk"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "At home the dog drinks <mask>.",
+      "expected": "water",
+      "status": "predicted",
+      "preferred": [
+        "water"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Sometimes the <mask> swims in rivers.",
+      "expected": "fish",
+      "status": "predicted",
+      "preferred": [
+        "fish"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "A small bird can <mask> above trees.",
+      "expected": "fly",
+      "status": "predicted",
+      "preferred": [
+        "fly"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "These leaves are <mask>.",
+      "expected": "green",
+      "status": "predicted",
+      "preferred": [
+        "green"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Today the sky looks <mask>.",
+      "expected": "blue",
+      "status": "predicted",
+      "preferred": [
+        "blue"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "This student reads <mask>.",
+      "expected": "books",
+      "status": "predicted",
+      "preferred": [
+        "books"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Young plants need <mask>.",
+      "expected": "light",
+      "status": "predicted",
+      "preferred": [
+        "light"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "This fire feels <mask>.",
+      "expected": "warm",
+      "status": "predicted",
+      "preferred": [
+        "warm"
+      ],
+      "correct": true,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "Today the child likes <mask>.",
+      "expected": "tea",
+      "status": "ambiguous",
+      "preferred": [
+        "juice",
+        "tea"
+      ],
+      "correct": false,
+      "baseline_correct": false,
+      "expected_in_candidates": true
+    },
+    {
+      "text": "quasar <mask> nebula",
+      "expected": "glows",
+      "status": "unknown",
+      "preferred": [],
+      "correct": false,
+      "baseline_correct": false,
+      "expected_in_candidates": false
+    },
+    {
+      "text": "enzyme <mask> catalyst",
+      "expected": "reacts",
+      "status": "unknown",
+      "preferred": [],
+      "correct": false,
+      "baseline_correct": false,
+      "expected_in_candidates": false
+    }
+  ],
+  "total": 12,
+  "correct": 9,
+  "accuracy": 0.75,
+  "baseline_correct": 0,
+  "baseline_accuracy": 0.0,
+  "baseline": {
+    "status": "predicted",
+    "preferred": [
+      {
+        "token": "the",
+        "support": 11
+      }
+    ],
+    "scope": "Most frequent training word; ignores input context."
+  },
+  "learning_updates": 0,
+  "scope": "Synthetic unseen sentences reuse observed local contexts; includes one ambiguous and two unknown cases. Not semantic understanding.",
+  "training_sentences": 11,
+  "model_calls": 0
+}
