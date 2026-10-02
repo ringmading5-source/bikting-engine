@@ -1898,3 +1898,8 @@ bounded. A transcript prediction is reported separately from acoustic matching.
 All stored examples survive the standard SDK save/load checkpoint. Uploaded
 training files are retained in SQLite; prediction alone does not store files.
 This encoder is versioned separately from earlier synthetic concept experiments.
+
+
+The chat interface now lives in the top-level `chatbot/index.html`.
+Run `python chatbot/run.py` from the repository root to open chat directly
+at `/`. See `../chatbot/README.md` for startup and hosting instructions.

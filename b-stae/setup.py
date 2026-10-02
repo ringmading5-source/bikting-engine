@@ -32,6 +32,7 @@ class BuildCore(build_py):
             for start,end,replacement in sorted(changes,reverse=True):raw=raw[:start]+replacement+raw[end:]
             (target/(name+'.py')).write_bytes(raw)
         for asset in ('app.html','byte-demo.html','chat.html','media.html'):
-            (target/asset).write_bytes((ROOT/asset).read_bytes())
+            source=ROOT.parent/'chatbot'/'index.html' if asset=='chat.html' else ROOT/asset
+            (target/asset).write_bytes(source.read_bytes())
 
 setup(packages=['bstae'],cmdclass={'build_py':BuildCore})

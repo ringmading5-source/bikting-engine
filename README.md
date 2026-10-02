@@ -1,3 +1,8 @@
+## B-STAE chatbot
+
+The chatbot is in [`chatbot/`](chatbot/README.md). Run `python chatbot/run.py`
+and open http://127.0.0.1:8765/ to chat directly.
+
 # Bikting Engine
 
 B-STAE is a knowledge and procedure memory layer attached to an LLM to reduce repeated model work. Its direction is source-backed storage, retrieval, applicability checks, bounded composition, deterministic execution, and LLM fallback for unresolved requests. It does not train prediction weights or infer transformation rules from training examples. See [MEMORY_COST_ENGINE.md](MEMORY_COST_ENGINE.md) for the implemented memory APIs and limits.

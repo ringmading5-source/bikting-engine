@@ -296,7 +296,7 @@ class Application:
         raise ValueError('unsupported app action')
 
 
-def serve(engine,port,host='127.0.0.1'):
+def serve(engine,port,host='127.0.0.1',chat_home=False):
     token=os.environ.get('BSTAE_ACCESS_TOKEN','')
     if host not in ('127.0.0.1','localhost') and len(token)<16:
         raise ValueError('Public binding requires BSTAE_ACCESS_TOKEN with at least 16 characters')
@@ -314,9 +314,12 @@ def serve(engine,port,host='127.0.0.1'):
             if self.path=='/health':
                 self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'knowledge-retrieval-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
             if not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
-            pages={'/':'app.html','/chat':'chat.html','/learn':'media.html'}
+            pages={'/':'chat.html' if chat_home else 'app.html','/chat':'chat.html','/learn':'media.html','/workspace':'app.html'}
             if self.path not in pages:self.reply(404,b'Not found','text/plain');return
-            self.reply(200,Path(__file__).with_name(pages[self.path]).read_bytes(),'text/html; charset=utf-8')
+            asset=Path(__file__).with_name(pages[self.path])
+            if pages[self.path]=='chat.html' and not asset.exists():
+                asset=Path(__file__).parent.parent/'chatbot'/'index.html'
+            self.reply(200,asset.read_bytes(),'text/html; charset=utf-8')
         def do_POST(self):
             if self.path!='/api' or not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
             origin=self.headers.get('Origin')
