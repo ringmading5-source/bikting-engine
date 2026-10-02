@@ -110,6 +110,20 @@ class Application:
         if action=='text_memory_express':return self.engine.text_memory.express(payload.get('record'),payload.get('context'),payload.get('level','byte'))
         if action=='memory_logic_learn':return self.engine.memory_logic.learn(payload.get('examples'),payload.get('context'))
         if action=='memory_logic_predict':return self.engine.memory_logic.predict(payload.get('record'),payload.get('context'))
+        if action=='span_question_learn':return self.engine.span_questions.learn(payload.get('span_model_id'),payload.get('examples'),payload.get('validation'),payload.get('context'))
+        if action=='unlabeled_span_learn':return self.engine.unlabeled_spans.learn(payload.get('passages'),payload.get('context'))
+        if action=='unlabeled_span_predict':return self.engine.unlabeled_spans.predict(payload.get('model_id'),payload.get('text'),payload.get('max_expansions',10000))
+        if action=='unlabeled_span_evaluate':return self.engine.unlabeled_spans.evaluate(payload.get('model_id'),payload.get('cases'))
+        if action=='unlabeled_pattern_learn':return self.engine.unlabeled_patterns.learn(payload.get('passages'),payload.get('context'))
+        if action=='unlabeled_pattern_predict':return self.engine.unlabeled_patterns.predict(payload.get('model_id'),payload.get('text'))
+        if action=='unlabeled_pattern_evaluate':return self.engine.unlabeled_patterns.evaluate(payload.get('model_id'),payload.get('cases'))
+        if action=='passage_learn':return self.engine.passage_knowledge.learn(payload.get('text'),payload.get('source'),payload.get('context'))
+        if action=='passage_answer':return self.engine.passage_knowledge.answer(payload.get('question'),payload.get('context'),payload.get('max_depth',2),payload.get('max_expansions',1000))
+        if action=='passage_evaluate':return self.engine.passage_knowledge.evaluate(payload.get('cases'),payload.get('context'),payload.get('max_depth',2))
+        if action=='relationship_compose_answer':
+            return self.engine.relationship_composition.answer(payload.get('facts'),payload.get('question'),payload.get('context'),payload.get('max_depth',2),payload.get('max_facts',48),payload.get('max_expansions',1000))
+        if action=='text_transform_learn':return self.engine.text_transforms.learn(payload.get('examples'),payload.get('validation'),payload.get('context'))
+        if action=='text_transform_predict':return self.engine.text_transforms.predict(payload.get('text'),payload.get('context'))
         if action=='text_relation_learn':return self.engine.text_relations.learn(payload.get('examples'),payload.get('context'))
         if action=='text_relation_transform':return self.engine.text_relations.transform(payload.get('statement'),payload.get('context'))
         if action=='text_relation_answer':return self.engine.text_relations.answer(payload.get('statement'),payload.get('question'),payload.get('context'))
@@ -122,6 +136,8 @@ class Application:
             return self.engine.text_gaps.learn(payload.get('text'),payload.get('source'),payload.get('context'),payload.get('window',3))
         if action=='text_gap_predict':
             return self.engine.text_gaps.predict(payload.get('text'),payload.get('context'),payload.get('window',3))
+        if action=='text_first_predict':
+            return self.engine.text_gaps.predict_first(payload.get('text'),payload.get('context'),payload.get('window',3))
         if action=='text_gap_evaluate':return self.engine.text_gaps.evaluate(payload.get('cases'),payload.get('context'))
         if action=='text_gap_baseline':return self.engine.text_gaps.baseline(payload.get('context'))
         if action=='pattern_dataset_import':
