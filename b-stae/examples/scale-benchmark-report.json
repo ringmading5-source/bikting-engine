@@ -1,0 +1,633 @@
+{
+  "scope": "Synthetic supervised fixed-frame scaling, with context supplied; not a natural-language or general-intelligence benchmark.",
+  "runs": [
+    {
+      "training_records": 36,
+      "per_frame": 6,
+      "training_seconds": 0.08605922299989288,
+      "training_python_peak_bytes": 46062,
+      "inference_python_peak_bytes": 47641,
+      "sqlite_allocated_bytes_after_conflicts": 286720,
+      "test_cases": 240,
+      "groups": {
+        "new_words": {
+          "total": 180,
+          "correct_records": 180,
+          "unknown": 0,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "new_structure": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "missing_punctuation": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        }
+      },
+      "inference_seconds": 0.10377491499980351,
+      "latency_ms_median": 0.39632099992559233,
+      "latency_ms_p95": 0.6526530000883213,
+      "conflict_checks": [
+        {
+          "context": "carrying",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "carrier": "traveller",
+              "item": "maps"
+            },
+            {
+              "item": "traveller",
+              "carrier": "maps"
+            }
+          ]
+        },
+        {
+          "context": "giving",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "giver": "traveller",
+              "gift": "maps"
+            },
+            {
+              "gift": "traveller",
+              "giver": "maps"
+            }
+          ]
+        },
+        {
+          "context": "finding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "finder": "traveller",
+              "found": "maps"
+            },
+            {
+              "found": "traveller",
+              "finder": "maps"
+            }
+          ]
+        },
+        {
+          "context": "liking",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "person": "traveller",
+              "liked": "maps"
+            },
+            {
+              "liked": "traveller",
+              "person": "maps"
+            }
+          ]
+        },
+        {
+          "context": "using",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "user": "traveller",
+              "used": "maps"
+            },
+            {
+              "used": "traveller",
+              "user": "maps"
+            }
+          ]
+        },
+        {
+          "context": "holding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "holder": "traveller",
+              "held": "maps"
+            },
+            {
+              "held": "traveller",
+              "holder": "maps"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "new_words",
+          "text": "The traveller7 likes map7.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller3 holds map3.",
+          "status": "unknown"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 gives map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 uses map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller6 uses map6.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller0 gives map0.",
+          "status": "unknown"
+        }
+      ],
+      "inference_learning_updates": 0,
+      "lookup_baseline_correct_new_word_cases": 0
+    },
+    {
+      "training_records": 180,
+      "per_frame": 30,
+      "training_seconds": 0.44897675100014567,
+      "training_python_peak_bytes": 87088,
+      "inference_python_peak_bytes": 44501,
+      "sqlite_allocated_bytes_after_conflicts": 335872,
+      "test_cases": 240,
+      "groups": {
+        "new_words": {
+          "total": 180,
+          "correct_records": 180,
+          "unknown": 0,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "new_structure": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "missing_punctuation": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        }
+      },
+      "inference_seconds": 0.2836068660001274,
+      "latency_ms_median": 1.1142880000534205,
+      "latency_ms_p95": 1.5247460000864521,
+      "conflict_checks": [
+        {
+          "context": "carrying",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "carrier": "traveller",
+              "item": "maps"
+            },
+            {
+              "item": "traveller",
+              "carrier": "maps"
+            }
+          ]
+        },
+        {
+          "context": "giving",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "giver": "traveller",
+              "gift": "maps"
+            },
+            {
+              "gift": "traveller",
+              "giver": "maps"
+            }
+          ]
+        },
+        {
+          "context": "finding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "finder": "traveller",
+              "found": "maps"
+            },
+            {
+              "found": "traveller",
+              "finder": "maps"
+            }
+          ]
+        },
+        {
+          "context": "liking",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "person": "traveller",
+              "liked": "maps"
+            },
+            {
+              "liked": "traveller",
+              "person": "maps"
+            }
+          ]
+        },
+        {
+          "context": "using",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "user": "traveller",
+              "used": "maps"
+            },
+            {
+              "used": "traveller",
+              "user": "maps"
+            }
+          ]
+        },
+        {
+          "context": "holding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "holder": "traveller",
+              "held": "maps"
+            },
+            {
+              "held": "traveller",
+              "holder": "maps"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "new_words",
+          "text": "The traveller7 likes map7.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller3 holds map3.",
+          "status": "unknown"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 gives map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 uses map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller6 uses map6.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller0 gives map0.",
+          "status": "unknown"
+        }
+      ],
+      "inference_learning_updates": 0,
+      "lookup_baseline_correct_new_word_cases": 0
+    },
+    {
+      "training_records": 600,
+      "per_frame": 100,
+      "training_seconds": 1.4070239980001134,
+      "training_python_peak_bytes": 160138,
+      "inference_python_peak_bytes": 53598,
+      "sqlite_allocated_bytes_after_conflicts": 503808,
+      "test_cases": 240,
+      "groups": {
+        "new_words": {
+          "total": 180,
+          "correct_records": 180,
+          "unknown": 0,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "new_structure": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "missing_punctuation": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        }
+      },
+      "inference_seconds": 0.9053863770000135,
+      "latency_ms_median": 3.718081999977585,
+      "latency_ms_p95": 4.247526999961337,
+      "conflict_checks": [
+        {
+          "context": "carrying",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "carrier": "traveller",
+              "item": "maps"
+            },
+            {
+              "item": "traveller",
+              "carrier": "maps"
+            }
+          ]
+        },
+        {
+          "context": "giving",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "giver": "traveller",
+              "gift": "maps"
+            },
+            {
+              "gift": "traveller",
+              "giver": "maps"
+            }
+          ]
+        },
+        {
+          "context": "finding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "finder": "traveller",
+              "found": "maps"
+            },
+            {
+              "found": "traveller",
+              "finder": "maps"
+            }
+          ]
+        },
+        {
+          "context": "liking",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "person": "traveller",
+              "liked": "maps"
+            },
+            {
+              "liked": "traveller",
+              "person": "maps"
+            }
+          ]
+        },
+        {
+          "context": "using",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "user": "traveller",
+              "used": "maps"
+            },
+            {
+              "used": "traveller",
+              "user": "maps"
+            }
+          ]
+        },
+        {
+          "context": "holding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "holder": "traveller",
+              "held": "maps"
+            },
+            {
+              "held": "traveller",
+              "holder": "maps"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "new_words",
+          "text": "The traveller7 likes map7.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller3 holds map3.",
+          "status": "unknown"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 gives map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 uses map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller6 uses map6.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller0 gives map0.",
+          "status": "unknown"
+        }
+      ],
+      "inference_learning_updates": 0,
+      "lookup_baseline_correct_new_word_cases": 0
+    },
+    {
+      "training_records": 1800,
+      "per_frame": 300,
+      "training_seconds": 4.512057044999892,
+      "training_python_peak_bytes": 445060,
+      "inference_python_peak_bytes": 73017,
+      "sqlite_allocated_bytes_after_conflicts": 937984,
+      "test_cases": 240,
+      "groups": {
+        "new_words": {
+          "total": 180,
+          "correct_records": 180,
+          "unknown": 0,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "new_structure": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        },
+        "missing_punctuation": {
+          "total": 30,
+          "correct_records": 0,
+          "unknown": 30,
+          "ambiguous": 0,
+          "wrong_unique": 0
+        }
+      },
+      "inference_seconds": 2.6421080449999863,
+      "latency_ms_median": 10.924307000095723,
+      "latency_ms_p95": 12.274818999912895,
+      "conflict_checks": [
+        {
+          "context": "carrying",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "carrier": "traveller",
+              "item": "maps"
+            },
+            {
+              "item": "traveller",
+              "carrier": "maps"
+            }
+          ]
+        },
+        {
+          "context": "giving",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "giver": "traveller",
+              "gift": "maps"
+            },
+            {
+              "gift": "traveller",
+              "giver": "maps"
+            }
+          ]
+        },
+        {
+          "context": "finding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "finder": "traveller",
+              "found": "maps"
+            },
+            {
+              "found": "traveller",
+              "finder": "maps"
+            }
+          ]
+        },
+        {
+          "context": "liking",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "person": "traveller",
+              "liked": "maps"
+            },
+            {
+              "liked": "traveller",
+              "person": "maps"
+            }
+          ]
+        },
+        {
+          "context": "using",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "user": "traveller",
+              "used": "maps"
+            },
+            {
+              "used": "traveller",
+              "user": "maps"
+            }
+          ]
+        },
+        {
+          "context": "holding",
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "holder": "traveller",
+              "held": "maps"
+            },
+            {
+              "held": "traveller",
+              "holder": "maps"
+            }
+          ]
+        }
+      ],
+      "samples": [
+        {
+          "kind": "new_words",
+          "text": "The traveller7 likes map7.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller3 holds map3.",
+          "status": "unknown"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 gives map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller2 uses map2.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_words",
+          "text": "The traveller6 uses map6.",
+          "status": "predicted"
+        },
+        {
+          "kind": "new_structure",
+          "text": "The young traveller0 gives map0.",
+          "status": "unknown"
+        }
+      ],
+      "inference_learning_updates": 0,
+      "lookup_baseline_correct_new_word_cases": 0
+    }
+  ],
+  "limits": [
+    "Artificial words, six supplied frame contexts, no automatic intent/context routing.",
+    "Memory metrics cover traced Python allocations and SQLite pages, not total process/native memory.",
+    "Timing is from one run per size in this environment, with allocation tracing enabled.",
+    "Grammar tests deliberately require structures absent from the hypothesis language.",
+    "Baseline is exact training-sentence lookup; all new-word inputs are absent, so it abstains."
+  ],
+  "model_calls": 0
+}

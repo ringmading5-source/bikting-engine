@@ -1,0 +1,1391 @@
+{
+  "runs": [
+    {
+      "mode": "character",
+      "training": [
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 1,
+              "prefix_numbers": [],
+              "suffix_numbers": [
+                115
+              ],
+              "prefix_state": [],
+              "suffix_state": [
+                4
+              ],
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 1,
+            "mode": "character",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 8,
+            "maximum_depth": 3,
+            "original_units": 25,
+            "compressed_units": 9,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 23
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 21
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 19
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 17
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 15
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 13
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 11
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 9
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        },
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 2,
+              "prefix_numbers": [
+                84,
+                104,
+                101,
+                32
+              ],
+              "suffix_numbers": [
+                32,
+                115,
+                108,
+                101,
+                101,
+                112,
+                115,
+                46
+              ],
+              "prefix_state": [
+                29
+              ],
+              "suffix_state": [
+                34
+              ],
+              "examples": [
+                4,
+                5,
+                6
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 2,
+            "mode": "character",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 17,
+            "maximum_depth": 4,
+            "original_units": 58,
+            "compressed_units": 14,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 54
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 51
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 48
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 45
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 42
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 39
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 36
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 33
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 30
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 28
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 26
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 24
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 22
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 20
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 18
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 16
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 14
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        },
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 3,
+              "prefix_numbers": [
+                82,
+                101,
+                112,
+                111,
+                114,
+                116,
+                58,
+                32
+              ],
+              "suffix_numbers": [],
+              "prefix_state": [
+                45,
+                43,
+                20
+              ],
+              "suffix_state": [],
+              "examples": [
+                7,
+                8,
+                9
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            7,
+            8,
+            9
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 3,
+            "mode": "character",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 27,
+            "maximum_depth": 7,
+            "original_units": 118,
+            "compressed_units": 12,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 109
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 101
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 95
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 89
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 83
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 77
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 71
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 65
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 59
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 54
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 50
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 47
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 44
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 41
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 38
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 35
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 32
+              },
+              {
+                "round": 18,
+                "stored_patterns": 18,
+                "working_units": 30
+              },
+              {
+                "round": 19,
+                "stored_patterns": 19,
+                "working_units": 28
+              },
+              {
+                "round": 20,
+                "stored_patterns": 20,
+                "working_units": 26
+              },
+              {
+                "round": 21,
+                "stored_patterns": 21,
+                "working_units": 24
+              },
+              {
+                "round": 22,
+                "stored_patterns": 22,
+                "working_units": 22
+              },
+              {
+                "round": 23,
+                "stored_patterns": 23,
+                "working_units": 20
+              },
+              {
+                "round": 24,
+                "stored_patterns": 24,
+                "working_units": 18
+              },
+              {
+                "round": 25,
+                "stored_patterns": 25,
+                "working_units": 16
+              },
+              {
+                "round": 26,
+                "stored_patterns": 26,
+                "working_units": 14
+              },
+              {
+                "round": 27,
+                "stored_patterns": 27,
+                "working_units": 12
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        }
+      ],
+      "plural": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "rabbits",
+            "state": [
+              9,
+              2,
+              {
+                "literal": 98
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 105
+              },
+              3,
+              4
+            ],
+            "evidence": [
+              {
+                "rule": 1,
+                "kind": "induced",
+                "supporting": [
+                  1,
+                  2,
+                  3
+                ],
+                "conflicting": []
+              }
+            ]
+          }
+        ],
+        "input_state": {
+          "status": "encoded",
+          "run_id": 1,
+          "mode": "character",
+          "units": [
+            9,
+            2,
+            {
+              "literal": 98
+            },
+            {
+              "literal": 98
+            },
+            {
+              "literal": 105
+            },
+            3
+          ],
+          "base_units": 6,
+          "compressed_units": 6,
+          "roundtrip_verified": true
+        },
+        "search_limited": false,
+        "verified": false
+      },
+      "composition": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "Report: The rabbit sleeps.",
+            "state": [
+              45,
+              43,
+              20,
+              29,
+              9,
+              2,
+              {
+                "literal": 98
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 105
+              },
+              48
+            ],
+            "trace": [
+              {
+                "step": 1,
+                "from": "The rabbit sleeps.",
+                "context": "report",
+                "evidence": [
+                  {
+                    "rule": 3,
+                    "kind": "induced",
+                    "supporting": [
+                      7,
+                      8,
+                      9
+                    ],
+                    "conflicting": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "context": "sentence",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "The rabbit sleeps.",
+                "incoming": [
+                  {
+                    "step": 0,
+                    "from": "rabbit",
+                    "context": "sentence",
+                    "evidence": [
+                      {
+                        "rule": 2,
+                        "kind": "induced",
+                        "supporting": [
+                          4,
+                          5,
+                          6
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "context": "report",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "Report: The rabbit sleeps.",
+                "incoming": [
+                  {
+                    "step": 1,
+                    "from": "The rabbit sleeps.",
+                    "context": "report",
+                    "evidence": [
+                      {
+                        "rule": 3,
+                        "kind": "induced",
+                        "supporting": [
+                          7,
+                          8,
+                          9
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Bounded composition of supervised symbolic rewrites; no assertion that generated sentences describe reality."
+      },
+      "unicode": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "Report: The café sleeps.",
+            "state": [
+              45,
+              43,
+              20,
+              29,
+              11,
+              {
+                "literal": 102
+              },
+              {
+                "literal": 233
+              },
+              41
+            ],
+            "trace": [
+              {
+                "step": 1,
+                "from": "The café sleeps.",
+                "context": "report",
+                "evidence": [
+                  {
+                    "rule": 3,
+                    "kind": "induced",
+                    "supporting": [
+                      7,
+                      8,
+                      9
+                    ],
+                    "conflicting": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "context": "sentence",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "The café sleeps.",
+                "incoming": [
+                  {
+                    "step": 0,
+                    "from": "café",
+                    "context": "sentence",
+                    "evidence": [
+                      {
+                        "rule": 2,
+                        "kind": "induced",
+                        "supporting": [
+                          4,
+                          5,
+                          6
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "context": "report",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "Report: The café sleeps.",
+                "incoming": [
+                  {
+                    "step": 1,
+                    "from": "The café sleeps.",
+                    "context": "report",
+                    "evidence": [
+                      {
+                        "rule": 3,
+                        "kind": "induced",
+                        "supporting": [
+                          7,
+                          8,
+                          9
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Bounded composition of supervised symbolic rewrites; no assertion that generated sentences describe reality."
+      },
+      "correct": true,
+      "inference_learning_updates": 0
+    },
+    {
+      "mode": "byte",
+      "training": [
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 4,
+              "prefix_numbers": [],
+              "suffix_numbers": [
+                115
+              ],
+              "prefix_state": [],
+              "suffix_state": [
+                58
+              ],
+              "examples": [
+                10,
+                11,
+                12
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            10,
+            11,
+            12
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 4,
+            "mode": "byte",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 8,
+            "maximum_depth": 3,
+            "original_units": 25,
+            "compressed_units": 9,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 23
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 21
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 19
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 17
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 15
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 13
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 11
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 9
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        },
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 5,
+              "prefix_numbers": [
+                84,
+                104,
+                101,
+                32
+              ],
+              "suffix_numbers": [
+                32,
+                115,
+                108,
+                101,
+                101,
+                112,
+                115,
+                46
+              ],
+              "prefix_state": [
+                83
+              ],
+              "suffix_state": [
+                88
+              ],
+              "examples": [
+                13,
+                14,
+                15
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            13,
+            14,
+            15
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 5,
+            "mode": "byte",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 17,
+            "maximum_depth": 4,
+            "original_units": 58,
+            "compressed_units": 14,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 54
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 51
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 48
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 45
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 42
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 39
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 36
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 33
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 30
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 28
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 26
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 24
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 22
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 20
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 18
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 16
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 14
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        },
+        {
+          "status": "learned",
+          "rules": [
+            {
+              "id": 6,
+              "prefix_numbers": [
+                82,
+                101,
+                112,
+                111,
+                114,
+                116,
+                58,
+                32
+              ],
+              "suffix_numbers": [],
+              "prefix_state": [
+                99,
+                97,
+                74
+              ],
+              "suffix_state": [],
+              "examples": [
+                16,
+                17,
+                18
+              ],
+              "operation": "concat(prefix,input,suffix)"
+            }
+          ],
+          "examples": [
+            16,
+            17,
+            18
+          ],
+          "evidence_retained": true,
+          "discovery": {
+            "run_id": 6,
+            "mode": "byte",
+            "training_observations": 6,
+            "new_observations": 6,
+            "patterns_discovered": 27,
+            "maximum_depth": 7,
+            "original_units": 118,
+            "compressed_units": 12,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 109
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 101
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 95
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 89
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 83
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 77
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 71
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 65
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 59
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 54
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 50
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 47
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 44
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 41
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 38
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 35
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 32
+              },
+              {
+                "round": 18,
+                "stored_patterns": 18,
+                "working_units": 30
+              },
+              {
+                "round": 19,
+                "stored_patterns": 19,
+                "working_units": 28
+              },
+              {
+                "round": 20,
+                "stored_patterns": 20,
+                "working_units": 26
+              },
+              {
+                "round": 21,
+                "stored_patterns": 21,
+                "working_units": 24
+              },
+              {
+                "round": 22,
+                "stored_patterns": 22,
+                "working_units": 22
+              },
+              {
+                "round": 23,
+                "stored_patterns": 23,
+                "working_units": 20
+              },
+              {
+                "round": 24,
+                "stored_patterns": 24,
+                "working_units": 18
+              },
+              {
+                "round": 25,
+                "stored_patterns": 25,
+                "working_units": 16
+              },
+              {
+                "round": 26,
+                "stored_patterns": 26,
+                "working_units": 14
+              },
+              {
+                "round": 27,
+                "stored_patterns": 27,
+                "working_units": 12
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "scope": "Observed whole-state concatenation transformations; targets supplied, not fact or meaning discovery."
+        }
+      ],
+      "plural": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "rabbits",
+            "state": [
+              63,
+              56,
+              {
+                "literal": 98
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 105
+              },
+              57,
+              58
+            ],
+            "evidence": [
+              {
+                "rule": 4,
+                "kind": "induced",
+                "supporting": [
+                  10,
+                  11,
+                  12
+                ],
+                "conflicting": []
+              }
+            ]
+          }
+        ],
+        "input_state": {
+          "status": "encoded",
+          "run_id": 4,
+          "mode": "byte",
+          "units": [
+            63,
+            56,
+            {
+              "literal": 98
+            },
+            {
+              "literal": 98
+            },
+            {
+              "literal": 105
+            },
+            57
+          ],
+          "base_units": 6,
+          "compressed_units": 6,
+          "roundtrip_verified": true
+        },
+        "search_limited": false,
+        "verified": false
+      },
+      "composition": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "Report: The rabbit sleeps.",
+            "state": [
+              99,
+              97,
+              74,
+              83,
+              63,
+              56,
+              {
+                "literal": 98
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 105
+              },
+              102
+            ],
+            "trace": [
+              {
+                "step": 1,
+                "from": "The rabbit sleeps.",
+                "context": "report",
+                "evidence": [
+                  {
+                    "rule": 6,
+                    "kind": "induced",
+                    "supporting": [
+                      16,
+                      17,
+                      18
+                    ],
+                    "conflicting": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "context": "sentence",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "The rabbit sleeps.",
+                "incoming": [
+                  {
+                    "step": 0,
+                    "from": "rabbit",
+                    "context": "sentence",
+                    "evidence": [
+                      {
+                        "rule": 5,
+                        "kind": "induced",
+                        "supporting": [
+                          13,
+                          14,
+                          15
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "context": "report",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "Report: The rabbit sleeps.",
+                "incoming": [
+                  {
+                    "step": 1,
+                    "from": "The rabbit sleeps.",
+                    "context": "report",
+                    "evidence": [
+                      {
+                        "rule": 6,
+                        "kind": "induced",
+                        "supporting": [
+                          16,
+                          17,
+                          18
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Bounded composition of supervised symbolic rewrites; no assertion that generated sentences describe reality."
+      },
+      "unicode": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "Report: The café sleeps.",
+            "state": [
+              99,
+              97,
+              74,
+              83,
+              65,
+              {
+                "literal": 102
+              },
+              {
+                "literal": 195
+              },
+              {
+                "literal": 169
+              },
+              95
+            ],
+            "trace": [
+              {
+                "step": 1,
+                "from": "The café sleeps.",
+                "context": "report",
+                "evidence": [
+                  {
+                    "rule": 6,
+                    "kind": "induced",
+                    "supporting": [
+                      16,
+                      17,
+                      18
+                    ],
+                    "conflicting": []
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "stages": [
+          {
+            "context": "sentence",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "The café sleeps.",
+                "incoming": [
+                  {
+                    "step": 0,
+                    "from": "café",
+                    "context": "sentence",
+                    "evidence": [
+                      {
+                        "rule": 5,
+                        "kind": "induced",
+                        "supporting": [
+                          13,
+                          14,
+                          15
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "context": "report",
+            "candidate_count": 1,
+            "states": [
+              {
+                "text": "Report: The café sleeps.",
+                "incoming": [
+                  {
+                    "step": 1,
+                    "from": "The café sleeps.",
+                    "context": "report",
+                    "evidence": [
+                      {
+                        "rule": 6,
+                        "kind": "induced",
+                        "supporting": [
+                          16,
+                          17,
+                          18
+                        ],
+                        "conflicting": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "executed": false,
+        "scope": "Bounded composition of supervised symbolic rewrites; no assertion that generated sentences describe reality."
+      },
+      "correct": true,
+      "inference_learning_updates": 0
+    }
+  ],
+  "model_calls": 0,
+  "scope": "Learned paired concatenation rewrites and their composition. Output sentences are symbolic test targets, not discovered facts."
+}

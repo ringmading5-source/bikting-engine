@@ -1,0 +1,659 @@
+{
+  "training": [
+    {
+      "status": "learned",
+      "templates": [
+        {
+          "level": "byte",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "2": [
+                  116,
+                  119,
+                  111
+                ],
+                "3": [
+                  116,
+                  104,
+                  114,
+                  101,
+                  101
+                ],
+                "4": [
+                  102,
+                  111,
+                  117,
+                  114
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": [
+                115
+              ]
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "search_limited": false
+        },
+        {
+          "level": "character",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "2": [
+                  116,
+                  119,
+                  111
+                ],
+                "3": [
+                  116,
+                  104,
+                  114,
+                  101,
+                  101
+                ],
+                "4": [
+                  102,
+                  111,
+                  117,
+                  114
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": [
+                115
+              ]
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "search_limited": false
+        }
+      ],
+      "examples": [
+        1,
+        2,
+        3
+      ],
+      "evidence_retained": true,
+      "search_limited": false
+    },
+    {
+      "status": "learned",
+      "templates": [
+        {
+          "level": "byte",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "1": [
+                  111,
+                  110,
+                  101
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": []
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "search_limited": false
+        },
+        {
+          "level": "character",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "1": [
+                  111,
+                  110,
+                  101
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": []
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "search_limited": false
+        }
+      ],
+      "examples": [
+        4,
+        5,
+        6
+      ],
+      "evidence_retained": true,
+      "search_limited": false
+    },
+    {
+      "status": "learned",
+      "model_id": 1,
+      "model": {
+        "rules": {
+          "multiple": [
+            {
+              "kind": "comparison",
+              "source": "count",
+              "operator": "gt",
+              "threshold": 1
+            }
+          ]
+        },
+        "examples": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "evidence_retained": true,
+      "supplied": "Record boundaries, field labels and example outputs.",
+      "learned": "Sequence bindings, observed literals, copy links and integer comparisons."
+    },
+    {
+      "status": "learned",
+      "model_id": 2,
+      "model": {
+        "rules": {
+          "entity": [
+            {
+              "kind": "sequence",
+              "source": "entity",
+              "level": "character",
+              "input": [
+                {
+                  "slot": 0,
+                  "min_tokens": 3
+                }
+              ],
+              "output": [
+                {
+                  "slot": 0
+                }
+              ]
+            },
+            {
+              "kind": "sequence",
+              "source": "entity",
+              "level": "character",
+              "input": [
+                {
+                  "slot": 0,
+                  "min_tokens": 3
+                }
+              ],
+              "output": [
+                {
+                  "slot": 0
+                }
+              ]
+            },
+            {
+              "kind": "sequence",
+              "source": "entity",
+              "level": "byte",
+              "input": [
+                {
+                  "slot": 0,
+                  "min_tokens": 3
+                }
+              ],
+              "output": [
+                {
+                  "slot": 0
+                }
+              ]
+            },
+            {
+              "kind": "sequence",
+              "source": "entity",
+              "level": "byte",
+              "input": [
+                {
+                  "slot": 0,
+                  "min_tokens": 3
+                }
+              ],
+              "output": [
+                {
+                  "slot": 0
+                }
+              ]
+            },
+            {
+              "kind": "copy",
+              "source": "entity"
+            }
+          ],
+          "count": [
+            {
+              "kind": "numeric",
+              "source": "count",
+              "program": [
+                {
+                  "kind": "polynomial",
+                  "coefficients": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ]
+                  ],
+                  "output_type": "integer_or_fraction"
+                }
+              ]
+            },
+            {
+              "kind": "numeric",
+              "source": "count",
+              "program": [
+                {
+                  "kind": "polynomial",
+                  "coefficients": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      0,
+                      1
+                    ]
+                  ],
+                  "output_type": "integer_or_fraction"
+                }
+              ]
+            }
+          ]
+        },
+        "examples": [
+          5,
+          6,
+          7
+        ]
+      },
+      "evidence_retained": true,
+      "supplied": "Record boundaries, field labels and example outputs.",
+      "learned": "Sequence bindings, observed literals, copy links and integer comparisons."
+    }
+  ],
+  "unseen_reading": {
+    "status": "predicted",
+    "readings": [
+      {
+        "record": {
+          "count": 3,
+          "entity": "rabbit"
+        },
+        "evidence": [
+          {
+            "model": 1,
+            "examples": [
+              1,
+              2,
+              3
+            ],
+            "kind": "induced"
+          }
+        ],
+        "relationships": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "record": {
+                "multiple": true
+              },
+              "evidence": [
+                {
+                  "model": 1,
+                  "examples": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "kind": "induced"
+                }
+              ]
+            }
+          ],
+          "search_limited": false,
+          "verified": false
+        },
+        "predicted_changes": [
+          {
+            "action": "add-one-observation",
+            "action_id": 10,
+            "prediction": {
+              "status": "predicted",
+              "candidates": [
+                {
+                  "record": {
+                    "count": 4,
+                    "entity": "rabbit"
+                  },
+                  "evidence": [
+                    {
+                      "model": 2,
+                      "examples": [
+                        5,
+                        6,
+                        7
+                      ],
+                      "kind": "induced"
+                    }
+                  ]
+                }
+              ],
+              "search_limited": false,
+              "verified": false
+            }
+          }
+        ]
+      }
+    ],
+    "operating_level": "byte",
+    "input_numbers": [
+      [
+        116,
+        104,
+        114,
+        101,
+        101
+      ],
+      [
+        114,
+        97,
+        98,
+        98,
+        105,
+        116,
+        115
+      ]
+    ],
+    "verified": false,
+    "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+  },
+  "count_query": {
+    "status": "answered",
+    "values": [
+      3
+    ],
+    "field": "count",
+    "evidence": {
+      "status": "predicted",
+      "readings": [
+        {
+          "record": {
+            "count": 3,
+            "entity": "rabbit"
+          },
+          "evidence": [
+            {
+              "model": 1,
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "kind": "induced"
+            }
+          ],
+          "relationships": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "record": {
+                  "multiple": true
+                },
+                "evidence": [
+                  {
+                    "model": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    "kind": "induced"
+                  }
+                ]
+              }
+            ],
+            "search_limited": false,
+            "verified": false
+          },
+          "predicted_changes": [
+            {
+              "action": "add-one-observation",
+              "action_id": 10,
+              "prediction": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "count": 4,
+                      "entity": "rabbit"
+                    },
+                    "evidence": [
+                      {
+                        "model": 2,
+                        "examples": [
+                          5,
+                          6,
+                          7
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              }
+            }
+          ]
+        }
+      ],
+      "operating_level": "byte",
+      "input_numbers": [
+        [
+          116,
+          104,
+          114,
+          101,
+          101
+        ],
+        [
+          114,
+          97,
+          98,
+          98,
+          105,
+          116,
+          115
+        ]
+      ],
+      "verified": false,
+      "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+    },
+    "verified": false
+  },
+  "multiple_query": {
+    "status": "answered",
+    "values": [
+      true
+    ],
+    "field": "multiple",
+    "evidence": {
+      "status": "predicted",
+      "readings": [
+        {
+          "record": {
+            "count": 3,
+            "entity": "rabbit"
+          },
+          "evidence": [
+            {
+              "model": 1,
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "kind": "induced"
+            }
+          ],
+          "relationships": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "record": {
+                  "multiple": true
+                },
+                "evidence": [
+                  {
+                    "model": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    "kind": "induced"
+                  }
+                ]
+              }
+            ],
+            "search_limited": false,
+            "verified": false
+          },
+          "predicted_changes": [
+            {
+              "action": "add-one-observation",
+              "action_id": 10,
+              "prediction": {
+                "status": "predicted",
+                "candidates": [
+                  {
+                    "record": {
+                      "count": 4,
+                      "entity": "rabbit"
+                    },
+                    "evidence": [
+                      {
+                        "model": 2,
+                        "examples": [
+                          5,
+                          6,
+                          7
+                        ],
+                        "kind": "induced"
+                      }
+                    ]
+                  }
+                ],
+                "search_limited": false,
+                "verified": false
+              }
+            }
+          ]
+        }
+      ],
+      "operating_level": "byte",
+      "input_numbers": [
+        [
+          116,
+          104,
+          114,
+          101,
+          101
+        ],
+        [
+          114,
+          97,
+          98,
+          98,
+          105,
+          116,
+          115
+        ]
+      ],
+      "verified": false,
+      "scope": "Labeled expression associations and bounded learned state transformations; no raw-text semantic discovery or real-world action verification."
+    },
+    "verified": false
+  },
+  "checks": {
+    "count": true,
+    "multiple": true,
+    "change": true,
+    "unknown": true
+  },
+  "model_calls": 0,
+  "test_learning_updates": 0,
+  "scope": "Supplied entity/count/multiple labels and paired transitions. Action wording is an identifier; its effect is fitted from examples, not understood from the label."
+}

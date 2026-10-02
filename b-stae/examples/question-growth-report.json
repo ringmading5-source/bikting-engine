@@ -1,0 +1,345 @@
+{
+  "alignment_growth": [
+    {
+      "examples": 3,
+      "mode": "character",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.011195553000106884,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 6,
+      "mode": "character",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.01885468199998286,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 12,
+      "mode": "character",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.04409011799998552,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 24,
+      "mode": "character",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.07202870299988717,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 3,
+      "mode": "byte",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.009835640999881434,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 6,
+      "mode": "byte",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.01756782199936424,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 12,
+      "mode": "byte",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.03864588000033109,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "examples": 24,
+      "mode": "byte",
+      "training_status": "learned",
+      "models": 2,
+      "training_seconds": 0.06659197399949335,
+      "correct": 3,
+      "total": 3,
+      "cases": [
+        {
+          "question": "what is chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is organic chemistry?",
+          "status": "predicted",
+          "outputs": [
+            "define organic chemistry"
+          ],
+          "correct": true
+        },
+        {
+          "question": "what is mathematics?",
+          "status": "predicted",
+          "outputs": [
+            "define mathematics"
+          ],
+          "correct": true
+        }
+      ],
+      "inference_writes": 0
+    }
+  ],
+  "knowledge_growth": [
+    {
+      "knowledge_records": 3,
+      "pattern_training_pairs": 18,
+      "training_seconds": 0.0011975610004810733,
+      "correct": 9,
+      "total": 9,
+      "timing_repeats": 5,
+      "median_answer_ms": 3.2815129998198245,
+      "sqlite_allocated_bytes": 425984,
+      "inference_writes": 0
+    },
+    {
+      "knowledge_records": 30,
+      "pattern_training_pairs": 18,
+      "training_seconds": 0.007169501999669592,
+      "correct": 12,
+      "total": 12,
+      "timing_repeats": 5,
+      "median_answer_ms": 3.287625499524438,
+      "sqlite_allocated_bytes": 430080,
+      "inference_writes": 0
+    },
+    {
+      "knowledge_records": 300,
+      "pattern_training_pairs": 18,
+      "training_seconds": 0.06996146799974667,
+      "correct": 12,
+      "total": 12,
+      "timing_repeats": 5,
+      "median_answer_ms": 3.153040500365023,
+      "sqlite_allocated_bytes": 614400,
+      "inference_writes": 0
+    },
+    {
+      "knowledge_records": 1200,
+      "pattern_training_pairs": 18,
+      "training_seconds": 0.297867581999526,
+      "correct": 12,
+      "total": 12,
+      "timing_repeats": 5,
+      "median_answer_ms": 3.5121525002068665,
+      "sqlite_allocated_bytes": 1163264,
+      "inference_writes": 0
+    }
+  ],
+  "model_calls": 0,
+  "limits": [
+    "Synthetic small fixed-form request patterns; subjects held out, question forms supplied as paired targets.",
+    "Definitions supplied as structured subject/definition/source records; answers are indexed retrieval, not new-fact discovery.",
+    "Knowledge timing includes request interpretation and retrieval; median of five repeats, one environment.",
+    "SQLite allocated pages include shared representation and model tables; not total process memory."
+  ]
+}

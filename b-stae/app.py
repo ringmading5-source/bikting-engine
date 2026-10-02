@@ -12,6 +12,8 @@ from core import BinaryState,decode_outputs
 class Application:
     def __init__(self,engine):
         self.engine=engine
+        from chatbot import Chatbot
+        self.chat=Chatbot(engine)
         from gemini_adapter import GeminiAdapter
         self.gemini=GeminiAdapter(engine)
         from task_runtime import TaskRuntime
@@ -26,13 +28,102 @@ class Application:
         self.learned_planner=LearnedTransitionPlanner(engine)
         from text_learning import TextPatternLearning
         self.text_learning=TextPatternLearning(engine)
-        from web_knowledge import WebKnowledge
-        self.web=WebKnowledge(engine)
-        from web_intent_loop import WebIntentLoop
-        self.discovery=WebIntentLoop(engine,self.web)
+        self._web=None
+        self._discovery=None
+    @property
+    def web(self):
+        if self._web is None:
+            from web_knowledge import WebKnowledge
+            self._web=WebKnowledge(self.engine)
+        return self._web
+    @property
+    def discovery(self):
+        if self._discovery is None:
+            from web_intent_loop import WebIntentLoop
+            self._discovery=WebIntentLoop(self.engine,self.web)
+        return self._discovery
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action=='chat_send':return self.chat.send(payload.get('text'),payload.get('conversation'),payload.get('context'))
+        if action=='chat_history':return self.chat.history(payload.get('conversation'))
+        if action=='chat_new':return {'conversation':self.chat.conversation()}
+        if action=='chat_teach':return self.chat.teach(payload.get('text'),payload.get('reply'),payload.get('source','user:chat-reply'))
+        if action=='chat_demo':return self.chat.demo()
+        if action=='text_behavior_observe':return self.engine.text_behavior.observe(payload.get('before'),payload.get('after'),payload.get('source'),payload.get('context'),payload.get('mode','character'))
+        if action=='text_behavior_learn':return self.engine.text_behavior.learn(payload.get('episodes'),payload.get('source'),payload.get('context'),payload.get('mode','character'))
+        if action=='text_behavior_predict':return self.engine.text_behavior.predict(payload.get('text'),payload.get('context'),payload.get('mode','character'),payload.get('path',False))
+        if action=='text_behavior_inventory':return self.engine.text_behavior.inventory(payload.get('context'),payload.get('mode','character'))
+        if action=='transfer_learn':return self.engine.transfer.learn(payload.get('examples'),payload.get('requirements'),payload.get('contexts'),payload.get('source'))
+        if action=='transfer_solve':return self.engine.transfer.solve(payload.get('initial'),payload.get('target'),payload.get('adapter'),payload.get('conditions'),payload.get('max_depth',4),payload.get('max_nodes',128))
+        if action=='transfer_feedback':return self.engine.transfer.feedback(payload.get('adapter'),payload.get('example'),payload.get('source'))
+        if action=='behavior_compose':return self.engine.composition.solve(payload.get('initial'),payload.get('target'),payload.get('contexts'),payload.get('max_depth',4),payload.get('max_nodes',128))
+        if action=='knowledge_behavior_observe':return self.engine.behavior.observe(payload.get('before'),payload.get('after'),payload.get('source'),payload.get('context'))
+        if action=='knowledge_behavior_predict':return self.engine.behavior.predict(payload.get('state'),payload.get('context'))
+        if action=='knowledge_behavior_learn_episodes':return self.engine.behavior.learn_episodes(payload.get('episodes'),payload.get('source'),payload.get('context'))
+        if action=='knowledge_behavior_predict_path':return self.engine.behavior.predict_path(payload.get('state'),payload.get('context'))
+        if action=='knowledge_behavior_inventory':return {'models':self.engine.behavior.inventory(payload.get('context'))}
+        if action=='recursive_text_train':return self.engine.recursive_text.train(payload.get('observations'),payload.get('context'),payload.get('mode','character'),payload.get('include_history',True))
+        if action=='recursive_text_predict':return self.engine.recursive_text.predict(payload.get('text'),payload.get('context'),payload.get('mode','character'))
+        if action=='recursive_text_inventory':return self.engine.recursive_text.inventory(payload.get('context'),payload.get('mode','character'))
+        if action=='adaptive_pattern_observe':return self.engine.adaptive_patterns.observe(payload.get('before'),payload.get('after'),payload.get('source'),payload.get('context'),payload.get('mode','character'))
+        if action=='adaptive_pattern_predict':return self.engine.adaptive_patterns.predict(payload.get('text'),payload.get('context'),payload.get('mode','character'))
+        if action=='adaptive_pattern_inventory':return {'models':self.engine.adaptive_patterns.inventory(payload.get('context'),payload.get('mode','character'))}
+        if action=='knowledge_question_learn':return self.engine.question_knowledge.learn_questions(payload.get('examples'),payload.get('label'),payload.get('context'),payload.get('mode','character'))
+        if action=='knowledge_fact_learn':return self.engine.question_knowledge.learn_facts(payload.get('facts'),payload.get('context'))
+        if action=='knowledge_question_answer':return self.engine.question_knowledge.answer(payload.get('question'),payload.get('context'),payload.get('mode','character'))
+        if action=='internal_state_learn':return self.engine.internal_states.learn(payload.get('examples'),payload.get('context'),payload.get('mode','character'))
+        if action=='internal_state_predict':return self.engine.internal_states.predict(payload.get('text'),payload.get('context'),payload.get('mode','character'),payload.get('strategy','indexed'))
+        if action=='boundary_state_observe':return {'state_id':self.engine.boundary_states.observe(payload.get('units'),payload.get('payload'),payload.get('source'),payload.get('context'),payload.get('mode','character'))}
+        if action=='boundary_state_search':return self.engine.boundary_states.search(payload.get('units'),payload.get('context'),payload.get('mode','character'),payload.get('strategy','indexed'),payload.get('max_candidates',2048),payload.get('max_nodes',65536))
+        if action=='composed_state_learn':return self.engine.composed_states.learn(payload.get('examples'),payload.get('context'),payload.get('mode','character'))
+        if action=='composed_state_predict':return self.engine.composed_states.predict(payload.get('text'),payload.get('context'),payload.get('mode','character'),payload.get('strategy','indexed'))
+        if action=='composed_state_compose':return self.engine.composed_states.compose(payload.get('text'),payload.get('contexts'),payload.get('mode','character'),payload.get('max_candidates',32))
+        if action=='composed_state_inventory':return {'rules':self.engine.composed_states.inventory(payload.get('context'),payload.get('mode','character'))}
+        if action=='recursive_pattern_learn':return self.engine.recursive_patterns.learn(payload.get('examples'),payload.get('context'),payload.get('mode','character'),payload.get('rounds',24),payload.get('max_depth',8),payload.get('min_documents',2),payload.get('include_history',True))
+        if action=='recursive_pattern_encode':return self.engine.recursive_patterns.encode(payload.get('text'),payload.get('context'),payload.get('mode','character'))
+        if action=='recursive_pattern_inventory':return self.engine.recursive_patterns.inventory(payload.get('context'),payload.get('mode','character'))
+        if action=='recursive_pattern_decode':return {'text':self.engine.recursive_patterns.decode(payload.get('units'),payload.get('mode','character'))}
+        if action=='meaning_run':return self.engine.meaning_memory.run(payload.get('text'),payload.get('context'),payload.get('label'),payload.get('level','byte'))
+        if action=='meaning_learn_expressions':return self.engine.meaning_memory.learn_expressions(payload.get('examples'),payload.get('context'))
+        if action=='meaning_learn_relations':return self.engine.meaning_memory.learn_relations(payload.get('examples'),payload.get('context'))
+        if action=='meaning_learn_changes':return self.engine.meaning_memory.learn_changes(payload.get('examples'),payload.get('label'),payload.get('context'))
+        if action=='meaning_inspect':return self.engine.meaning_memory.inspect(payload.get('text'),payload.get('context'))
+        if action=='meaning_read_field':return self.engine.meaning_memory.read_field(payload.get('text'),payload.get('field'),payload.get('context'))
+        if action=='numeric_text_encode':return self.engine.numeric_text.encode(payload.get('text'))
+        if action=='numeric_text_decode':return self.engine.numeric_text.decode(payload.get('sentence_id'))
+        if action=='numeric_text_decode_tokens':return {'text':self.engine.numeric_text.decode_tokens(payload.get('token_ids'))}
+        if action=='claim_learn':return self.engine.claims.learn(payload.get('examples'),payload.get('source'),payload.get('context'))
+        if action=='claim_parse':return self.engine.claims.parse(payload.get('text'),payload.get('context'),payload.get('level','byte'))
+        if action=='claim_inspect':return self.engine.claims.inspect(payload.get('text'),payload.get('claim_context'),payload.get('context'),payload.get('level','byte'))
+        if action=='shared_concept_observe':return self.engine.shared_concepts.observe(payload.get('concept'),payload.get('value'),payload.get('source'),payload.get('context'))
+        if action=='shared_concept_predict':return self.engine.shared_concepts.predict(payload.get('value'),payload.get('context'))
+        if action=='shared_concept_inspect':return self.engine.shared_concepts.inspect(payload.get('values'),payload.get('context'))
+        if action=='coherence_observe':return self.engine.coherence.observe(payload.get('assertion'),payload.get('source'),payload.get('supersedes'))
+        if action=='coherence_check':return self.engine.coherence.check(payload.get('record'),payload.get('context'))
+        if action=='coherence_inspect':return self.engine.coherence.inspect(payload.get('text'),payload.get('role_context'),payload.get('context'),payload.get('level','byte'))
+        if action=='role_learn':return self.engine.roles.learn(payload.get('examples'),payload.get('context'))
+        if action=='role_parse':return self.engine.roles.parse(payload.get('text'),payload.get('context'),payload.get('level','byte'))
+        if action=='role_evaluate':return self.engine.roles.evaluate(payload.get('examples'),payload.get('context'),payload.get('level','byte'))
+        if action=='text_memory_learn':return self.engine.text_memory.learn(payload.get('examples'),payload.get('context'))
+        if action=='text_memory_parse':return self.engine.text_memory.parse(payload.get('text'),payload.get('context'),payload.get('level','byte'))
+        if action=='text_memory_express':return self.engine.text_memory.express(payload.get('record'),payload.get('context'),payload.get('level','byte'))
+        if action=='memory_logic_learn':return self.engine.memory_logic.learn(payload.get('examples'),payload.get('context'))
+        if action=='memory_logic_predict':return self.engine.memory_logic.predict(payload.get('record'),payload.get('context'))
+        if action=='text_relation_learn':return self.engine.text_relations.learn(payload.get('examples'),payload.get('context'))
+        if action=='text_relation_transform':return self.engine.text_relations.transform(payload.get('statement'),payload.get('context'))
+        if action=='text_relation_answer':return self.engine.text_relations.answer(payload.get('statement'),payload.get('question'),payload.get('context'))
+        if action=='sentence_predict':
+            return self.engine.sentences.predict(payload.get('text'),payload.get('context'),payload.get('window',3),payload.get('max_tokens',24),payload.get('sentence_end',False))
+        if action=='sentence_continue':
+            return self.engine.sentences.continue_sentence(payload.get('text'),payload.get('context'),payload.get('max_tokens',24))
+        if action=='sentence_evaluate':return self.engine.sentences.evaluate(payload.get('cases'),payload.get('context'))
+        if action=='text_gap_learn':
+            return self.engine.text_gaps.learn(payload.get('text'),payload.get('source'),payload.get('context'),payload.get('window',3))
+        if action=='text_gap_predict':
+            return self.engine.text_gaps.predict(payload.get('text'),payload.get('context'),payload.get('window',3))
+        if action=='text_gap_evaluate':return self.engine.text_gaps.evaluate(payload.get('cases'),payload.get('context'))
+        if action=='text_gap_baseline':return self.engine.text_gaps.baseline(payload.get('context'))
         if action=='pattern_dataset_import':
             from pattern_dataset import PatternDataset
             return PatternDataset(self.engine).ingest(payload.get('name'),payload.get('records'))
@@ -201,8 +292,9 @@ def serve(engine,port,host='127.0.0.1'):
             if self.path=='/health':
                 self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'knowledge-retrieval-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
             if not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
-            if self.path!='/':self.reply(404,b'Not found','text/plain');return
-            self.reply(200,Path(__file__).with_name('app.html').read_bytes(),'text/html; charset=utf-8')
+            pages={'/':'app.html','/chat':'chat.html'}
+            if self.path not in pages:self.reply(404,b'Not found','text/plain');return
+            self.reply(200,Path(__file__).with_name(pages[self.path]).read_bytes(),'text/html; charset=utf-8')
         def do_POST(self):
             if self.path!='/api' or not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
             origin=self.headers.get('Origin')

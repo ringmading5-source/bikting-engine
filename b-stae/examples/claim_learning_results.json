@@ -1,0 +1,521 @@
+{
+  "correct": 2400,
+  "total": 2400,
+  "cases": [
+    {
+      "input": "猫0000 inspects newobject0000.",
+      "level": "byte",
+      "expected": {
+        "actor": "猫0000",
+        "action": "inspect",
+        "object": "newobject0000",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0001 marks newobject0001.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0001",
+        "action": "mark",
+        "object": "newobject0001",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0002 prints newobject0002.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0002",
+        "action": "print",
+        "object": "newobject0002",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0003 transports newobject0003.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0003",
+        "action": "transport",
+        "object": "newobject0003",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0004 inspects newobject0004.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0004",
+        "action": "inspect",
+        "object": "newobject0004",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0005 marks newobject0005.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0005",
+        "action": "mark",
+        "object": "newobject0005",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0006 prints newobject0006.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0006",
+        "action": "print",
+        "object": "newobject0006",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "猫0007 transports newobject0007.",
+      "level": "byte",
+      "expected": {
+        "actor": "猫0007",
+        "action": "transport",
+        "object": "newobject0007",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0008 inspects newobject0008.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0008",
+        "action": "inspect",
+        "object": "newobject0008",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0009 marks newobject0009.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0009",
+        "action": "mark",
+        "object": "newobject0009",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0010 prints newobject0010.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0010",
+        "action": "print",
+        "object": "newobject0010",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    },
+    {
+      "input": "newactor0011 transports newobject0011.",
+      "level": "byte",
+      "expected": {
+        "actor": "newactor0011",
+        "action": "transport",
+        "object": "newobject0011",
+        "mode": "assertion",
+        "polarity": true
+      },
+      "status": "predicted",
+      "correct": true
+    }
+  ],
+  "coherence": {
+    "cat speaks English.": {
+      "status": "conflict",
+      "parse_status": "predicted",
+      "original": "cat speaks English.",
+      "normalized": "cat speaks English",
+      "readings": [
+        {
+          "record": {
+            "actor": "cat",
+            "action": "speak",
+            "object": "English",
+            "mode": "assertion",
+            "polarity": true
+          },
+          "language_evidence": [
+            {
+              "model": 1,
+              "examples": [
+                1,
+                2,
+                3
+              ],
+              "kind": "induced"
+            }
+          ],
+          "source_evidence": [
+            {
+              "id": 1,
+              "original": "cat pushs box.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 1
+            },
+            {
+              "id": 2,
+              "original": "dog lifts cart.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 2
+            },
+            {
+              "id": 3,
+              "original": "bird kicks ball.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 3
+            }
+          ],
+          "coherence": {
+            "status": "conflict",
+            "record": {
+              "actor": "cat",
+              "action": "speak",
+              "object": "English"
+            },
+            "context": null,
+            "deciding_evidence": [
+              {
+                "id": 1,
+                "assertion": {
+                  "action": "speak",
+                  "allowed": false,
+                  "context": null,
+                  "kind": "capability",
+                  "object": "English",
+                  "subject": "cat"
+                },
+                "source": "synthetic:capability",
+                "rank": [
+                  0,
+                  0,
+                  1
+                ],
+                "membership_path": []
+              }
+            ],
+            "overridden_evidence": [],
+            "model_calls": 0,
+            "verification_scope": "consistency with supplied active evidence; not real-world verification",
+            "suggested_assertion": {
+              "kind": "capability",
+              "subject": "cat",
+              "action": "speak",
+              "object": "English",
+              "allowed": false,
+              "context": null
+            }
+          }
+        }
+      ],
+      "model_calls": 0,
+      "scope": "Answers and corrections are relative to supplied capability evidence, not proof of actual events."
+    },
+    "cat does not speak English.": {
+      "status": "supported",
+      "parse_status": "predicted",
+      "original": "cat does not speak English.",
+      "normalized": "cat does not speak English",
+      "readings": [
+        {
+          "record": {
+            "actor": "cat",
+            "action": "speak",
+            "object": "English",
+            "mode": "assertion",
+            "polarity": false
+          },
+          "language_evidence": [
+            {
+              "model": 3,
+              "examples": [
+                4,
+                5,
+                6
+              ],
+              "kind": "induced"
+            }
+          ],
+          "source_evidence": [
+            {
+              "id": 4,
+              "original": "cat does not push box.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 4
+            },
+            {
+              "id": 5,
+              "original": "dog does not lift cart.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 5
+            },
+            {
+              "id": 6,
+              "original": "bird does not kick ball.",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 6
+            }
+          ],
+          "coherence": {
+            "status": "supported",
+            "record": {
+              "actor": "cat",
+              "action": "speak",
+              "object": "English"
+            },
+            "context": null,
+            "deciding_evidence": [
+              {
+                "id": 1,
+                "assertion": {
+                  "action": "speak",
+                  "allowed": false,
+                  "context": null,
+                  "kind": "capability",
+                  "object": "English",
+                  "subject": "cat"
+                },
+                "source": "synthetic:capability",
+                "rank": [
+                  0,
+                  0,
+                  1
+                ],
+                "membership_path": []
+              }
+            ],
+            "overridden_evidence": [],
+            "model_calls": 0,
+            "verification_scope": "consistency with supplied active evidence; not real-world verification"
+          }
+        }
+      ],
+      "model_calls": 0,
+      "scope": "Answers and corrections are relative to supplied capability evidence, not proof of actual events."
+    },
+    "can cat speak English?": {
+      "status": "answered",
+      "parse_status": "predicted",
+      "original": "can cat speak English?",
+      "normalized": "can cat speak English ?",
+      "readings": [
+        {
+          "record": {
+            "actor": "cat",
+            "action": "speak",
+            "object": "English",
+            "mode": "question",
+            "polarity": true
+          },
+          "language_evidence": [
+            {
+              "model": 7,
+              "examples": [
+                10,
+                11,
+                12
+              ],
+              "kind": "induced"
+            }
+          ],
+          "source_evidence": [
+            {
+              "id": 10,
+              "original": "can cat push box?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 10
+            },
+            {
+              "id": 11,
+              "original": "can dog lift cart?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 11
+            },
+            {
+              "id": 12,
+              "original": "can bird kick ball?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 12
+            }
+          ],
+          "coherence": {
+            "status": "answered",
+            "record": {
+              "actor": "cat",
+              "action": "speak",
+              "object": "English"
+            },
+            "context": null,
+            "deciding_evidence": [
+              {
+                "id": 1,
+                "assertion": {
+                  "action": "speak",
+                  "allowed": false,
+                  "context": null,
+                  "kind": "capability",
+                  "object": "English",
+                  "subject": "cat"
+                },
+                "source": "synthetic:capability",
+                "rank": [
+                  0,
+                  0,
+                  1
+                ],
+                "membership_path": []
+              }
+            ],
+            "overridden_evidence": [],
+            "model_calls": 0,
+            "verification_scope": "consistency with supplied active evidence; not real-world verification",
+            "answer": "no"
+          }
+        }
+      ],
+      "model_calls": 0,
+      "scope": "Answers and corrections are relative to supplied capability evidence, not proof of actual events."
+    },
+    "does cat not speak English?": {
+      "status": "answered",
+      "parse_status": "predicted",
+      "original": "does cat not speak English?",
+      "normalized": "does cat not speak English ?",
+      "readings": [
+        {
+          "record": {
+            "actor": "cat",
+            "action": "speak",
+            "object": "English",
+            "mode": "question",
+            "polarity": false
+          },
+          "language_evidence": [
+            {
+              "model": 11,
+              "examples": [
+                16,
+                17,
+                18
+              ],
+              "kind": "induced"
+            }
+          ],
+          "source_evidence": [
+            {
+              "id": 16,
+              "original": "does cat not push box?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 16
+            },
+            {
+              "id": 17,
+              "original": "does dog not lift cart?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 17
+            },
+            {
+              "id": 18,
+              "original": "does bird not kick ball?",
+              "source": "synthetic:claim-alignment",
+              "bridge_example_id": 18
+            }
+          ],
+          "coherence": {
+            "status": "answered",
+            "record": {
+              "actor": "cat",
+              "action": "speak",
+              "object": "English"
+            },
+            "context": null,
+            "deciding_evidence": [
+              {
+                "id": 1,
+                "assertion": {
+                  "action": "speak",
+                  "allowed": false,
+                  "context": null,
+                  "kind": "capability",
+                  "object": "English",
+                  "subject": "cat"
+                },
+                "source": "synthetic:capability",
+                "rank": [
+                  0,
+                  0,
+                  1
+                ],
+                "membership_path": []
+              }
+            ],
+            "overridden_evidence": [],
+            "model_calls": 0,
+            "verification_scope": "consistency with supplied active evidence; not real-world verification",
+            "answer": "yes"
+          }
+        }
+      ],
+      "model_calls": 0,
+      "scope": "Answers and corrections are relative to supplied capability evidence, not proof of actual events."
+    }
+  },
+  "inference_writes": 0,
+  "training_examples": 18,
+  "model_calls": 0,
+  "distinct_holdout_sentences": 1200,
+  "unsupported": {
+    "status": "unknown",
+    "candidates": [],
+    "original": "it is not true that cat speaks English",
+    "normalized": "it is not true that cat speaks English",
+    "operating_level": "byte",
+    "model_calls": 0,
+    "scope": "Supervised local mode/polarity templates; no arbitrary negation scope, quantifiers, tense or event verification."
+  },
+  "scope": "Six labeled synthetic templates; learned role and mode/polarity alignment, not arbitrary negation or event understanding.",
+  "previous_punctuation_regression": {
+    "correct": 200,
+    "total": 200,
+    "independent_test": false
+  }
+}

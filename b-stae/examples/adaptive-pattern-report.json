@@ -1,0 +1,995 @@
+{
+  "scope": "Supervised incremental character/byte copying patterns, not general semantics.",
+  "modes": {
+    "character": {
+      "history": [
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 1,
+            "new_models": [],
+            "models_retained": 0,
+            "hypotheses_attempted": 0,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "unknown",
+            "candidates": [],
+            "models_tested": 0,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 2,
+            "new_models": [],
+            "models_retained": 0,
+            "hypotheses_attempted": 0,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "unknown",
+            "candidates": [],
+            "models_tested": 0,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "adapted",
+            "example_id": 3,
+            "new_models": [
+              1,
+              2
+            ],
+            "models_retained": 2,
+            "hypotheses_attempted": 2,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 2,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 4,
+            "new_models": [],
+            "models_retained": 2,
+            "hypotheses_attempted": 6,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 5,
+            "new_models": [],
+            "models_retained": 2,
+            "hypotheses_attempted": 12,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        },
+        {
+          "update": {
+            "status": "adapted",
+            "example_id": 6,
+            "new_models": [
+              3
+            ],
+            "models_retained": 3,
+            "hypotheses_attempted": 20,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        }
+      ],
+      "checks": [
+        {
+          "query": "what is chemistry?",
+          "expected": "chemistry",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "what is organic chemistry?",
+          "expected": "organic chemistry",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "organic chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "plural robot",
+          "expected": "robots",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "robots",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 3,
+                    "supporting_examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "plural café",
+          "expected": "cafés",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "cafés",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 3,
+                    "supporting_examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 4,
+      "total": 4,
+      "inference_writes": 0,
+      "llm_calls": 0,
+      "counterexample_result": {
+        "status": "ambiguous",
+        "candidates": [
+          {
+            "text": "mice",
+            "evidence": [
+              {
+                "kind": "observed",
+                "example_id": 7
+              }
+            ]
+          },
+          {
+            "text": "mouses",
+            "evidence": [
+              {
+                "kind": "induced",
+                "model_id": 3,
+                "supporting_examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "contradicting_examples": [
+                  7
+                ]
+              }
+            ]
+          }
+        ],
+        "models_tested": 3,
+        "search_limited": false,
+        "verified": false,
+        "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+      },
+      "inventory": [
+        {
+          "model_id": 1,
+          "model": {
+            "input": [
+              {
+                "literal": 119
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              },
+              {
+                "literal": 63
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              1,
+              2,
+              3
+            ],
+            "contradicts": [],
+            "inapplicable": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "bounded": []
+          }
+        },
+        {
+          "model_id": 2,
+          "model": {
+            "input": [
+              {
+                "literal": 119
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              },
+              {
+                "literal": 121
+              },
+              {
+                "min_tokens": 0,
+                "slot": 1
+              },
+              {
+                "literal": 63
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": 121
+              },
+              {
+                "slot": 1
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              1,
+              2,
+              3
+            ],
+            "contradicts": [],
+            "inapplicable": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "bounded": []
+          }
+        },
+        {
+          "model_id": 3,
+          "model": {
+            "input": [
+              {
+                "literal": 112
+              },
+              {
+                "literal": 108
+              },
+              {
+                "literal": 117
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 108
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": 115
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              4,
+              5,
+              6
+            ],
+            "contradicts": [
+              7
+            ],
+            "inapplicable": [
+              1,
+              2,
+              3
+            ],
+            "bounded": []
+          }
+        }
+      ]
+    },
+    "byte": {
+      "history": [
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 1,
+            "new_models": [],
+            "models_retained": 0,
+            "hypotheses_attempted": 0,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "unknown",
+            "candidates": [],
+            "models_tested": 0,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 2,
+            "new_models": [],
+            "models_retained": 0,
+            "hypotheses_attempted": 0,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "unknown",
+            "candidates": [],
+            "models_tested": 0,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "adapted",
+            "example_id": 3,
+            "new_models": [
+              1,
+              2
+            ],
+            "models_retained": 2,
+            "hypotheses_attempted": 2,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          },
+          "unseen_question": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 2,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 4,
+            "new_models": [],
+            "models_retained": 2,
+            "hypotheses_attempted": 6,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        },
+        {
+          "update": {
+            "status": "observed",
+            "example_id": 5,
+            "new_models": [],
+            "models_retained": 2,
+            "hypotheses_attempted": 12,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        },
+        {
+          "update": {
+            "status": "adapted",
+            "example_id": 6,
+            "new_models": [
+              3
+            ],
+            "models_retained": 3,
+            "hypotheses_attempted": 20,
+            "evidence_retained": true,
+            "search_limited": false,
+            "scope": "Incremental supervised numerical sequence rewriting; no raw-text fact discovery."
+          }
+        }
+      ],
+      "checks": [
+        {
+          "query": "what is chemistry?",
+          "expected": "chemistry",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "what is organic chemistry?",
+          "expected": "organic chemistry",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "organic chemistry",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 1,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  },
+                  {
+                    "kind": "induced",
+                    "model_id": 2,
+                    "supporting_examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "plural robot",
+          "expected": "robots",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "robots",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 3,
+                    "supporting_examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        },
+        {
+          "query": "plural café",
+          "expected": "cafés",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "cafés",
+                "evidence": [
+                  {
+                    "kind": "induced",
+                    "model_id": 3,
+                    "supporting_examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "contradicting_examples": []
+                  }
+                ]
+              }
+            ],
+            "models_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 4,
+      "total": 4,
+      "inference_writes": 0,
+      "llm_calls": 0,
+      "counterexample_result": {
+        "status": "ambiguous",
+        "candidates": [
+          {
+            "text": "mice",
+            "evidence": [
+              {
+                "kind": "observed",
+                "example_id": 7
+              }
+            ]
+          },
+          {
+            "text": "mouses",
+            "evidence": [
+              {
+                "kind": "induced",
+                "model_id": 3,
+                "supporting_examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "contradicting_examples": [
+                  7
+                ]
+              }
+            ]
+          }
+        ],
+        "models_tested": 3,
+        "search_limited": false,
+        "verified": false,
+        "scope": "All applicable retained hypotheses; agreement is not proof of correctness."
+      },
+      "inventory": [
+        {
+          "model_id": 1,
+          "model": {
+            "input": [
+              {
+                "literal": 119
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              },
+              {
+                "literal": 63
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              1,
+              2,
+              3
+            ],
+            "contradicts": [],
+            "inapplicable": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "bounded": []
+          }
+        },
+        {
+          "model_id": 2,
+          "model": {
+            "input": [
+              {
+                "literal": 119
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              },
+              {
+                "literal": 121
+              },
+              {
+                "min_tokens": 0,
+                "slot": 1
+              },
+              {
+                "literal": 63
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": 121
+              },
+              {
+                "slot": 1
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              1,
+              2,
+              3
+            ],
+            "contradicts": [],
+            "inapplicable": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "bounded": []
+          }
+        },
+        {
+          "model_id": 3,
+          "model": {
+            "input": [
+              {
+                "literal": 112
+              },
+              {
+                "literal": 108
+              },
+              {
+                "literal": 117
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 108
+              },
+              {
+                "literal": 32
+              },
+              {
+                "min_tokens": 1,
+                "slot": 0
+              }
+            ],
+            "output": [
+              {
+                "slot": 0
+              },
+              {
+                "literal": 115
+              }
+            ]
+          },
+          "evidence": {
+            "supports": [
+              4,
+              5,
+              6
+            ],
+            "contradicts": [
+              7
+            ],
+            "inapplicable": [
+              1,
+              2,
+              3
+            ],
+            "bounded": []
+          }
+        }
+      ]
+    }
+  }
+}

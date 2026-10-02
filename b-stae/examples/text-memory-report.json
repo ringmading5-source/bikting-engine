@@ -1,0 +1,591 @@
+{
+  "training": [
+    {
+      "text": "two cats",
+      "record": {
+        "entity": "cat",
+        "count": 2
+      }
+    },
+    {
+      "text": "three dogs",
+      "record": {
+        "entity": "dog",
+        "count": 3
+      }
+    },
+    {
+      "text": "four horses",
+      "record": {
+        "entity": "horse",
+        "count": 4
+      }
+    },
+    {
+      "text": "one cat",
+      "record": {
+        "entity": "cat",
+        "count": 1
+      }
+    },
+    {
+      "text": "one dog",
+      "record": {
+        "entity": "dog",
+        "count": 1
+      }
+    },
+    {
+      "text": "one horse",
+      "record": {
+        "entity": "horse",
+        "count": 1
+      }
+    }
+  ],
+  "learned": [
+    {
+      "status": "learned",
+      "templates": [
+        {
+          "level": "byte",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "2": [
+                  116,
+                  119,
+                  111
+                ],
+                "3": [
+                  116,
+                  104,
+                  114,
+                  101,
+                  101
+                ],
+                "4": [
+                  102,
+                  111,
+                  117,
+                  114
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": [
+                115
+              ]
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "search_limited": false
+        },
+        {
+          "level": "character",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "2": [
+                  116,
+                  119,
+                  111
+                ],
+                "3": [
+                  116,
+                  104,
+                  114,
+                  101,
+                  101
+                ],
+                "4": [
+                  102,
+                  111,
+                  117,
+                  114
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": [
+                115
+              ]
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "search_limited": false
+        }
+      ],
+      "examples": [
+        1,
+        2,
+        3
+      ],
+      "evidence_retained": true,
+      "search_limited": false
+    },
+    {
+      "status": "learned",
+      "templates": [
+        {
+          "level": "byte",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "1": [
+                  111,
+                  110,
+                  101
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": []
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "search_limited": false
+        },
+        {
+          "level": "character",
+          "template": [
+            {
+              "kind": "lookup",
+              "field": "count",
+              "mapping": {
+                "1": [
+                  111,
+                  110,
+                  101
+                ]
+              }
+            },
+            {
+              "kind": "affix",
+              "field": "entity",
+              "prefix": [],
+              "suffix": []
+            }
+          ],
+          "fields": [
+            "count",
+            "entity"
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "search_limited": false
+        }
+      ],
+      "examples": [
+        4,
+        5,
+        6
+      ],
+      "evidence_retained": true,
+      "search_limited": false
+    }
+  ],
+  "cases": [
+    {
+      "memory_reasoning": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 3,
+              "form": "rabbits",
+              "multiple": true
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "text": "three rabbits",
+      "record": {
+        "entity": "rabbit",
+        "count": 3
+      },
+      "parsed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 3,
+              "entity": "rabbit"
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte",
+        "input_numbers": [
+          [
+            116,
+            104,
+            114,
+            101,
+            101
+          ],
+          [
+            114,
+            97,
+            98,
+            98,
+            105,
+            116,
+            115
+          ]
+        ]
+      },
+      "expressed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "three rabbits",
+            "numbers": [
+              116,
+              104,
+              114,
+              101,
+              101,
+              32,
+              114,
+              97,
+              98,
+              98,
+              105,
+              116,
+              115
+            ],
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte"
+      },
+      "correct": true
+    },
+    {
+      "memory_reasoning": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 2,
+              "form": "cafés",
+              "multiple": true
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "text": "two cafés",
+      "record": {
+        "entity": "café",
+        "count": 2
+      },
+      "parsed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 2,
+              "entity": "café"
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte",
+        "input_numbers": [
+          [
+            116,
+            119,
+            111
+          ],
+          [
+            99,
+            97,
+            102,
+            195,
+            169,
+            115
+          ]
+        ]
+      },
+      "expressed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "two cafés",
+            "numbers": [
+              116,
+              119,
+              111,
+              32,
+              99,
+              97,
+              102,
+              195,
+              169,
+              115
+            ],
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte"
+      },
+      "correct": true
+    },
+    {
+      "memory_reasoning": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 1,
+              "form": "rabbits",
+              "multiple": false
+            },
+            "evidence": [
+              {
+                "model": 1,
+                "examples": [
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false
+      },
+      "text": "one rabbit",
+      "record": {
+        "entity": "rabbit",
+        "count": 1
+      },
+      "parsed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "record": {
+              "count": 1,
+              "entity": "rabbit"
+            },
+            "evidence": [
+              {
+                "model": 3,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte",
+        "input_numbers": [
+          [
+            111,
+            110,
+            101
+          ],
+          [
+            114,
+            97,
+            98,
+            98,
+            105,
+            116
+          ]
+        ]
+      },
+      "expressed": {
+        "status": "predicted",
+        "candidates": [
+          {
+            "text": "one rabbit",
+            "numbers": [
+              111,
+              110,
+              101,
+              32,
+              114,
+              97,
+              98,
+              98,
+              105,
+              116
+            ],
+            "evidence": [
+              {
+                "model": 3,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "kind": "induced"
+              }
+            ]
+          }
+        ],
+        "search_limited": false,
+        "verified": false,
+        "operating_level": "byte"
+      },
+      "correct": true
+    }
+  ],
+  "correct": 3,
+  "total": 3,
+  "unseen_quantity": {
+    "status": "unknown",
+    "candidates": [],
+    "search_limited": false,
+    "verified": false,
+    "operating_level": "byte",
+    "input_numbers": [
+      [
+        102,
+        105,
+        118,
+        101
+      ],
+      [
+        114,
+        97,
+        98,
+        98,
+        105,
+        116,
+        115
+      ]
+    ]
+  },
+  "model_calls": 0,
+  "test_learning_updates": 0,
+  "scope": "Supervised whitespace-token alignment, learned affixes and observed scalar vocabulary. No raw-text concept discovery; unseen quantity words remain unknown."
+}

@@ -1,0 +1,362 @@
+{
+  "counterfactual_control": {
+    "passages": [
+      "Luma is a robot. Luma lives in Arin. Arin is in Nelo. Luma carries a green box. The green box contains a key.",
+      "Luma moved a coin into a red bag. The red bag is inside the drawer."
+    ],
+    "probe": "From these facts, the key is now in the <mask>.",
+    "expected": "box",
+    "preferred": [
+      "drawer"
+    ],
+    "correct": false,
+    "interpretation": "Only the coin moved. The key remains in the green box. This controls for superficial matches to drawer."
+  },
+  "training": {
+    "passages": [
+      "Luma is a robot. Luma lives in Arin. Arin is in Nelo. Luma carries a green box. The green box contains a key.",
+      "Luma moved the key into a red bag. The red bag is inside the drawer."
+    ],
+    "question_answer_examples": 0,
+    "model_calls": 0
+  },
+  "direct_questions": [
+    {
+      "question": "What is Luma?",
+      "expected": "robot",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    },
+    {
+      "question": "Where does Luma live?",
+      "expected": "Arin",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    },
+    {
+      "question": "What color is the box Luma carries?",
+      "expected": "green",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    },
+    {
+      "question": "What does the green box contain?",
+      "expected": "key",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    },
+    {
+      "question": "Where did Luma move the key?",
+      "expected": "red bag",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    },
+    {
+      "question": "Where is the key now?",
+      "expected": "drawer",
+      "status": "unsupported_question",
+      "reason": "one <mask> and up to 20000 characters required",
+      "request_routing": "unknown",
+      "answer": null
+    }
+  ],
+  "direct_answers_produced": 0,
+  "direct_questions_total": 6,
+  "cloze": {
+    "cases": [
+      {
+        "text": "We learned that Luma is a <mask>.",
+        "expected": "robot",
+        "status": "predicted",
+        "preferred": [
+          "robot"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      },
+      {
+        "text": "We learned that Luma lives in <mask>.",
+        "expected": "Arin",
+        "status": "predicted",
+        "preferred": [
+          "arin"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      },
+      {
+        "text": "We learned that Luma carries a <mask> box.",
+        "expected": "green",
+        "status": "predicted",
+        "preferred": [
+          "green"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      },
+      {
+        "text": "We learned that the green box contains a <mask>.",
+        "expected": "key",
+        "status": "predicted",
+        "preferred": [
+          "key"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      },
+      {
+        "text": "We learned that Luma moved the key into a red <mask>.",
+        "expected": "bag",
+        "status": "predicted",
+        "preferred": [
+          "bag"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      },
+      {
+        "text": "From these facts, the key is now in the <mask>.",
+        "expected": "drawer",
+        "status": "predicted",
+        "preferred": [
+          "drawer"
+        ],
+        "correct": true,
+        "baseline_correct": false,
+        "expected_in_candidates": true
+      }
+    ],
+    "total": 6,
+    "correct": 6,
+    "accuracy": 1.0,
+    "baseline_correct": 0,
+    "baseline_accuracy": 0.0,
+    "baseline": {
+      "status": "ambiguous",
+      "preferred": [
+        {
+          "token": "a",
+          "support": 4
+        },
+        {
+          "token": "luma",
+          "support": 4
+        },
+        {
+          "token": "the",
+          "support": 4
+        }
+      ],
+      "scope": "Most frequent training word; ignores input context."
+    },
+    "learning_updates": 0,
+    "scope": "Exact word-gap scoring on unseen complete sentences; contexts may overlap training."
+  },
+  "multi_fact_probe": {
+    "status": "predicted",
+    "preferred": [
+      {
+        "token": "drawer",
+        "matched_units": 2,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "drawer",
+            "matched_units": 2,
+            "left_units": 1,
+            "right_units": 1,
+            "document": 2,
+            "position": 15,
+            "source": "synthetic:fictional-passage:1",
+            "observation": 2
+          }
+        ]
+      }
+    ],
+    "candidates": [
+      {
+        "token": "drawer",
+        "matched_units": 2,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "drawer",
+            "matched_units": 2,
+            "left_units": 1,
+            "right_units": 1,
+            "document": 2,
+            "position": 15,
+            "source": "synthetic:fictional-passage:1",
+            "observation": 2
+          }
+        ]
+      },
+      {
+        "token": "key",
+        "matched_units": 1,
+        "support": 2,
+        "evidence": [
+          {
+            "token": "key",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 1,
+            "position": 26,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          },
+          {
+            "token": "key",
+            "matched_units": 1,
+            "left_units": 1,
+            "right_units": 0,
+            "document": 2,
+            "position": 3,
+            "source": "synthetic:fictional-passage:1",
+            "observation": 2
+          }
+        ]
+      },
+      {
+        "token": "arin",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "arin",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 1,
+            "position": 8,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          }
+        ]
+      },
+      {
+        "token": "bag",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "bag",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 2,
+            "position": 7,
+            "source": "synthetic:fictional-passage:1",
+            "observation": 2
+          }
+        ]
+      },
+      {
+        "token": "box",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "box",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 1,
+            "position": 19,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          }
+        ]
+      },
+      {
+        "token": "green",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "green",
+            "matched_units": 1,
+            "left_units": 1,
+            "right_units": 0,
+            "document": 1,
+            "position": 22,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          }
+        ]
+      },
+      {
+        "token": "nelo",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "nelo",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 1,
+            "position": 13,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          }
+        ]
+      },
+      {
+        "token": "red",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "red",
+            "matched_units": 1,
+            "left_units": 1,
+            "right_units": 0,
+            "document": 2,
+            "position": 10,
+            "source": "synthetic:fictional-passage:1",
+            "observation": 2
+          }
+        ]
+      },
+      {
+        "token": "robot",
+        "matched_units": 1,
+        "support": 1,
+        "evidence": [
+          {
+            "token": "robot",
+            "matched_units": 1,
+            "left_units": 0,
+            "right_units": 1,
+            "document": 1,
+            "position": 3,
+            "source": "synthetic:fictional-passage:0",
+            "observation": 1
+          }
+        ]
+      }
+    ],
+    "verified": false,
+    "scope": "Observed word-context counts; case-insensitive, one missing word, no semantic guarantees."
+  },
+  "question_learning_updates": 0,
+  "interpretation": "This prototype predicts word contexts but has no trained passage-to-question answering mechanism. A cloze hit does not prove factual reasoning.",
+  "scope": "Small fictional synthetic experiment; not a real-corpus or universal-intelligence evaluation."
+}
