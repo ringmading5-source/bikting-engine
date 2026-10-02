@@ -937,3 +937,187 @@ unmatched inputs remain unknown. All text is case-folded. This supervised
 hypothesis language is programmed, while its specific templates are fitted from
 examples. It does not learn facts about geology from the grammar or answer
 `What is geology?` without supplied knowledge. It uses no LLM.
+
+### Compose learned relationships across supplied statements
+
+`relationship_compose_answer` accepts `facts` (1–24 statements), `question`,
+optional `context`, and search bounds: `max_depth` (0–4, default 2), `max_facts`
+(up to 96, default 48), `max_expansions` (1–5000, default 1000).
+
+First fit a binary rule with `text_transform_learn`: paired examples of `A
+studies B. B includes C.` → `A studies C.`, using different entities in at least
+three examples and separate validation pairs. Fit the question relationship with
+`text_relation_learn`: `A studies B.` / `Which field studies B?` / `A`.
+Neither `studies` nor `includes` has a built-in handler. Equal variable columns
+across examples become shared slots; inference requires the middle entity to
+match in both statements. Correlated training columns can still mislead this
+limited template learner, so varied examples and held-out validation matter.
+
+With supplied facts `Chemistry studies matter.` and `Matter includes substances.`,
+the question `Which field studies substances?` yields `chemistry` under that
+learned rule. Chemistry and substances are absent from the demonstration's
+training examples. Inference uses fitted rule parameters, current facts, and a
+learned QA template; it does not read the retained training-example records.
+Derived statements include parent facts, depth and model IDs in `trace`.
+
+The rule itself is a supervised hypothesis: `studies` plus `includes` does not
+universally entail specialized study in ordinary language. This experiment
+shows structural composition under an explicitly learned rule, not proof of
+semantic entailment, independent discovery of facts or universal intelligence.
+Conflicting answers remain `ambiguous`; missing bridges and unmatched relations
+return `unknown` within the depth bound. Exhausted fact/expansion/search budgets
+return `bounded` even when provisional candidates exist. `verified` stays false.
+
+### Learn passages, then answer without facts in the request
+
+`passage_learn` accepts raw `text`, `source`, and optional `context`. It splits
+punctuated sentences, retains them with sources, and recognizes variable spans
+using previously learned transformation and question templates. Unrecognized
+sentences remain stored but do not participate in inference. Learn the templates
+first. Optional supervised paraphrase rules can normalize different wording,
+for example an example-trained `investigates` → `studies` transformation.
+
+`passage_answer` accepts only `question`, optional `context`, `max_depth`, and
+`max_expansions`. It reads recognized statements from earlier passages, composes
+learned rules, and returns answers with a derivation trace and source provenance.
+It never looks up stored answers or reads the retained supervised training-pair
+records. It does read persistent knowledge facts: memory is necessary to answer
+questions about content supplied previously. It cannot invent missing knowledge.
+
+`passage_evaluate` accepts `cases` with `question`/`expected`. It rejects duplicate
+questions and exact supervised QA training questions and reports both composition
+results and a depth-zero direct-answer baseline without updating memory. A small
+synthetic test scores 3/3 versus 0/3 direct answers on new Chemistry/Botany/Ecology
+questions requiring two earlier statements. This measures limited structural
+composition, not general natural-language reasoning. Negative tests cover
+missing bridges, conflicting answers, unsupported relations, persistence and
+context isolation. Recognition is supervised; raw-text semantic learning remains
+unimplemented. Sentence splitting uses punctuation and can misread abbreviations.
+
+Fitted variable spans exclude sentence punctuation absent from their training
+values. This prevents unary paraphrase templates from accidentally swallowing
+multiple statements. Previously fitted models must be retrained for this constraint.
+More than 24 distinct recognized statements in a context returns `bounded`; no
+facts are silently dropped. Passage ingestion accepts up to 64 sentences, each
+up to 64 tokens, within a 20000-character limit.
+
+### Unlabeled recurring frames and variable links
+
+`unlabeled_pattern_learn` accepts 3–64 raw `passages` and optional `context`.
+There are no output, question, relation or missing-token labels. It groups texts
+by token length, discovers common literal positions and fits equality links
+between variable columns across at least three distinct passages. The programmed
+hypothesis language is fixed-length positional frames; its literal words and
+repeated-variable positions are learned. Two constant word anchors and three
+observed values per varying column are required. Unsupported variation leads to
+abstention rather than a guessed rule. No grammar or relation-name handlers exist.
+
+Example raw training passages:
+
+- `Mira carries amber. Later Mira stores amber.`
+- `Kito carries jade. Later Kito stores jade.`
+- `Sena carries silver. Later Sena stores silver.`
+
+`unlabeled_pattern_predict` accepts `model_id` and a `text` containing one
+`<mask>`. `Taro carries copper. Later <mask> stores copper.` predicts `taro`:
+the word is absent from training but present elsewhere in the current input.
+Reversed-position training learns reversed links, rather than a fixed copying
+position. A fitted model can run independently with only exported parameters;
+removing stored training passages does not affect prediction. Contradictory
+bindings return unknown; unresolved variable slots cause abstention. Competing
+predictions remain ambiguous. Frequency/support are not calibrated probabilities.
+
+`unlabeled_pattern_evaluate` accepts `model_id` and `cases` with `text`/`expected`.
+Labels are used only for scoring, never for fitting. It rejects exact completed
+passage leakage and duplicate cases, compares exact full-frame matching and
+most-frequent-word baselines, and reports whether expected words were unseen.
+Run `python unlabeled_pattern_demo.py`: three synthetic completions score 3/3,
+versus 0/3 for each baseline, without learning updates or LLM calls.
+
+This demonstrates narrow equality-pattern transfer, not understanding why
+someone carries or stores something, independent fact discovery, free-form QA,
+or universal generalization. Passages must align in token length; varying-length
+phrases and arbitrary prose remain unsupported. Learned literals and variable
+constraints are still memory in the ordinary sense; prediction reads fitted
+parameters, not raw training examples. Raw passages are retained only for audit
+and held-out baseline evaluation. Each passage is limited to 96 tokens and 4000
+characters. These models are not automatically used by the passage QA subsystem.
+
+### Variable-length unlabeled span learning
+
+`unlabeled_span_learn` accepts 3–32 raw `passages` and optional `context`. Supply
+a coherent batch showing one recurring structure with different entities and
+phrase lengths. Generic sequence alignment discovers literal anchors, variable
+spans, and equal variable columns. No missing-span, question, relation or answer
+labels are supplied. At least two fixed word anchors, three distinct values per
+varying span, and one repeated variable are required. Heterogeneous prose may
+produce no supported pattern; this is not unrestricted raw-text understanding.
+
+Example training passages vary both subject and object length:
+
+- `Mira carries amber. Later Mira stores amber.`
+- `The red robot carries a green basket. Later the red robot stores a green basket.`
+- `A farmer carries heavy books. Later a farmer stores heavy books.`
+
+`unlabeled_span_predict` accepts `model_id`, masked `text`, and optional
+`max_expansions` (1–10000). For `The young student carries a blue bag. Later
+<mask> stores a blue bag.`, it predicts `the young student`. Longer subjects and
+objects are allowed, and their words need not occur in training. Only fitted
+parameters and current input are read. A mask stands for one entire learned
+span or one literal, not an arbitrary substring within a span. Reversed-link
+training learns reversed relationships; inconsistent bindings return unknown.
+Competing consistent predictions return ambiguous. Exhausted search budgets
+return bounded, retaining any provisional candidates without declaring success.
+
+`unlabeled_span_evaluate` accepts `model_id` and held-out `cases` with
+`text`/`expected` and rejects exact completed-passage leakage and duplicates.
+Four synthetic completions with new words and lengths score 4/4 versus 0/4
+for exact-match and word-frequency baselines. Labels are used only for scoring.
+Persistence and inference after deleting audit training records are tested.
+
+This is learned repeated-span structure, not semantic understanding. Alignment
+anchors and minimum span lengths reflect the training examples; rare/optional
+forms, misleading shared words and varied prose remain limitations. The general
+alignment/search hypothesis language is programmed, while its fitted literals,
+boundaries and repeated-variable links are learned. This learner remains a
+separate experiment and is not yet connected to passage question answering.
+
+### Connect unlabeled span frames to passage question answering
+
+1. Fit the recurring passage frame with `unlabeled_span_learn` and unlabeled raw
+   passages, as above. Preserve its `model_id` and `context`.
+2. Call `span_question_learn` with `span_model_id`, matching `context`, 3–32
+   `examples` and 1–32 held-out `validation` records. Each record contains
+   `passage`, `question` and `answer`. The mapper binds the already fitted span
+   frame, then learns question literals and answer links onto those span slots.
+   It does not independently install a grammar for `stores` or any other verb.
+3. Store a new raw passage with `passage_learn`. Later call `passage_answer`
+   with only a question and context. It now combines the existing sentence-rule
+   pathway with the span-question pathway and preserves conflicting answers.
+
+For example, teach mappings from the original three training passages to `Who
+stores amber?` → `Mira`, and analogous questions about the robot and farmer.
+Validate on an entirely new teacher/chalk passage. Store `The young student
+carries a blue bag. Later the young student stores a blue bag.`. Then `Who stores
+a blue bag?` answers `the young student`, with source, question model ID, span
+model ID and variable bindings in its derivation trace. Other example-trained
+mappings support `What does the young student store?` and `Which person stores
+a blue bag?`. These wording families are explicitly taught, not invented by the
+system. A test also trains `ships` instead of `stores` with the same generic code.
+
+No stored training answers are looked up at inference. Removing audit training
+records does not alter answers. The system still reads earlier stored passages
+and fitted parameters. Span recognition is unlabeled; question mapping remains
+supervised. It requires the whole passage to fit a known recurring frame and
+therefore may reject an independently true statement whose repeated entities do
+not satisfy that frame. It is not general semantic reasoning or unrestricted QA.
+
+`passage_evaluate` now also rejects exact span-question training questions.
+Its depth-zero direct baseline uses only the older sentence-template pathway,
+excluding the new span pathway; it is a deliberately limited comparator. Three
+held-out questions score 3/3 versus 0/3 for that baseline. Repeated questions or
+completed validation passages from span-model training are rejected. Conflicting
+passages/models yield ambiguous answers; exhausted search limits yield bounded.
+Span QA supports passages of up to 96 tokens/4000 characters and at most 256
+passage/model comparisons in one context. Longer stored passages can still use
+the older sentence pathway, but are unsupported by this span pathway.

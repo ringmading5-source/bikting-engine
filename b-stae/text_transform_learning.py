@@ -35,6 +35,12 @@ class TextTransformModel:
             inputs.append(checked_text(example['input']));outputs.append(checked_text(example['output']))
         if len({encoded(x) for x in inputs})<3:raise ValueError('three distinct inputs required')
         source,source_values=infer_pattern(inputs)
+        # Equal variable columns identify shared entities, including a bridge
+        # repeated in two statements. bind() enforces equality at inference.
+        aliases={slot:next(other for other,values in source_values.items() if values==column)
+                 for slot,column in source_values.items()}
+        source=[dict(part,slot=aliases[part['slot']]) if 'slot' in part else part for part in source]
+        source_values={slot:column for slot,column in source_values.items() if aliases[slot]==slot}
         target,target_values=infer_pattern(outputs)
         linked=[]
         for part in target:

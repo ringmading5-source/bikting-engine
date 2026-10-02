@@ -44,7 +44,8 @@ def infer_pattern(sequences):
         if any(values):
             if all(v==values[0] for v in values):pattern.extend({'literal':v} for v in values[0])
             else:
-                pattern.append({'slot':slot,'min_tokens':min(len(v) for v in values)});slot_values[slot]=values;slot+=1
+                pattern.append({'slot':slot,'min_tokens':min(len(v) for v in values),
+                                'forbidden_tokens':[mark for mark in ('.','!','?') if all(mark not in v for v in values)]});slot_values[slot]=values;slot+=1
         if position<len(anchors):pattern.append({'literal':anchors[position]})
     return pattern,slot_values
 
@@ -66,6 +67,7 @@ def bind(pattern,units,max_bindings=32):
             for end in range(offset+part.get('min_tokens',0),len(units)+1):
                 if limited:break
                 value=units[offset:end];slot=part['slot']
+                if any(unit in part.get('forbidden_tokens',[]) for unit in value):continue
                 if slot in values and values[slot]!=value:continue
                 visit(index+1,end,{**values,slot:value})
     visit(0,0,{})

@@ -34,6 +34,16 @@ class Engine(BinaryEngine):
         self.text_relations = TextRelationshipLearning(self)
         from text_transform_learning import TextTransformLearning
         self.text_transforms = TextTransformLearning(self)
+        from relationship_composition import RelationshipComposition
+        self.relationship_composition = RelationshipComposition(self)
+        from passage_knowledge import PassageKnowledge
+        self.passage_knowledge = PassageKnowledge(self)
+        from unlabeled_patterns import UnlabeledPatterns
+        self.unlabeled_patterns = UnlabeledPatterns(self)
+        from unlabeled_spans import UnlabeledSpanLearning
+        self.unlabeled_spans = UnlabeledSpanLearning(self)
+        from span_questions import SpanQuestions
+        self.span_questions = SpanQuestions(self)
         from memory_logic import MemoryLogic
         self.memory_logic = MemoryLogic(self)
         from text_memory_bridge import TextMemoryBridge
