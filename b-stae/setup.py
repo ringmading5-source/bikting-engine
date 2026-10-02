@@ -31,7 +31,7 @@ class BuildCore(build_py):
                                     offsets[node.end_lineno-1]+node.end_col_offset,replacement.encode()))
             for start,end,replacement in sorted(changes,reverse=True):raw=raw[:start]+replacement+raw[end:]
             (target/(name+'.py')).write_bytes(raw)
-        for asset in ('app.html','byte-demo.html','chat.html'):
+        for asset in ('app.html','byte-demo.html','chat.html','media.html'):
             (target/asset).write_bytes((ROOT/asset).read_bytes())
 
 setup(packages=['bstae'],cmdclass={'build_py':BuildCore})

@@ -9,5 +9,6 @@ description = "Bounded state-transition learning and evidence-relative coherence
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
+media = ["Pillow>=10.4,<13", "numpy>=1.26,<3"]
 web = ["beautifulsoup4==4.14.3"]
 plots = ["matplotlib==3.10.8"]

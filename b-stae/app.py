@@ -45,6 +45,12 @@ class Application:
     def dispatch(self,payload):
         if not isinstance(payload,dict):raise ValueError('request object required')
         action=payload.get('action')
+        if action in ('media_observe','media_predict','media_inspect'):
+            from media_inputs import MediaInputs
+            media=MediaInputs(self.engine)
+            if action=='media_observe':return media.observe(payload.get('concept'),payload.get('value'),payload.get('source'),payload.get('context'))
+            if action=='media_predict':return media.predict(payload.get('value'),payload.get('context'))
+            return media.inspect(payload.get('values'),payload.get('context'))
         if action=='chat_send':return self.chat.send(payload.get('text'),payload.get('conversation'),payload.get('context'))
         if action=='chat_history':return self.chat.history(payload.get('conversation'))
         if action=='chat_new':return {'conversation':self.chat.conversation()}
@@ -308,7 +314,7 @@ def serve(engine,port,host='127.0.0.1'):
             if self.path=='/health':
                 self.reply(200,json.dumps({'status':'ok','engine':'B-STAE','release':'knowledge-retrieval-v1','revision':os.environ.get('RENDER_GIT_COMMIT','local'),'storage':'sqlite','memory_path': 'configured' if os.environ.get('BSTAE_DB_PATH') else 'local'}).encode());return
             if not self.valid_host():self.reply(403,b'Forbidden','text/plain');return
-            pages={'/':'app.html','/chat':'chat.html'}
+            pages={'/':'app.html','/chat':'chat.html','/learn':'media.html'}
             if self.path not in pages:self.reply(404,b'Not found','text/plain');return
             self.reply(200,Path(__file__).with_name(pages[self.path]).read_bytes(),'text/html; charset=utf-8')
         def do_POST(self):

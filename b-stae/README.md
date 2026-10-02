@@ -1869,3 +1869,32 @@ passages/models yield ambiguous answers; exhausted search limits yield bounded.
 Span QA supports passages of up to 96 tokens/4000 characters and at most 256
 passage/model comparisons in one context. Longer stored passages can still use
 the older sentence pathway, but are unsupported by this span pathway.
+
+
+### Teach text, image files and voice recordings
+
+Install local media adapters with `python -m pip install ".[media]"` from
+`b-stae`, start `python app.py`, and open http://127.0.0.1:8765/learn.
+The page accepts text, PNG/JPEG images and mono/stereo PCM16 WAV recordings.
+Use the same concept label and collection across modalities. Teach at least
+three distinct examples per concept per modality before testing new inputs.
+Repeating an identical file does not supply independent support.
+
+Files are limited to 700 KB; images to four million pixels; WAV recordings
+to ten seconds at 4–48 kHz. Images are reduced to an 8×8 spatial RGB descriptor.
+Audio is represented by averaged spectral-band and zero-crossing features.
+These CPU adapters provide labeled similarity experiments, not general object
+recognition or speech transcription. An optional user-supplied audio transcript
+is stored as a separate text example under the same concept; no transcript is
+generated automatically. No external service or model is called.
+
+SDK actions: `media_observe` takes `concept`, `value`, `source`, and optional
+`context`; `media_predict` takes `value` and optional `context`; `media_inspect`
+takes 1–8 `values` and optional `context`. A value is plain text or an object
+`{"kind": "image", "data": "BASE64_FILE_BYTES"}` or
+`{"kind": "audio", "data": "BASE64_WAV_BYTES", "transcript": "optional words"}`.
+Predictions retain evidence and may return unknown, ambiguous, contested or
+bounded. A transcript prediction is reported separately from acoustic matching.
+All stored examples survive the standard SDK save/load checkpoint. Uploaded
+training files are retained in SQLite; prediction alone does not store files.
+This encoder is versioned separately from earlier synthetic concept experiments.

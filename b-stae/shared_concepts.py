@@ -19,6 +19,7 @@ def normalized(vector):
 def distance(a,b):return math.sqrt(sum((x-y)**2 for x,y in zip(a,b)))
 
 class SharedConcepts:
+    encoder_version=VERSION
     def __init__(self,engine):
         self.engine,self.db=engine,engine.db
         self.db.execute('''CREATE TABLE IF NOT EXISTS shared_concept_examples
@@ -64,13 +65,13 @@ class SharedConcepts:
         modality,features=self.encode(value)
         with self.db:
             ident=self.db.execute('INSERT INTO shared_concept_examples(context,concept,modality,encoder,value,features,source) VALUES (?,?,?,?,?,?,?)',
-                (encoded(context),concept,modality,VERSION,encoded(value),encoded(features),source)).lastrowid
-        return {'status':'recorded','example':ident,'concept':concept,'modality':modality,'encoder':VERSION}
+                (encoded(context),concept,modality,self.encoder_version,encoded(value),encoded(features),source)).lastrowid
+        return {'status':'recorded','example':ident,'concept':concept,'modality':modality,'encoder':self.encoder_version}
 
     def predict(self,value,context=None):
         modality,features=self.encode(value)
         rows=self.db.execute('SELECT * FROM shared_concept_examples WHERE context=? AND modality=? AND encoder=? ORDER BY id LIMIT 513',
-                            (encoded(context),modality,VERSION)).fetchall()
+                            (encoded(context),modality,self.encoder_version)).fetchall()
         if len(rows)>512:return {'status':'bounded','reason':'512-example budget exceeded','model_calls':0}
         groups={};exact={}
         for row in rows:
@@ -92,7 +93,7 @@ class SharedConcepts:
         ambiguous=len(candidates)>1 and candidates[1]['distance']-candidates[0]['distance']<=0.05
         status='ambiguous' if ambiguous else 'linked' if candidates else 'unknown'
         return {'status':status,'concept':candidates[0]['concept'] if status=='linked' else None,
-                'candidates':candidates,'modality':modality,'encoder':VERSION,'model_calls':0,
+                'candidates':candidates,'modality':modality,'encoder':self.encoder_version,'model_calls':0,
                 'scope':'supervised similarity linkage; hashed text words, RGB statistics and tone spectra; not general semantic, object or speech understanding'}
 
     def inspect(self,values,context=None):
