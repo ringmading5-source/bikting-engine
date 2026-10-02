@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bikting-bstae"
+version = "0.1.0"
+description = "Bounded state-transition learning and evidence-relative coherence"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+web = ["beautifulsoup4==4.14.3"]
+plots = ["matplotlib==3.10.8"]

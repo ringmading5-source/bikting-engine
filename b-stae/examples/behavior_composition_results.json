@@ -1,0 +1,118 @@
+{
+  "correct": 200,
+  "total": 200,
+  "training_pairs": 6,
+  "supplied_complete_trajectories": 0,
+  "remembered": {
+    "status": "goal_satisfied",
+    "reason": "exact target matched under replayed learned hypotheses",
+    "expanded": 0,
+    "rejected_models": [],
+    "model_calls": 0,
+    "verified_world_outcome": false,
+    "result": {
+      "entity": "unseen-50",
+      "phase": "end",
+      "value": -90
+    },
+    "plan": [
+      {
+        "model_id": 1,
+        "context": "offset",
+        "before": {
+          "entity": "unseen-50",
+          "phase": "start",
+          "value": -50
+        },
+        "after": {
+          "entity": "unseen-50",
+          "phase": "middle",
+          "value": -45
+        },
+        "support": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "model_id": 5,
+        "context": "scale",
+        "before": {
+          "entity": "unseen-50",
+          "phase": "middle",
+          "value": -45
+        },
+        "after": {
+          "entity": "unseen-50",
+          "phase": "end",
+          "value": -90
+        },
+        "support": [
+          4,
+          5,
+          6
+        ]
+      }
+    ],
+    "source": "reverified_memory",
+    "goal_satisfied": true,
+    "verification_scope": "explicit structured goal under learned models, not world execution"
+  },
+  "counterevidence": {
+    "status": "contested",
+    "reason": "no verified path under eligible evidence and supplied bounds",
+    "expanded": 1,
+    "rejected_models": [
+      {
+        "context": "offset",
+        "model_id": 1,
+        "conflicts": [
+          7
+        ],
+        "reason": "counterevidence"
+      },
+      {
+        "context": "offset",
+        "model_id": 2,
+        "conflicts": [
+          7
+        ],
+        "reason": "counterevidence"
+      },
+      {
+        "context": "offset",
+        "model_id": 3,
+        "conflicts": [
+          7
+        ],
+        "reason": "counterevidence"
+      },
+      {
+        "context": "offset",
+        "model_id": 4,
+        "conflicts": [
+          7
+        ],
+        "reason": "counterevidence"
+      }
+    ],
+    "model_calls": 0,
+    "verified_world_outcome": false
+  },
+  "example": {
+    "initial": {
+      "entity": "unseen-50",
+      "phase": "start",
+      "value": -50
+    },
+    "target": {
+      "entity": "unseen-50",
+      "phase": "end",
+      "value": -90
+    },
+    "correct": true
+  },
+  "model_calls": 0,
+  "scope": "learned structured transformations and bounded goal-directed composition; not natural-language fact inference or general intelligence"
+}

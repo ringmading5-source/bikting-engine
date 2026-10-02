@@ -1,0 +1,933 @@
+{
+  "training_raw_text": [
+    "The cat carries books.",
+    "The dog carries tools.",
+    "The farmer carries seeds.",
+    "The child carries papers.",
+    "The robot carries boxes."
+  ],
+  "runs": [
+    {
+      "learned": {
+        "run_id": 1,
+        "mode": "character",
+        "training_observations": 5,
+        "new_observations": 5,
+        "patterns_discovered": 17,
+        "maximum_depth": 6,
+        "original_units": 118,
+        "compressed_units": 46,
+        "history": [
+          {
+            "round": 1,
+            "stored_patterns": 1,
+            "working_units": 111
+          },
+          {
+            "round": 2,
+            "stored_patterns": 2,
+            "working_units": 105
+          },
+          {
+            "round": 3,
+            "stored_patterns": 3,
+            "working_units": 99
+          },
+          {
+            "round": 4,
+            "stored_patterns": 4,
+            "working_units": 94
+          },
+          {
+            "round": 5,
+            "stored_patterns": 5,
+            "working_units": 89
+          },
+          {
+            "round": 6,
+            "stored_patterns": 6,
+            "working_units": 84
+          },
+          {
+            "round": 7,
+            "stored_patterns": 7,
+            "working_units": 79
+          },
+          {
+            "round": 8,
+            "stored_patterns": 8,
+            "working_units": 74
+          },
+          {
+            "round": 9,
+            "stored_patterns": 9,
+            "working_units": 69
+          },
+          {
+            "round": 10,
+            "stored_patterns": 10,
+            "working_units": 64
+          },
+          {
+            "round": 11,
+            "stored_patterns": 11,
+            "working_units": 60
+          },
+          {
+            "round": 12,
+            "stored_patterns": 12,
+            "working_units": 57
+          },
+          {
+            "round": 13,
+            "stored_patterns": 13,
+            "working_units": 54
+          },
+          {
+            "round": 14,
+            "stored_patterns": 14,
+            "working_units": 52
+          },
+          {
+            "round": 15,
+            "stored_patterns": 15,
+            "working_units": 50
+          },
+          {
+            "round": 16,
+            "stored_patterns": 16,
+            "working_units": 48
+          },
+          {
+            "round": 17,
+            "stored_patterns": 17,
+            "working_units": 46
+          }
+        ],
+        "stop_reason": "no_supported_pair",
+        "evidence_retained": true,
+        "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+      },
+      "inventory": {
+        "status": "learned",
+        "run_id": 1,
+        "mode": "character",
+        "patterns": [
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 7,
+            "pair": [
+              4,
+              5
+            ],
+            "unit": 22,
+            "base_numbers": [
+              32,
+              99
+            ],
+            "readable": " c"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 6,
+            "pair": [
+              3,
+              10
+            ],
+            "unit": 23,
+            "base_numbers": [
+              101,
+              115
+            ],
+            "readable": "es"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 6,
+            "pair": [
+              6,
+              8
+            ],
+            "unit": 24,
+            "base_numbers": [
+              97,
+              114
+            ],
+            "readable": "ar"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              1,
+              2
+            ],
+            "unit": 25,
+            "base_numbers": [
+              84,
+              104
+            ],
+            "readable": "Th"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              8,
+              9
+            ],
+            "unit": 26,
+            "base_numbers": [
+              114,
+              105
+            ],
+            "readable": "ri"
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              22,
+              24
+            ],
+            "unit": 27,
+            "base_numbers": [
+              32,
+              99,
+              97,
+              114
+            ],
+            "readable": " car"
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              23,
+              4
+            ],
+            "unit": 28,
+            "base_numbers": [
+              101,
+              115,
+              32
+            ],
+            "readable": "es "
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              25,
+              3
+            ],
+            "unit": 29,
+            "base_numbers": [
+              84,
+              104,
+              101
+            ],
+            "readable": "The"
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              26,
+              28
+            ],
+            "unit": 30,
+            "base_numbers": [
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": "ries "
+          },
+          {
+            "depth": 4,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              27,
+              30
+            ],
+            "unit": 31,
+            "base_numbers": [
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": " carries "
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 4,
+            "occurrences": 4,
+            "pair": [
+              10,
+              14
+            ],
+            "unit": 32,
+            "base_numbers": [
+              115,
+              46
+            ],
+            "readable": "s."
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 2,
+            "occurrences": 3,
+            "pair": [
+              11,
+              12
+            ],
+            "unit": 33,
+            "base_numbers": [
+              98,
+              111
+            ],
+            "readable": "bo"
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 3,
+            "occurrences": 3,
+            "pair": [
+              29,
+              4
+            ],
+            "unit": 34,
+            "base_numbers": [
+              84,
+              104,
+              101,
+              32
+            ],
+            "readable": "The "
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              3,
+              8
+            ],
+            "unit": 35,
+            "base_numbers": [
+              101,
+              114
+            ],
+            "readable": "er"
+          },
+          {
+            "depth": 5,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              7,
+              31
+            ],
+            "unit": 36,
+            "base_numbers": [
+              116,
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": "t carries "
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              29,
+              22
+            ],
+            "unit": 37,
+            "base_numbers": [
+              84,
+              104,
+              101,
+              32,
+              99
+            ],
+            "readable": "The c"
+          },
+          {
+            "depth": 6,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              36,
+              33
+            ],
+            "unit": 38,
+            "base_numbers": [
+              116,
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32,
+              98,
+              111
+            ],
+            "readable": "t carries bo"
+          }
+        ],
+        "stop_reason": "no_supported_pair"
+      },
+      "unseen": {
+        "status": "encoded",
+        "run_id": 1,
+        "mode": "character",
+        "units": [
+          34,
+          7,
+          8,
+          6,
+          {
+            "literal": 118
+          },
+          3,
+          17,
+          17,
+          35,
+          31,
+          19,
+          6,
+          20,
+          32
+        ],
+        "base_units": 27,
+        "compressed_units": 14,
+        "roundtrip_verified": true
+      },
+      "decoded": "The traveller carries maps.",
+      "novel_unicode": {
+        "status": "encoded",
+        "run_id": 1,
+        "mode": "character",
+        "units": [
+          {
+            "literal": 65
+          },
+          22,
+          6,
+          18,
+          {
+            "literal": 233
+          },
+          31,
+          {
+            "literal": 128007
+          },
+          14
+        ],
+        "base_units": 17,
+        "compressed_units": 8,
+        "roundtrip_verified": true
+      },
+      "prediction_learning_updates": 0
+    },
+    {
+      "learned": {
+        "run_id": 2,
+        "mode": "byte",
+        "training_observations": 5,
+        "new_observations": 5,
+        "patterns_discovered": 17,
+        "maximum_depth": 6,
+        "original_units": 118,
+        "compressed_units": 46,
+        "history": [
+          {
+            "round": 1,
+            "stored_patterns": 1,
+            "working_units": 111
+          },
+          {
+            "round": 2,
+            "stored_patterns": 2,
+            "working_units": 105
+          },
+          {
+            "round": 3,
+            "stored_patterns": 3,
+            "working_units": 99
+          },
+          {
+            "round": 4,
+            "stored_patterns": 4,
+            "working_units": 94
+          },
+          {
+            "round": 5,
+            "stored_patterns": 5,
+            "working_units": 89
+          },
+          {
+            "round": 6,
+            "stored_patterns": 6,
+            "working_units": 84
+          },
+          {
+            "round": 7,
+            "stored_patterns": 7,
+            "working_units": 79
+          },
+          {
+            "round": 8,
+            "stored_patterns": 8,
+            "working_units": 74
+          },
+          {
+            "round": 9,
+            "stored_patterns": 9,
+            "working_units": 69
+          },
+          {
+            "round": 10,
+            "stored_patterns": 10,
+            "working_units": 64
+          },
+          {
+            "round": 11,
+            "stored_patterns": 11,
+            "working_units": 60
+          },
+          {
+            "round": 12,
+            "stored_patterns": 12,
+            "working_units": 57
+          },
+          {
+            "round": 13,
+            "stored_patterns": 13,
+            "working_units": 54
+          },
+          {
+            "round": 14,
+            "stored_patterns": 14,
+            "working_units": 52
+          },
+          {
+            "round": 15,
+            "stored_patterns": 15,
+            "working_units": 50
+          },
+          {
+            "round": 16,
+            "stored_patterns": 16,
+            "working_units": 48
+          },
+          {
+            "round": 17,
+            "stored_patterns": 17,
+            "working_units": 46
+          }
+        ],
+        "stop_reason": "no_supported_pair",
+        "evidence_retained": true,
+        "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+      },
+      "inventory": {
+        "status": "learned",
+        "run_id": 2,
+        "mode": "byte",
+        "patterns": [
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 7,
+            "pair": [
+              42,
+              43
+            ],
+            "unit": 60,
+            "base_numbers": [
+              32,
+              99
+            ],
+            "readable": " c"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 6,
+            "pair": [
+              41,
+              48
+            ],
+            "unit": 61,
+            "base_numbers": [
+              101,
+              115
+            ],
+            "readable": "es"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 6,
+            "pair": [
+              44,
+              46
+            ],
+            "unit": 62,
+            "base_numbers": [
+              97,
+              114
+            ],
+            "readable": "ar"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              39,
+              40
+            ],
+            "unit": 63,
+            "base_numbers": [
+              84,
+              104
+            ],
+            "readable": "Th"
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              46,
+              47
+            ],
+            "unit": 64,
+            "base_numbers": [
+              114,
+              105
+            ],
+            "readable": "ri"
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              60,
+              62
+            ],
+            "unit": 65,
+            "base_numbers": [
+              32,
+              99,
+              97,
+              114
+            ],
+            "readable": " car"
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              61,
+              42
+            ],
+            "unit": 66,
+            "base_numbers": [
+              101,
+              115,
+              32
+            ],
+            "readable": "es "
+          },
+          {
+            "depth": 2,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              63,
+              41
+            ],
+            "unit": 67,
+            "base_numbers": [
+              84,
+              104,
+              101
+            ],
+            "readable": "The"
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              64,
+              66
+            ],
+            "unit": 68,
+            "base_numbers": [
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": "ries "
+          },
+          {
+            "depth": 4,
+            "distinct_documents": 5,
+            "occurrences": 5,
+            "pair": [
+              65,
+              68
+            ],
+            "unit": 69,
+            "base_numbers": [
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": " carries "
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 4,
+            "occurrences": 4,
+            "pair": [
+              48,
+              52
+            ],
+            "unit": 70,
+            "base_numbers": [
+              115,
+              46
+            ],
+            "readable": "s."
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 2,
+            "occurrences": 3,
+            "pair": [
+              49,
+              50
+            ],
+            "unit": 71,
+            "base_numbers": [
+              98,
+              111
+            ],
+            "readable": "bo"
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 3,
+            "occurrences": 3,
+            "pair": [
+              67,
+              42
+            ],
+            "unit": 72,
+            "base_numbers": [
+              84,
+              104,
+              101,
+              32
+            ],
+            "readable": "The "
+          },
+          {
+            "depth": 1,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              41,
+              46
+            ],
+            "unit": 73,
+            "base_numbers": [
+              101,
+              114
+            ],
+            "readable": "er"
+          },
+          {
+            "depth": 5,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              45,
+              69
+            ],
+            "unit": 74,
+            "base_numbers": [
+              116,
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32
+            ],
+            "readable": "t carries "
+          },
+          {
+            "depth": 3,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              67,
+              60
+            ],
+            "unit": 75,
+            "base_numbers": [
+              84,
+              104,
+              101,
+              32,
+              99
+            ],
+            "readable": "The c"
+          },
+          {
+            "depth": 6,
+            "distinct_documents": 2,
+            "occurrences": 2,
+            "pair": [
+              74,
+              71
+            ],
+            "unit": 76,
+            "base_numbers": [
+              116,
+              32,
+              99,
+              97,
+              114,
+              114,
+              105,
+              101,
+              115,
+              32,
+              98,
+              111
+            ],
+            "readable": "t carries bo"
+          }
+        ],
+        "stop_reason": "no_supported_pair"
+      },
+      "unseen": {
+        "status": "encoded",
+        "run_id": 2,
+        "mode": "byte",
+        "units": [
+          72,
+          45,
+          46,
+          44,
+          {
+            "literal": 118
+          },
+          41,
+          55,
+          55,
+          73,
+          69,
+          57,
+          44,
+          58,
+          70
+        ],
+        "base_units": 27,
+        "compressed_units": 14,
+        "roundtrip_verified": true
+      },
+      "decoded": "The traveller carries maps.",
+      "novel_unicode": {
+        "status": "encoded",
+        "run_id": 2,
+        "mode": "byte",
+        "units": [
+          {
+            "literal": 65
+          },
+          60,
+          44,
+          56,
+          {
+            "literal": 195
+          },
+          {
+            "literal": 169
+          },
+          69,
+          {
+            "literal": 240
+          },
+          {
+            "literal": 159
+          },
+          {
+            "literal": 144
+          },
+          {
+            "literal": 135
+          },
+          52
+        ],
+        "base_units": 21,
+        "compressed_units": 12,
+        "roundtrip_verified": true
+      },
+      "prediction_learning_updates": 0
+    }
+  ],
+  "model_calls": 0,
+  "scope": "Recursive symbolic frequent-pair discovery. New composites can contain earlier learned units; no semantic roles, meanings or actions learned."
+}

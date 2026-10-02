@@ -1,0 +1,2571 @@
+{
+  "runs": [
+    {
+      "mode": "character",
+      "learned": {
+        "status": "learned",
+        "model_id": 1,
+        "model": {
+          "input": [
+            {
+              "literal": 26
+            },
+            {
+              "slot": 0,
+              "min_tokens": 1
+            },
+            {
+              "literal": 39
+            },
+            {
+              "slot": 1,
+              "min_tokens": 1
+            },
+            {
+              "literal": 33
+            }
+          ],
+          "output": [
+            {
+              "slot": 1
+            },
+            {
+              "literal": 41
+            },
+            {
+              "slot": 0
+            },
+            {
+              "literal": 13
+            }
+          ],
+          "examples": [
+            1,
+            2,
+            3
+          ],
+          "hierarchy_run": 1,
+          "encoding": "hierarchy",
+          "alignment_method": "lcs"
+        },
+        "model_ids": [
+          1,
+          2
+        ],
+        "models": [
+          {
+            "input": [
+              {
+                "literal": 26
+              },
+              {
+                "slot": 0,
+                "min_tokens": 1
+              },
+              {
+                "literal": 39
+              },
+              {
+                "slot": 1,
+                "min_tokens": 1
+              },
+              {
+                "literal": 33
+              }
+            ],
+            "output": [
+              {
+                "slot": 1
+              },
+              {
+                "literal": 41
+              },
+              {
+                "slot": 0
+              },
+              {
+                "literal": 13
+              }
+            ],
+            "examples": [
+              1,
+              2,
+              3
+            ],
+            "hierarchy_run": 1,
+            "encoding": "hierarchy",
+            "alignment_method": "lcs"
+          },
+          {
+            "input": [
+              {
+                "literal": 116
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 0,
+                "min_tokens": 1
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 99
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 1,
+                "min_tokens": 0
+              },
+              {
+                "literal": 115
+              },
+              {
+                "slot": 2,
+                "min_tokens": 0
+              },
+              {
+                "literal": 46
+              }
+            ],
+            "output": [
+              {
+                "slot": 1
+              },
+              {
+                "literal": 115
+              },
+              {
+                "slot": 2
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 99
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 100
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 121
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 0
+              },
+              {
+                "literal": 46
+              }
+            ],
+            "examples": [
+              1,
+              2,
+              3
+            ],
+            "hierarchy_run": 1,
+            "encoding": "base",
+            "alignment_method": "lcs"
+          }
+        ],
+        "alignment_limited": false,
+        "examples": [
+          1,
+          2,
+          3
+        ],
+        "evidence_retained": true,
+        "discovery": {
+          "run_id": 1,
+          "mode": "character",
+          "training_observations": 6,
+          "new_observations": 6,
+          "patterns_discovered": 32,
+          "maximum_depth": 7,
+          "original_units": 159,
+          "compressed_units": 37,
+          "history": [
+            {
+              "round": 1,
+              "stored_patterns": 1,
+              "working_units": 148
+            },
+            {
+              "round": 2,
+              "stored_patterns": 2,
+              "working_units": 139
+            },
+            {
+              "round": 3,
+              "stored_patterns": 3,
+              "working_units": 133
+            },
+            {
+              "round": 4,
+              "stored_patterns": 4,
+              "working_units": 127
+            },
+            {
+              "round": 5,
+              "stored_patterns": 5,
+              "working_units": 121
+            },
+            {
+              "round": 6,
+              "stored_patterns": 6,
+              "working_units": 115
+            },
+            {
+              "round": 7,
+              "stored_patterns": 7,
+              "working_units": 109
+            },
+            {
+              "round": 8,
+              "stored_patterns": 8,
+              "working_units": 103
+            },
+            {
+              "round": 9,
+              "stored_patterns": 9,
+              "working_units": 97
+            },
+            {
+              "round": 10,
+              "stored_patterns": 10,
+              "working_units": 93
+            },
+            {
+              "round": 11,
+              "stored_patterns": 11,
+              "working_units": 90
+            },
+            {
+              "round": 12,
+              "stored_patterns": 12,
+              "working_units": 87
+            },
+            {
+              "round": 13,
+              "stored_patterns": 13,
+              "working_units": 84
+            },
+            {
+              "round": 14,
+              "stored_patterns": 14,
+              "working_units": 81
+            },
+            {
+              "round": 15,
+              "stored_patterns": 15,
+              "working_units": 78
+            },
+            {
+              "round": 16,
+              "stored_patterns": 16,
+              "working_units": 75
+            },
+            {
+              "round": 17,
+              "stored_patterns": 17,
+              "working_units": 72
+            },
+            {
+              "round": 18,
+              "stored_patterns": 18,
+              "working_units": 69
+            },
+            {
+              "round": 19,
+              "stored_patterns": 19,
+              "working_units": 66
+            },
+            {
+              "round": 20,
+              "stored_patterns": 20,
+              "working_units": 63
+            },
+            {
+              "round": 21,
+              "stored_patterns": 21,
+              "working_units": 60
+            },
+            {
+              "round": 22,
+              "stored_patterns": 22,
+              "working_units": 57
+            },
+            {
+              "round": 23,
+              "stored_patterns": 23,
+              "working_units": 55
+            },
+            {
+              "round": 24,
+              "stored_patterns": 24,
+              "working_units": 53
+            },
+            {
+              "round": 25,
+              "stored_patterns": 25,
+              "working_units": 51
+            },
+            {
+              "round": 26,
+              "stored_patterns": 26,
+              "working_units": 49
+            },
+            {
+              "round": 27,
+              "stored_patterns": 27,
+              "working_units": 47
+            },
+            {
+              "round": 28,
+              "stored_patterns": 28,
+              "working_units": 45
+            },
+            {
+              "round": 29,
+              "stored_patterns": 29,
+              "working_units": 43
+            },
+            {
+              "round": 30,
+              "stored_patterns": 30,
+              "working_units": 41
+            },
+            {
+              "round": 31,
+              "stored_patterns": 31,
+              "working_units": 39
+            },
+            {
+              "round": 32,
+              "stored_patterns": 32,
+              "working_units": 37
+            }
+          ],
+          "stop_reason": "round_budget",
+          "evidence_retained": true,
+          "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+        },
+        "scope": "Verified hierarchy/base LCS and common-boundary copying hypotheses; paired targets supplied."
+      },
+      "cases": [
+        {
+          "input": "the traveller carries maps.",
+          "target": "maps are carried by the traveller.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "maps are carried by the traveller.",
+                "state": [
+                  19,
+                  6,
+                  {
+                    "literal": 112
+                  },
+                  41,
+                  1,
+                  7,
+                  6,
+                  {
+                    "literal": 118
+                  },
+                  3,
+                  17,
+                  17,
+                  44,
+                  13
+                ],
+                "evidence": [
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        1,
+                        7,
+                        6,
+                        {
+                          "literal": 118
+                        },
+                        3,
+                        17,
+                        17,
+                        44
+                      ],
+                      "1": [
+                        19,
+                        6,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 2,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 27
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        },
+        {
+          "input": "the young traveller carries old maps.",
+          "target": "old maps are carried by the young traveller.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "old maps are carried by the young traveller.",
+                "state": [
+                  11,
+                  17,
+                  14,
+                  4,
+                  19,
+                  6,
+                  {
+                    "literal": 112
+                  },
+                  41,
+                  15,
+                  11,
+                  {
+                    "literal": 117
+                  },
+                  {
+                    "literal": 110
+                  },
+                  16,
+                  4,
+                  1,
+                  7,
+                  6,
+                  {
+                    "literal": 118
+                  },
+                  3,
+                  17,
+                  17,
+                  44,
+                  13
+                ],
+                "evidence": [
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        15,
+                        11,
+                        {
+                          "literal": 117
+                        },
+                        {
+                          "literal": 110
+                        },
+                        16,
+                        4,
+                        1,
+                        7,
+                        6,
+                        {
+                          "literal": 118
+                        },
+                        3,
+                        17,
+                        17,
+                        44
+                      ],
+                      "1": [
+                        11,
+                        17,
+                        14,
+                        4,
+                        19,
+                        6,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        121,
+                        111,
+                        117,
+                        110,
+                        103,
+                        32,
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        111,
+                        108,
+                        100,
+                        32,
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 2,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        121,
+                        111,
+                        117,
+                        110,
+                        103,
+                        32,
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        111,
+                        108,
+                        100,
+                        32,
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 37
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        },
+        {
+          "input": "the 猫 carries maps.",
+          "target": "maps are carried by the 猫.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "maps are carried by the 猫.",
+                "state": [
+                  19,
+                  6,
+                  {
+                    "literal": 112
+                  },
+                  41,
+                  {
+                    "literal": 29483
+                  },
+                  13
+                ],
+                "evidence": [
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        {
+                          "literal": 29483
+                        }
+                      ],
+                      "1": [
+                        19,
+                        6,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 1,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        29483
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 2,
+                    "examples": [
+                      1,
+                      2,
+                      3
+                    ],
+                    "hierarchy_run": 1,
+                    "bindings": {
+                      "0": [
+                        29483
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 19
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 3,
+      "total": 3,
+      "untrained_verb_form": {
+        "status": "unknown",
+        "candidates": [],
+        "retrieval": {
+          "status": "unknown",
+          "matches": [],
+          "signature": {
+            "first": 116,
+            "last": 46,
+            "count": 27
+          },
+          "strategy": "indexed",
+          "total_states": 3,
+          "candidate_states": 0,
+          "tested_states": 0,
+          "rejected_states": 0,
+          "recursive_nodes_visited": 0,
+          "search_limited": false,
+          "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+        },
+        "models_tested": 2,
+        "bindings_tested": 0,
+        "search_limited": false,
+        "verified": false,
+        "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+      },
+      "repeated_anchor": {
+        "status": "ambiguous",
+        "candidates": [
+          {
+            "text": "books carries maps are carried by the robot.",
+            "state": [
+              47,
+              12,
+              25,
+              28,
+              25,
+              19,
+              6,
+              {
+                "literal": 112
+              },
+              41,
+              7,
+              11,
+              10,
+              11,
+              1,
+              13
+            ],
+            "evidence": [
+              {
+                "model_id": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    7,
+                    11,
+                    10,
+                    11,
+                    1
+                  ],
+                  "1": [
+                    47,
+                    12,
+                    25,
+                    28,
+                    25,
+                    19,
+                    6,
+                    {
+                      "literal": 112
+                    }
+                  ]
+                },
+                "kind": "induced"
+              },
+              {
+                "model_id": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers"
+              },
+              {
+                "model_id": 2,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107
+                  ],
+                  "2": [
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              },
+              {
+                "model_id": 2,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101
+                  ],
+                  "2": [
+                    32,
+                    109,
+                    97,
+                    112,
+                    115
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              },
+              {
+                "model_id": 2,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112
+                  ],
+                  "2": []
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              }
+            ]
+          },
+          {
+            "text": "maps are carried by the robot carries books.",
+            "state": [
+              19,
+              6,
+              {
+                "literal": 112
+              },
+              41,
+              7,
+              11,
+              10,
+              11,
+              1,
+              39,
+              47,
+              12,
+              33
+            ],
+            "evidence": [
+              {
+                "model_id": 1,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    98,
+                    111,
+                    111,
+                    107,
+                    115
+                  ],
+                  "1": [
+                    109,
+                    97,
+                    112
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers"
+              },
+              {
+                "model_id": 2,
+                "examples": [
+                  1,
+                  2,
+                  3
+                ],
+                "hierarchy_run": 1,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    98,
+                    111,
+                    111,
+                    107,
+                    115
+                  ],
+                  "1": [
+                    109,
+                    97,
+                    112
+                  ],
+                  "2": []
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              }
+            ]
+          }
+        ],
+        "retrieval": {
+          "status": "unknown",
+          "matches": [],
+          "signature": {
+            "first": 116,
+            "last": 46,
+            "count": 37
+          },
+          "strategy": "indexed",
+          "total_states": 3,
+          "candidate_states": 0,
+          "tested_states": 0,
+          "rejected_states": 0,
+          "recursive_nodes_visited": 0,
+          "search_limited": false,
+          "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+        },
+        "models_tested": 2,
+        "bindings_tested": 7,
+        "search_limited": false,
+        "verified": false,
+        "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+      },
+      "inference_writes": 0
+    },
+    {
+      "mode": "byte",
+      "learned": {
+        "status": "learned",
+        "model_id": 3,
+        "model": {
+          "input": [
+            {
+              "literal": 77
+            },
+            {
+              "slot": 0,
+              "min_tokens": 1
+            },
+            {
+              "literal": 90
+            },
+            {
+              "slot": 1,
+              "min_tokens": 1
+            },
+            {
+              "literal": 84
+            }
+          ],
+          "output": [
+            {
+              "slot": 1
+            },
+            {
+              "literal": 92
+            },
+            {
+              "slot": 0
+            },
+            {
+              "literal": 64
+            }
+          ],
+          "examples": [
+            4,
+            5,
+            6
+          ],
+          "hierarchy_run": 2,
+          "encoding": "hierarchy",
+          "alignment_method": "lcs"
+        },
+        "model_ids": [
+          3,
+          4
+        ],
+        "models": [
+          {
+            "input": [
+              {
+                "literal": 77
+              },
+              {
+                "slot": 0,
+                "min_tokens": 1
+              },
+              {
+                "literal": 90
+              },
+              {
+                "slot": 1,
+                "min_tokens": 1
+              },
+              {
+                "literal": 84
+              }
+            ],
+            "output": [
+              {
+                "slot": 1
+              },
+              {
+                "literal": 92
+              },
+              {
+                "slot": 0
+              },
+              {
+                "literal": 64
+              }
+            ],
+            "examples": [
+              4,
+              5,
+              6
+            ],
+            "hierarchy_run": 2,
+            "encoding": "hierarchy",
+            "alignment_method": "lcs"
+          },
+          {
+            "input": [
+              {
+                "literal": 116
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 0,
+                "min_tokens": 1
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 99
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 115
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 1,
+                "min_tokens": 0
+              },
+              {
+                "literal": 115
+              },
+              {
+                "slot": 2,
+                "min_tokens": 0
+              },
+              {
+                "literal": 46
+              }
+            ],
+            "output": [
+              {
+                "slot": 1
+              },
+              {
+                "literal": 115
+              },
+              {
+                "slot": 2
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 99
+              },
+              {
+                "literal": 97
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 114
+              },
+              {
+                "literal": 105
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 100
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 98
+              },
+              {
+                "literal": 121
+              },
+              {
+                "literal": 32
+              },
+              {
+                "literal": 116
+              },
+              {
+                "literal": 104
+              },
+              {
+                "literal": 101
+              },
+              {
+                "literal": 32
+              },
+              {
+                "slot": 0
+              },
+              {
+                "literal": 46
+              }
+            ],
+            "examples": [
+              4,
+              5,
+              6
+            ],
+            "hierarchy_run": 2,
+            "encoding": "base",
+            "alignment_method": "lcs"
+          }
+        ],
+        "alignment_limited": false,
+        "examples": [
+          4,
+          5,
+          6
+        ],
+        "evidence_retained": true,
+        "discovery": {
+          "run_id": 2,
+          "mode": "byte",
+          "training_observations": 6,
+          "new_observations": 6,
+          "patterns_discovered": 32,
+          "maximum_depth": 7,
+          "original_units": 159,
+          "compressed_units": 37,
+          "history": [
+            {
+              "round": 1,
+              "stored_patterns": 1,
+              "working_units": 148
+            },
+            {
+              "round": 2,
+              "stored_patterns": 2,
+              "working_units": 139
+            },
+            {
+              "round": 3,
+              "stored_patterns": 3,
+              "working_units": 133
+            },
+            {
+              "round": 4,
+              "stored_patterns": 4,
+              "working_units": 127
+            },
+            {
+              "round": 5,
+              "stored_patterns": 5,
+              "working_units": 121
+            },
+            {
+              "round": 6,
+              "stored_patterns": 6,
+              "working_units": 115
+            },
+            {
+              "round": 7,
+              "stored_patterns": 7,
+              "working_units": 109
+            },
+            {
+              "round": 8,
+              "stored_patterns": 8,
+              "working_units": 103
+            },
+            {
+              "round": 9,
+              "stored_patterns": 9,
+              "working_units": 97
+            },
+            {
+              "round": 10,
+              "stored_patterns": 10,
+              "working_units": 93
+            },
+            {
+              "round": 11,
+              "stored_patterns": 11,
+              "working_units": 90
+            },
+            {
+              "round": 12,
+              "stored_patterns": 12,
+              "working_units": 87
+            },
+            {
+              "round": 13,
+              "stored_patterns": 13,
+              "working_units": 84
+            },
+            {
+              "round": 14,
+              "stored_patterns": 14,
+              "working_units": 81
+            },
+            {
+              "round": 15,
+              "stored_patterns": 15,
+              "working_units": 78
+            },
+            {
+              "round": 16,
+              "stored_patterns": 16,
+              "working_units": 75
+            },
+            {
+              "round": 17,
+              "stored_patterns": 17,
+              "working_units": 72
+            },
+            {
+              "round": 18,
+              "stored_patterns": 18,
+              "working_units": 69
+            },
+            {
+              "round": 19,
+              "stored_patterns": 19,
+              "working_units": 66
+            },
+            {
+              "round": 20,
+              "stored_patterns": 20,
+              "working_units": 63
+            },
+            {
+              "round": 21,
+              "stored_patterns": 21,
+              "working_units": 60
+            },
+            {
+              "round": 22,
+              "stored_patterns": 22,
+              "working_units": 57
+            },
+            {
+              "round": 23,
+              "stored_patterns": 23,
+              "working_units": 55
+            },
+            {
+              "round": 24,
+              "stored_patterns": 24,
+              "working_units": 53
+            },
+            {
+              "round": 25,
+              "stored_patterns": 25,
+              "working_units": 51
+            },
+            {
+              "round": 26,
+              "stored_patterns": 26,
+              "working_units": 49
+            },
+            {
+              "round": 27,
+              "stored_patterns": 27,
+              "working_units": 47
+            },
+            {
+              "round": 28,
+              "stored_patterns": 28,
+              "working_units": 45
+            },
+            {
+              "round": 29,
+              "stored_patterns": 29,
+              "working_units": 43
+            },
+            {
+              "round": 30,
+              "stored_patterns": 30,
+              "working_units": 41
+            },
+            {
+              "round": 31,
+              "stored_patterns": 31,
+              "working_units": 39
+            },
+            {
+              "round": 32,
+              "stored_patterns": 32,
+              "working_units": 37
+            }
+          ],
+          "stop_reason": "round_budget",
+          "evidence_retained": true,
+          "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+        },
+        "scope": "Verified hierarchy/base LCS and common-boundary copying hypotheses; paired targets supplied."
+      },
+      "cases": [
+        {
+          "input": "the traveller carries maps.",
+          "target": "maps are carried by the traveller.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "maps are carried by the traveller.",
+                "state": [
+                  70,
+                  57,
+                  {
+                    "literal": 112
+                  },
+                  92,
+                  52,
+                  58,
+                  57,
+                  {
+                    "literal": 118
+                  },
+                  54,
+                  68,
+                  68,
+                  95,
+                  64
+                ],
+                "evidence": [
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        52,
+                        58,
+                        57,
+                        {
+                          "literal": 118
+                        },
+                        54,
+                        68,
+                        68,
+                        95
+                      ],
+                      "1": [
+                        70,
+                        57,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 4,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 27
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        },
+        {
+          "input": "the young traveller carries old maps.",
+          "target": "old maps are carried by the young traveller.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "old maps are carried by the young traveller.",
+                "state": [
+                  62,
+                  68,
+                  65,
+                  55,
+                  70,
+                  57,
+                  {
+                    "literal": 112
+                  },
+                  92,
+                  66,
+                  62,
+                  {
+                    "literal": 117
+                  },
+                  {
+                    "literal": 110
+                  },
+                  67,
+                  55,
+                  52,
+                  58,
+                  57,
+                  {
+                    "literal": 118
+                  },
+                  54,
+                  68,
+                  68,
+                  95,
+                  64
+                ],
+                "evidence": [
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        66,
+                        62,
+                        {
+                          "literal": 117
+                        },
+                        {
+                          "literal": 110
+                        },
+                        67,
+                        55,
+                        52,
+                        58,
+                        57,
+                        {
+                          "literal": 118
+                        },
+                        54,
+                        68,
+                        68,
+                        95
+                      ],
+                      "1": [
+                        62,
+                        68,
+                        65,
+                        55,
+                        70,
+                        57,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        121,
+                        111,
+                        117,
+                        110,
+                        103,
+                        32,
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        111,
+                        108,
+                        100,
+                        32,
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 4,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        121,
+                        111,
+                        117,
+                        110,
+                        103,
+                        32,
+                        116,
+                        114,
+                        97,
+                        118,
+                        101,
+                        108,
+                        108,
+                        101,
+                        114
+                      ],
+                      "1": [
+                        111,
+                        108,
+                        100,
+                        32,
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 37
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        },
+        {
+          "input": "the 猫 carries maps.",
+          "target": "maps are carried by the 猫.",
+          "result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "maps are carried by the 猫.",
+                "state": [
+                  70,
+                  57,
+                  {
+                    "literal": 112
+                  },
+                  92,
+                  {
+                    "literal": 231
+                  },
+                  {
+                    "literal": 140
+                  },
+                  {
+                    "literal": 171
+                  },
+                  64
+                ],
+                "evidence": [
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        {
+                          "literal": 231
+                        },
+                        {
+                          "literal": 140
+                        },
+                        {
+                          "literal": 171
+                        }
+                      ],
+                      "1": [
+                        70,
+                        57,
+                        {
+                          "literal": 112
+                        }
+                      ]
+                    },
+                    "kind": "induced"
+                  },
+                  {
+                    "model_id": 3,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        231,
+                        140,
+                        171
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ]
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers"
+                  },
+                  {
+                    "model_id": 4,
+                    "examples": [
+                      4,
+                      5,
+                      6
+                    ],
+                    "hierarchy_run": 2,
+                    "bindings": {
+                      "0": [
+                        231,
+                        140,
+                        171
+                      ],
+                      "1": [
+                        109,
+                        97,
+                        112
+                      ],
+                      "2": []
+                    },
+                    "kind": "induced",
+                    "alignment_level": "base-numbers",
+                    "alignment_method": "lcs"
+                  }
+                ]
+              }
+            ],
+            "retrieval": {
+              "status": "unknown",
+              "matches": [],
+              "signature": {
+                "first": 116,
+                "last": 46,
+                "count": 21
+              },
+              "strategy": "indexed",
+              "total_states": 3,
+              "candidate_states": 0,
+              "tested_states": 0,
+              "rejected_states": 0,
+              "recursive_nodes_visited": 0,
+              "search_limited": false,
+              "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+            },
+            "models_tested": 2,
+            "bindings_tested": 3,
+            "search_limited": false,
+            "verified": false,
+            "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 3,
+      "total": 3,
+      "untrained_verb_form": {
+        "status": "unknown",
+        "candidates": [],
+        "retrieval": {
+          "status": "unknown",
+          "matches": [],
+          "signature": {
+            "first": 116,
+            "last": 46,
+            "count": 27
+          },
+          "strategy": "indexed",
+          "total_states": 3,
+          "candidate_states": 0,
+          "tested_states": 0,
+          "rejected_states": 0,
+          "recursive_nodes_visited": 0,
+          "search_limited": false,
+          "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+        },
+        "models_tested": 2,
+        "bindings_tested": 0,
+        "search_limited": false,
+        "verified": false,
+        "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+      },
+      "repeated_anchor": {
+        "status": "ambiguous",
+        "candidates": [
+          {
+            "text": "books carries maps are carried by the robot.",
+            "state": [
+              98,
+              63,
+              76,
+              79,
+              76,
+              70,
+              57,
+              {
+                "literal": 112
+              },
+              92,
+              58,
+              62,
+              61,
+              62,
+              52,
+              64
+            ],
+            "evidence": [
+              {
+                "model_id": 3,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    58,
+                    62,
+                    61,
+                    62,
+                    52
+                  ],
+                  "1": [
+                    98,
+                    63,
+                    76,
+                    79,
+                    76,
+                    70,
+                    57,
+                    {
+                      "literal": 112
+                    }
+                  ]
+                },
+                "kind": "induced"
+              },
+              {
+                "model_id": 3,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers"
+              },
+              {
+                "model_id": 4,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107
+                  ],
+                  "2": [
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112,
+                    115
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              },
+              {
+                "model_id": 4,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101
+                  ],
+                  "2": [
+                    32,
+                    109,
+                    97,
+                    112,
+                    115
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              },
+              {
+                "model_id": 4,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116
+                  ],
+                  "1": [
+                    98,
+                    111,
+                    111,
+                    107,
+                    115,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    109,
+                    97,
+                    112
+                  ],
+                  "2": []
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              }
+            ]
+          },
+          {
+            "text": "maps are carried by the robot carries books.",
+            "state": [
+              70,
+              57,
+              {
+                "literal": 112
+              },
+              92,
+              58,
+              62,
+              61,
+              62,
+              52,
+              90,
+              98,
+              63,
+              84
+            ],
+            "evidence": [
+              {
+                "model_id": 3,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    98,
+                    111,
+                    111,
+                    107,
+                    115
+                  ],
+                  "1": [
+                    109,
+                    97,
+                    112
+                  ]
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers"
+              },
+              {
+                "model_id": 4,
+                "examples": [
+                  4,
+                  5,
+                  6
+                ],
+                "hierarchy_run": 2,
+                "bindings": {
+                  "0": [
+                    114,
+                    111,
+                    98,
+                    111,
+                    116,
+                    32,
+                    99,
+                    97,
+                    114,
+                    114,
+                    105,
+                    101,
+                    115,
+                    32,
+                    98,
+                    111,
+                    111,
+                    107,
+                    115
+                  ],
+                  "1": [
+                    109,
+                    97,
+                    112
+                  ],
+                  "2": []
+                },
+                "kind": "induced",
+                "alignment_level": "base-numbers",
+                "alignment_method": "lcs"
+              }
+            ]
+          }
+        ],
+        "retrieval": {
+          "status": "unknown",
+          "matches": [],
+          "signature": {
+            "first": 116,
+            "last": 46,
+            "count": 37
+          },
+          "strategy": "indexed",
+          "total_states": 3,
+          "candidate_states": 0,
+          "tested_states": 0,
+          "rejected_states": 0,
+          "recursive_nodes_visited": 0,
+          "search_limited": false,
+          "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+        },
+        "models_tested": 2,
+        "bindings_tested": 7,
+        "search_limited": false,
+        "verified": false,
+        "scope": "Supervised structural rewrite; no world facts or semantic equivalence verified."
+      },
+      "inference_writes": 0
+    }
+  ],
+  "training_pairs": [
+    {
+      "before": "the cat carries books.",
+      "after": "books are carried by the cat.",
+      "source": "synthetic:paired"
+    },
+    {
+      "before": "the dog carries tools.",
+      "after": "tools are carried by the dog.",
+      "source": "synthetic:paired"
+    },
+    {
+      "before": "the farmer carries seeds.",
+      "after": "seeds are carried by the farmer.",
+      "source": "synthetic:paired"
+    }
+  ],
+  "model_calls": 0,
+  "scope": "Supervised copying/reordering on learned state units. No hand-installed carry/passive grammar or supplied word boundaries; paired outputs still supplied. Mixed-language cases are symbolic tests, not grammatical claims."
+}

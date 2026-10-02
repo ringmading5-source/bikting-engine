@@ -48,10 +48,40 @@ class Engine(BinaryEngine):
         self.memory_logic = MemoryLogic(self)
         from text_memory_bridge import TextMemoryBridge
         self.text_memory = TextMemoryBridge(self)
+        from role_learning import RoleLearning
+        self.roles = RoleLearning(self)
+        from relationship_coherence import RelationshipCoherence
+        self.coherence = RelationshipCoherence(self)
+        from shared_concepts import SharedConcepts
+        self.shared_concepts = SharedConcepts(self)
+        from claim_learning import ClaimLearning
+        self.claims = ClaimLearning(self)
         from numeric_text import NumericText
         self.numeric_text = NumericText(self)
         from meaning_memory import MeaningMemory
         self.meaning_memory = MeaningMemory(self)
+        from recursive_pattern_learning import RecursivePatternLearning
+        self.recursive_patterns = RecursivePatternLearning(self)
+        from boundary_state_search import BoundaryStateSearch
+        self.boundary_states = BoundaryStateSearch(self)
+        from composed_state_learning import ComposedStateLearning
+        self.composed_states = ComposedStateLearning(self)
+        from internal_state_learning import InternalStateLearning
+        self.internal_states = InternalStateLearning(self)
+        from question_knowledge import QuestionKnowledge
+        self.question_knowledge = QuestionKnowledge(self)
+        from adaptive_patterns import AdaptivePatterns
+        self.adaptive_patterns = AdaptivePatterns(self)
+        from recursive_text_patterns import RecursiveTextPatterns
+        self.recursive_text = RecursiveTextPatterns(self)
+        from knowledge_behavior import KnowledgeBehavior
+        self.behavior = KnowledgeBehavior(self)
+        from behavior_composition import BehaviorComposition
+        self.composition = BehaviorComposition(self)
+        from transfer_learning import TransferLearning
+        self.transfer = TransferLearning(self)
+        from text_behavior_learning import TextBehaviorLearning
+        self.text_behavior = TextBehaviorLearning(self)
         self.paths = PathMemory(self.db)
         from byte_relationships import RelationshipEngine
         self.relationships = RelationshipEngine(self.db)

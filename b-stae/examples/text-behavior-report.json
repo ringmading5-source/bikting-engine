@@ -1,0 +1,2495 @@
+{
+  "training_text": [
+    [
+      "water: start 10",
+      "water: middle 15",
+      "water: end 30"
+    ],
+    [
+      "metal: start 20",
+      "metal: middle 25",
+      "metal: end 50"
+    ],
+    [
+      "oil: start 40",
+      "oil: middle 45",
+      "oil: end 90"
+    ]
+  ],
+  "modes": {
+    "character": {
+      "learning": {
+        "status": "learned",
+        "batch_id": 1,
+        "raw_patterns": {
+          "status": "learned",
+          "run_id": 1,
+          "discovery": {
+            "run_id": 1,
+            "mode": "character",
+            "training_observations": 9,
+            "new_observations": 9,
+            "patterns_discovered": 26,
+            "maximum_depth": 4,
+            "original_units": 126,
+            "compressed_units": 36,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 117
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 111
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 105
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 102
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 99
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 96
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 93
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 90
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 87
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 84
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 81
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 78
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 75
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 72
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 69
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 66
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 63
+              },
+              {
+                "round": 18,
+                "stored_patterns": 18,
+                "working_units": 60
+              },
+              {
+                "round": 19,
+                "stored_patterns": 19,
+                "working_units": 57
+              },
+              {
+                "round": 20,
+                "stored_patterns": 20,
+                "working_units": 54
+              },
+              {
+                "round": 21,
+                "stored_patterns": 21,
+                "working_units": 51
+              },
+              {
+                "round": 22,
+                "stored_patterns": 22,
+                "working_units": 48
+              },
+              {
+                "round": 23,
+                "stored_patterns": 23,
+                "working_units": 45
+              },
+              {
+                "round": 24,
+                "stored_patterns": 24,
+                "working_units": 42
+              },
+              {
+                "round": 25,
+                "stored_patterns": 25,
+                "working_units": 39
+              },
+              {
+                "round": 26,
+                "stored_patterns": 26,
+                "working_units": 36
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "frames_discovered": 36,
+          "candidate_spans": 219,
+          "search_limited": false,
+          "evidence_retained": true,
+          "scope": "Raw numerical hierarchy plus recurring variable-span frames; no semantic labels supplied."
+        },
+        "behavior": {
+          "status": "learned",
+          "paths": [
+            [
+              1,
+              4
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              1,
+              6
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              2,
+              5
+            ],
+            [
+              2,
+              6
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              3,
+              6
+            ]
+          ],
+          "evidence_retained": true,
+          "scope": "Recurring sequences of learned behavior IDs supported by three distinct starting states."
+        },
+        "derived_states": [
+          [
+            {
+              "span0": "\"water: start \"",
+              "number0": 10,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"water: middle \"",
+              "number0": 15,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"water: end \"",
+              "number0": 30,
+              "span1": "\"\""
+            }
+          ],
+          [
+            {
+              "span0": "\"metal: start \"",
+              "number0": 20,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"metal: middle \"",
+              "number0": 25,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"metal: end \"",
+              "number0": 50,
+              "span1": "\"\""
+            }
+          ],
+          [
+            {
+              "span0": "\"oil: start \"",
+              "number0": 40,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"oil: middle \"",
+              "number0": 45,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"oil: end \"",
+              "number0": 90,
+              "span1": "\"\""
+            }
+          ]
+        ],
+        "evidence_retained": true,
+        "scope": "Observed text trajectories through a generic integer/text codec; no domain semantics parser."
+      },
+      "checks": [
+        {
+          "text": "copper: start 70",
+          "expected_next": "copper: middle 75",
+          "expected_final": "copper: end 150",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "copper: middle 75",
+                "state": {
+                  "number0": 75,
+                  "span0": "\"copper: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 1,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 2,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 3,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"copper: start \"",
+              "number0": 70,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "copper: end 150",
+                "state": {
+                  "number0": 150,
+                  "span0": "\"copper: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"copper: start \"",
+                        "number0": 70,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 75,
+                        "span0": "\"copper: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 150,
+                        "span0": "\"copper: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      1,
+                      4
+                    ],
+                    "path_id": 1,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "copper: start 70",
+                      "copper: middle 75",
+                      "copper: end 150"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"copper: start \"",
+              "number0": 70,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        },
+        {
+          "text": "new sample: start -10",
+          "expected_next": "new sample: middle -5",
+          "expected_final": "new sample: end -10",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "new sample: middle -5",
+                "state": {
+                  "number0": -5,
+                  "span0": "\"new sample: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 1,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 2,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 3,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"new sample: start \"",
+              "number0": -10,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "new sample: end -10",
+                "state": {
+                  "number0": -10,
+                  "span0": "\"new sample: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"new sample: start \"",
+                        "number0": -10,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": -5,
+                        "span0": "\"new sample: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": -10,
+                        "span0": "\"new sample: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      1,
+                      4
+                    ],
+                    "path_id": 1,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "new sample: start -10",
+                      "new sample: middle -5",
+                      "new sample: end -10"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"new sample: start \"",
+              "number0": -10,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        },
+        {
+          "text": "猫: start 101",
+          "expected_next": "猫: middle 106",
+          "expected_final": "猫: end 212",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "猫: middle 106",
+                "state": {
+                  "number0": 106,
+                  "span0": "\"猫: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 1,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 2,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 3,
+                    "support": [
+                      1,
+                      3,
+                      5
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"猫: start \"",
+              "number0": 101,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "猫: end 212",
+                "state": {
+                  "number0": 212,
+                  "span0": "\"猫: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"猫: start \"",
+                        "number0": 101,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 106,
+                        "span0": "\"猫: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 212,
+                        "span0": "\"猫: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      1,
+                      4
+                    ],
+                    "path_id": 1,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "猫: start 101",
+                      "猫: middle 106",
+                      "猫: end 212"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"猫: start \"",
+              "number0": 101,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 3,
+      "total": 3,
+      "text_only": {
+        "training": [
+          [
+            "cat is asleep.",
+            "cat is awake.",
+            "cat is walking."
+          ],
+          [
+            "dog is asleep.",
+            "dog is awake.",
+            "dog is walking."
+          ],
+          [
+            "bird is asleep.",
+            "bird is awake.",
+            "bird is walking."
+          ]
+        ],
+        "learning": {
+          "status": "learned",
+          "batch_id": 2,
+          "raw_patterns": {
+            "status": "learned",
+            "run_id": 2,
+            "discovery": {
+              "run_id": 2,
+              "mode": "character",
+              "training_observations": 9,
+              "new_observations": 9,
+              "patterns_discovered": 29,
+              "maximum_depth": 5,
+              "original_units": 129,
+              "compressed_units": 18,
+              "history": [
+                {
+                  "round": 1,
+                  "stored_patterns": 1,
+                  "working_units": 120
+                },
+                {
+                  "round": 2,
+                  "stored_patterns": 2,
+                  "working_units": 111
+                },
+                {
+                  "round": 3,
+                  "stored_patterns": 3,
+                  "working_units": 102
+                },
+                {
+                  "round": 4,
+                  "stored_patterns": 4,
+                  "working_units": 96
+                },
+                {
+                  "round": 5,
+                  "stored_patterns": 5,
+                  "working_units": 90
+                },
+                {
+                  "round": 6,
+                  "stored_patterns": 6,
+                  "working_units": 87
+                },
+                {
+                  "round": 7,
+                  "stored_patterns": 7,
+                  "working_units": 84
+                },
+                {
+                  "round": 8,
+                  "stored_patterns": 8,
+                  "working_units": 81
+                },
+                {
+                  "round": 9,
+                  "stored_patterns": 9,
+                  "working_units": 78
+                },
+                {
+                  "round": 10,
+                  "stored_patterns": 10,
+                  "working_units": 75
+                },
+                {
+                  "round": 11,
+                  "stored_patterns": 11,
+                  "working_units": 72
+                },
+                {
+                  "round": 12,
+                  "stored_patterns": 12,
+                  "working_units": 69
+                },
+                {
+                  "round": 13,
+                  "stored_patterns": 13,
+                  "working_units": 66
+                },
+                {
+                  "round": 14,
+                  "stored_patterns": 14,
+                  "working_units": 63
+                },
+                {
+                  "round": 15,
+                  "stored_patterns": 15,
+                  "working_units": 60
+                },
+                {
+                  "round": 16,
+                  "stored_patterns": 16,
+                  "working_units": 57
+                },
+                {
+                  "round": 17,
+                  "stored_patterns": 17,
+                  "working_units": 54
+                },
+                {
+                  "round": 18,
+                  "stored_patterns": 18,
+                  "working_units": 51
+                },
+                {
+                  "round": 19,
+                  "stored_patterns": 19,
+                  "working_units": 48
+                },
+                {
+                  "round": 20,
+                  "stored_patterns": 20,
+                  "working_units": 45
+                },
+                {
+                  "round": 21,
+                  "stored_patterns": 21,
+                  "working_units": 42
+                },
+                {
+                  "round": 22,
+                  "stored_patterns": 22,
+                  "working_units": 39
+                },
+                {
+                  "round": 23,
+                  "stored_patterns": 23,
+                  "working_units": 36
+                },
+                {
+                  "round": 24,
+                  "stored_patterns": 24,
+                  "working_units": 33
+                },
+                {
+                  "round": 25,
+                  "stored_patterns": 25,
+                  "working_units": 30
+                },
+                {
+                  "round": 26,
+                  "stored_patterns": 26,
+                  "working_units": 27
+                },
+                {
+                  "round": 27,
+                  "stored_patterns": 27,
+                  "working_units": 24
+                },
+                {
+                  "round": 28,
+                  "stored_patterns": 28,
+                  "working_units": 21
+                },
+                {
+                  "round": 29,
+                  "stored_patterns": 29,
+                  "working_units": 18
+                }
+              ],
+              "stop_reason": "no_supported_pair",
+              "evidence_retained": true,
+              "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+            },
+            "frames_discovered": 22,
+            "candidate_spans": 227,
+            "search_limited": false,
+            "evidence_retained": true,
+            "scope": "Raw numerical hierarchy plus recurring variable-span frames; no semantic labels supplied."
+          },
+          "behavior": {
+            "status": "learned",
+            "paths": [
+              [
+                7,
+                8
+              ]
+            ],
+            "evidence_retained": true,
+            "scope": "Recurring sequences of learned behavior IDs supported by three distinct starting states."
+          },
+          "derived_states": [
+            [
+              {
+                "span0": "\"cat is asleep.\""
+              },
+              {
+                "span0": "\"cat is awake.\""
+              },
+              {
+                "span0": "\"cat is walking.\""
+              }
+            ],
+            [
+              {
+                "span0": "\"dog is asleep.\""
+              },
+              {
+                "span0": "\"dog is awake.\""
+              },
+              {
+                "span0": "\"dog is walking.\""
+              }
+            ],
+            [
+              {
+                "span0": "\"bird is asleep.\""
+              },
+              {
+                "span0": "\"bird is awake.\""
+              },
+              {
+                "span0": "\"bird is walking.\""
+              }
+            ]
+          ],
+          "evidence_retained": true,
+          "scope": "Observed text trajectories through a generic integer/text codec; no domain semantics parser."
+        },
+        "result": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "text": "robot is walking.",
+              "state": {
+                "span0": "\"robot is walking.\""
+              },
+              "evidence": [],
+              "trajectories": [
+                {
+                  "states": [
+                    {
+                      "span0": "\"robot is asleep.\""
+                    },
+                    {
+                      "span0": "\"robot is awake.\""
+                    },
+                    {
+                      "span0": "\"robot is walking.\""
+                    }
+                  ],
+                  "model_ids": [
+                    7,
+                    8
+                  ],
+                  "path_id": 10,
+                  "conflicting_observations": [],
+                  "texts": [
+                    "robot is asleep.",
+                    "robot is awake.",
+                    "robot is walking."
+                  ]
+                }
+              ],
+              "matching_paths": 1
+            }
+          ],
+          "input_state": {
+            "span0": "\"robot is asleep.\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        },
+        "correct": true
+      },
+      "counterexample": {
+        "next_result": {
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "text": "water: middle 15",
+              "state": {
+                "number0": 15,
+                "span0": "\"water: middle \"",
+                "span1": "\"\""
+              },
+              "evidence": [
+                {
+                  "kind": "observed",
+                  "observation": 1,
+                  "source": "synthetic:text-trajectory"
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 1,
+                  "support": [
+                    1,
+                    3,
+                    5
+                  ],
+                  "conflicts": [
+                    13
+                  ]
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 2,
+                  "support": [
+                    1,
+                    3,
+                    5
+                  ],
+                  "conflicts": [
+                    13
+                  ]
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 3,
+                  "support": [
+                    1,
+                    3,
+                    5
+                  ],
+                  "conflicts": [
+                    13
+                  ]
+                }
+              ],
+              "trajectories": [],
+              "matching_paths": 0
+            },
+            {
+              "text": "water: middle 99",
+              "state": {
+                "number0": 99,
+                "span0": "\"water: middle \"",
+                "span1": "\"\""
+              },
+              "evidence": [
+                {
+                  "kind": "observed",
+                  "observation": 13,
+                  "source": "synthetic:counterexample"
+                }
+              ],
+              "trajectories": [],
+              "matching_paths": 0
+            }
+          ],
+          "input_state": {
+            "span0": "\"water: start \"",
+            "number0": 10,
+            "span1": "\"\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        },
+        "path_result": {
+          "status": "contested",
+          "candidates": [
+            {
+              "text": "copper: end 150",
+              "state": {
+                "number0": 150,
+                "span0": "\"copper: end \"",
+                "span1": "\"\""
+              },
+              "evidence": [],
+              "trajectories": [
+                {
+                  "states": [
+                    {
+                      "span0": "\"copper: start \"",
+                      "number0": 70,
+                      "span1": "\"\""
+                    },
+                    {
+                      "number0": 75,
+                      "span0": "\"copper: middle \"",
+                      "span1": "\"\""
+                    },
+                    {
+                      "number0": 150,
+                      "span0": "\"copper: end \"",
+                      "span1": "\"\""
+                    }
+                  ],
+                  "model_ids": [
+                    1,
+                    4
+                  ],
+                  "path_id": 1,
+                  "conflicting_observations": [
+                    13
+                  ],
+                  "texts": [
+                    "copper: start 70",
+                    "copper: middle 75",
+                    "copper: end 150"
+                  ]
+                }
+              ],
+              "matching_paths": 9
+            }
+          ],
+          "input_state": {
+            "span0": "\"copper: start \"",
+            "number0": 70,
+            "span1": "\"\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        }
+      },
+      "inference_writes": 0,
+      "llm_calls": 0
+    },
+    "byte": {
+      "learning": {
+        "status": "learned",
+        "batch_id": 4,
+        "raw_patterns": {
+          "status": "learned",
+          "run_id": 4,
+          "discovery": {
+            "run_id": 4,
+            "mode": "byte",
+            "training_observations": 9,
+            "new_observations": 9,
+            "patterns_discovered": 26,
+            "maximum_depth": 4,
+            "original_units": 126,
+            "compressed_units": 36,
+            "history": [
+              {
+                "round": 1,
+                "stored_patterns": 1,
+                "working_units": 117
+              },
+              {
+                "round": 2,
+                "stored_patterns": 2,
+                "working_units": 111
+              },
+              {
+                "round": 3,
+                "stored_patterns": 3,
+                "working_units": 105
+              },
+              {
+                "round": 4,
+                "stored_patterns": 4,
+                "working_units": 102
+              },
+              {
+                "round": 5,
+                "stored_patterns": 5,
+                "working_units": 99
+              },
+              {
+                "round": 6,
+                "stored_patterns": 6,
+                "working_units": 96
+              },
+              {
+                "round": 7,
+                "stored_patterns": 7,
+                "working_units": 93
+              },
+              {
+                "round": 8,
+                "stored_patterns": 8,
+                "working_units": 90
+              },
+              {
+                "round": 9,
+                "stored_patterns": 9,
+                "working_units": 87
+              },
+              {
+                "round": 10,
+                "stored_patterns": 10,
+                "working_units": 84
+              },
+              {
+                "round": 11,
+                "stored_patterns": 11,
+                "working_units": 81
+              },
+              {
+                "round": 12,
+                "stored_patterns": 12,
+                "working_units": 78
+              },
+              {
+                "round": 13,
+                "stored_patterns": 13,
+                "working_units": 75
+              },
+              {
+                "round": 14,
+                "stored_patterns": 14,
+                "working_units": 72
+              },
+              {
+                "round": 15,
+                "stored_patterns": 15,
+                "working_units": 69
+              },
+              {
+                "round": 16,
+                "stored_patterns": 16,
+                "working_units": 66
+              },
+              {
+                "round": 17,
+                "stored_patterns": 17,
+                "working_units": 63
+              },
+              {
+                "round": 18,
+                "stored_patterns": 18,
+                "working_units": 60
+              },
+              {
+                "round": 19,
+                "stored_patterns": 19,
+                "working_units": 57
+              },
+              {
+                "round": 20,
+                "stored_patterns": 20,
+                "working_units": 54
+              },
+              {
+                "round": 21,
+                "stored_patterns": 21,
+                "working_units": 51
+              },
+              {
+                "round": 22,
+                "stored_patterns": 22,
+                "working_units": 48
+              },
+              {
+                "round": 23,
+                "stored_patterns": 23,
+                "working_units": 45
+              },
+              {
+                "round": 24,
+                "stored_patterns": 24,
+                "working_units": 42
+              },
+              {
+                "round": 25,
+                "stored_patterns": 25,
+                "working_units": 39
+              },
+              {
+                "round": 26,
+                "stored_patterns": 26,
+                "working_units": 36
+              }
+            ],
+            "stop_reason": "no_supported_pair",
+            "evidence_retained": true,
+            "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+          },
+          "frames_discovered": 36,
+          "candidate_spans": 219,
+          "search_limited": false,
+          "evidence_retained": true,
+          "scope": "Raw numerical hierarchy plus recurring variable-span frames; no semantic labels supplied."
+        },
+        "behavior": {
+          "status": "learned",
+          "paths": [
+            [
+              9,
+              12
+            ],
+            [
+              9,
+              13
+            ],
+            [
+              9,
+              14
+            ],
+            [
+              10,
+              12
+            ],
+            [
+              10,
+              13
+            ],
+            [
+              10,
+              14
+            ],
+            [
+              11,
+              12
+            ],
+            [
+              11,
+              13
+            ],
+            [
+              11,
+              14
+            ]
+          ],
+          "evidence_retained": true,
+          "scope": "Recurring sequences of learned behavior IDs supported by three distinct starting states."
+        },
+        "derived_states": [
+          [
+            {
+              "span0": "\"water: start \"",
+              "number0": 10,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"water: middle \"",
+              "number0": 15,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"water: end \"",
+              "number0": 30,
+              "span1": "\"\""
+            }
+          ],
+          [
+            {
+              "span0": "\"metal: start \"",
+              "number0": 20,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"metal: middle \"",
+              "number0": 25,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"metal: end \"",
+              "number0": 50,
+              "span1": "\"\""
+            }
+          ],
+          [
+            {
+              "span0": "\"oil: start \"",
+              "number0": 40,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"oil: middle \"",
+              "number0": 45,
+              "span1": "\"\""
+            },
+            {
+              "span0": "\"oil: end \"",
+              "number0": 90,
+              "span1": "\"\""
+            }
+          ]
+        ],
+        "evidence_retained": true,
+        "scope": "Observed text trajectories through a generic integer/text codec; no domain semantics parser."
+      },
+      "checks": [
+        {
+          "text": "copper: start 70",
+          "expected_next": "copper: middle 75",
+          "expected_final": "copper: end 150",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "copper: middle 75",
+                "state": {
+                  "number0": 75,
+                  "span0": "\"copper: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 9,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 10,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 11,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"copper: start \"",
+              "number0": 70,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "copper: end 150",
+                "state": {
+                  "number0": 150,
+                  "span0": "\"copper: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"copper: start \"",
+                        "number0": 70,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 75,
+                        "span0": "\"copper: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 150,
+                        "span0": "\"copper: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      9,
+                      12
+                    ],
+                    "path_id": 11,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "copper: start 70",
+                      "copper: middle 75",
+                      "copper: end 150"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"copper: start \"",
+              "number0": 70,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        },
+        {
+          "text": "new sample: start -10",
+          "expected_next": "new sample: middle -5",
+          "expected_final": "new sample: end -10",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "new sample: middle -5",
+                "state": {
+                  "number0": -5,
+                  "span0": "\"new sample: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 9,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 10,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 11,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"new sample: start \"",
+              "number0": -10,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "new sample: end -10",
+                "state": {
+                  "number0": -10,
+                  "span0": "\"new sample: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"new sample: start \"",
+                        "number0": -10,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": -5,
+                        "span0": "\"new sample: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": -10,
+                        "span0": "\"new sample: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      9,
+                      12
+                    ],
+                    "path_id": 11,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "new sample: start -10",
+                      "new sample: middle -5",
+                      "new sample: end -10"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"new sample: start \"",
+              "number0": -10,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        },
+        {
+          "text": "猫: start 101",
+          "expected_next": "猫: middle 106",
+          "expected_final": "猫: end 212",
+          "next_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "猫: middle 106",
+                "state": {
+                  "number0": 106,
+                  "span0": "\"猫: middle \"",
+                  "span1": "\"\""
+                },
+                "evidence": [
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 9,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 10,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  },
+                  {
+                    "kind": "learned_behavior",
+                    "model_id": 11,
+                    "support": [
+                      14,
+                      16,
+                      18
+                    ],
+                    "conflicts": []
+                  }
+                ],
+                "trajectories": [],
+                "matching_paths": 0
+              }
+            ],
+            "input_state": {
+              "span0": "\"猫: start \"",
+              "number0": 101,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "path_result": {
+            "status": "predicted",
+            "candidates": [
+              {
+                "text": "猫: end 212",
+                "state": {
+                  "number0": 212,
+                  "span0": "\"猫: end \"",
+                  "span1": "\"\""
+                },
+                "evidence": [],
+                "trajectories": [
+                  {
+                    "states": [
+                      {
+                        "span0": "\"猫: start \"",
+                        "number0": 101,
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 106,
+                        "span0": "\"猫: middle \"",
+                        "span1": "\"\""
+                      },
+                      {
+                        "number0": 212,
+                        "span0": "\"猫: end \"",
+                        "span1": "\"\""
+                      }
+                    ],
+                    "model_ids": [
+                      9,
+                      12
+                    ],
+                    "path_id": 11,
+                    "conflicting_observations": [],
+                    "texts": [
+                      "猫: start 101",
+                      "猫: middle 106",
+                      "猫: end 212"
+                    ]
+                  }
+                ],
+                "matching_paths": 9
+              }
+            ],
+            "input_state": {
+              "span0": "\"猫: start \"",
+              "number0": 101,
+              "span1": "\"\""
+            },
+            "search_limited": false,
+            "verified": false,
+            "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+          },
+          "correct": true
+        }
+      ],
+      "correct": 3,
+      "total": 3,
+      "text_only": {
+        "training": [
+          [
+            "cat is asleep.",
+            "cat is awake.",
+            "cat is walking."
+          ],
+          [
+            "dog is asleep.",
+            "dog is awake.",
+            "dog is walking."
+          ],
+          [
+            "bird is asleep.",
+            "bird is awake.",
+            "bird is walking."
+          ]
+        ],
+        "learning": {
+          "status": "learned",
+          "batch_id": 5,
+          "raw_patterns": {
+            "status": "learned",
+            "run_id": 5,
+            "discovery": {
+              "run_id": 5,
+              "mode": "byte",
+              "training_observations": 9,
+              "new_observations": 9,
+              "patterns_discovered": 29,
+              "maximum_depth": 5,
+              "original_units": 129,
+              "compressed_units": 18,
+              "history": [
+                {
+                  "round": 1,
+                  "stored_patterns": 1,
+                  "working_units": 120
+                },
+                {
+                  "round": 2,
+                  "stored_patterns": 2,
+                  "working_units": 111
+                },
+                {
+                  "round": 3,
+                  "stored_patterns": 3,
+                  "working_units": 102
+                },
+                {
+                  "round": 4,
+                  "stored_patterns": 4,
+                  "working_units": 96
+                },
+                {
+                  "round": 5,
+                  "stored_patterns": 5,
+                  "working_units": 90
+                },
+                {
+                  "round": 6,
+                  "stored_patterns": 6,
+                  "working_units": 87
+                },
+                {
+                  "round": 7,
+                  "stored_patterns": 7,
+                  "working_units": 84
+                },
+                {
+                  "round": 8,
+                  "stored_patterns": 8,
+                  "working_units": 81
+                },
+                {
+                  "round": 9,
+                  "stored_patterns": 9,
+                  "working_units": 78
+                },
+                {
+                  "round": 10,
+                  "stored_patterns": 10,
+                  "working_units": 75
+                },
+                {
+                  "round": 11,
+                  "stored_patterns": 11,
+                  "working_units": 72
+                },
+                {
+                  "round": 12,
+                  "stored_patterns": 12,
+                  "working_units": 69
+                },
+                {
+                  "round": 13,
+                  "stored_patterns": 13,
+                  "working_units": 66
+                },
+                {
+                  "round": 14,
+                  "stored_patterns": 14,
+                  "working_units": 63
+                },
+                {
+                  "round": 15,
+                  "stored_patterns": 15,
+                  "working_units": 60
+                },
+                {
+                  "round": 16,
+                  "stored_patterns": 16,
+                  "working_units": 57
+                },
+                {
+                  "round": 17,
+                  "stored_patterns": 17,
+                  "working_units": 54
+                },
+                {
+                  "round": 18,
+                  "stored_patterns": 18,
+                  "working_units": 51
+                },
+                {
+                  "round": 19,
+                  "stored_patterns": 19,
+                  "working_units": 48
+                },
+                {
+                  "round": 20,
+                  "stored_patterns": 20,
+                  "working_units": 45
+                },
+                {
+                  "round": 21,
+                  "stored_patterns": 21,
+                  "working_units": 42
+                },
+                {
+                  "round": 22,
+                  "stored_patterns": 22,
+                  "working_units": 39
+                },
+                {
+                  "round": 23,
+                  "stored_patterns": 23,
+                  "working_units": 36
+                },
+                {
+                  "round": 24,
+                  "stored_patterns": 24,
+                  "working_units": 33
+                },
+                {
+                  "round": 25,
+                  "stored_patterns": 25,
+                  "working_units": 30
+                },
+                {
+                  "round": 26,
+                  "stored_patterns": 26,
+                  "working_units": 27
+                },
+                {
+                  "round": 27,
+                  "stored_patterns": 27,
+                  "working_units": 24
+                },
+                {
+                  "round": 28,
+                  "stored_patterns": 28,
+                  "working_units": 21
+                },
+                {
+                  "round": 29,
+                  "stored_patterns": 29,
+                  "working_units": 18
+                }
+              ],
+              "stop_reason": "no_supported_pair",
+              "evidence_retained": true,
+              "scope": "Recursive frequent-pair discovery; no word boundaries or semantic labels supplied."
+            },
+            "frames_discovered": 22,
+            "candidate_spans": 227,
+            "search_limited": false,
+            "evidence_retained": true,
+            "scope": "Raw numerical hierarchy plus recurring variable-span frames; no semantic labels supplied."
+          },
+          "behavior": {
+            "status": "learned",
+            "paths": [
+              [
+                15,
+                16
+              ]
+            ],
+            "evidence_retained": true,
+            "scope": "Recurring sequences of learned behavior IDs supported by three distinct starting states."
+          },
+          "derived_states": [
+            [
+              {
+                "span0": "\"cat is asleep.\""
+              },
+              {
+                "span0": "\"cat is awake.\""
+              },
+              {
+                "span0": "\"cat is walking.\""
+              }
+            ],
+            [
+              {
+                "span0": "\"dog is asleep.\""
+              },
+              {
+                "span0": "\"dog is awake.\""
+              },
+              {
+                "span0": "\"dog is walking.\""
+              }
+            ],
+            [
+              {
+                "span0": "\"bird is asleep.\""
+              },
+              {
+                "span0": "\"bird is awake.\""
+              },
+              {
+                "span0": "\"bird is walking.\""
+              }
+            ]
+          ],
+          "evidence_retained": true,
+          "scope": "Observed text trajectories through a generic integer/text codec; no domain semantics parser."
+        },
+        "result": {
+          "status": "predicted",
+          "candidates": [
+            {
+              "text": "robot is walking.",
+              "state": {
+                "span0": "\"robot is walking.\""
+              },
+              "evidence": [],
+              "trajectories": [
+                {
+                  "states": [
+                    {
+                      "span0": "\"robot is asleep.\""
+                    },
+                    {
+                      "span0": "\"robot is awake.\""
+                    },
+                    {
+                      "span0": "\"robot is walking.\""
+                    }
+                  ],
+                  "model_ids": [
+                    15,
+                    16
+                  ],
+                  "path_id": 20,
+                  "conflicting_observations": [],
+                  "texts": [
+                    "robot is asleep.",
+                    "robot is awake.",
+                    "robot is walking."
+                  ]
+                }
+              ],
+              "matching_paths": 1
+            }
+          ],
+          "input_state": {
+            "span0": "\"robot is asleep.\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        },
+        "correct": true
+      },
+      "counterexample": {
+        "next_result": {
+          "status": "ambiguous",
+          "candidates": [
+            {
+              "text": "water: middle 15",
+              "state": {
+                "number0": 15,
+                "span0": "\"water: middle \"",
+                "span1": "\"\""
+              },
+              "evidence": [
+                {
+                  "kind": "observed",
+                  "observation": 14,
+                  "source": "synthetic:text-trajectory"
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 9,
+                  "support": [
+                    14,
+                    16,
+                    18
+                  ],
+                  "conflicts": [
+                    26
+                  ]
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 10,
+                  "support": [
+                    14,
+                    16,
+                    18
+                  ],
+                  "conflicts": [
+                    26
+                  ]
+                },
+                {
+                  "kind": "learned_behavior",
+                  "model_id": 11,
+                  "support": [
+                    14,
+                    16,
+                    18
+                  ],
+                  "conflicts": [
+                    26
+                  ]
+                }
+              ],
+              "trajectories": [],
+              "matching_paths": 0
+            },
+            {
+              "text": "water: middle 99",
+              "state": {
+                "number0": 99,
+                "span0": "\"water: middle \"",
+                "span1": "\"\""
+              },
+              "evidence": [
+                {
+                  "kind": "observed",
+                  "observation": 26,
+                  "source": "synthetic:counterexample"
+                }
+              ],
+              "trajectories": [],
+              "matching_paths": 0
+            }
+          ],
+          "input_state": {
+            "span0": "\"water: start \"",
+            "number0": 10,
+            "span1": "\"\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        },
+        "path_result": {
+          "status": "contested",
+          "candidates": [
+            {
+              "text": "copper: end 150",
+              "state": {
+                "number0": 150,
+                "span0": "\"copper: end \"",
+                "span1": "\"\""
+              },
+              "evidence": [],
+              "trajectories": [
+                {
+                  "states": [
+                    {
+                      "span0": "\"copper: start \"",
+                      "number0": 70,
+                      "span1": "\"\""
+                    },
+                    {
+                      "number0": 75,
+                      "span0": "\"copper: middle \"",
+                      "span1": "\"\""
+                    },
+                    {
+                      "number0": 150,
+                      "span0": "\"copper: end \"",
+                      "span1": "\"\""
+                    }
+                  ],
+                  "model_ids": [
+                    9,
+                    12
+                  ],
+                  "path_id": 11,
+                  "conflicting_observations": [
+                    26
+                  ],
+                  "texts": [
+                    "copper: start 70",
+                    "copper: middle 75",
+                    "copper: end 150"
+                  ]
+                }
+              ],
+              "matching_paths": 9
+            }
+          ],
+          "input_state": {
+            "span0": "\"copper: start \"",
+            "number0": 70,
+            "span1": "\"\""
+          },
+          "search_limited": false,
+          "verified": false,
+          "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+        }
+      },
+      "inference_writes": 0,
+      "llm_calls": 0
+    }
+  },
+  "scope": "Ordered text observations → generic lexical states → learned changes → text descriptions.",
+  "limits": "Trajectory order supplied; integer/text codec programmed; finite behavior operators; no arbitrary prose interpretation or causal verification.",
+  "cross_measurement": {
+    "result": {
+      "status": "predicted",
+      "candidates": [
+        {
+          "text": "new sample: 107 with 7",
+          "state": {
+            "number0": 107,
+            "number1": 7,
+            "span0": "\"new sample: \"",
+            "span1": "\" with \"",
+            "span2": "\"\""
+          },
+          "evidence": [
+            {
+              "kind": "learned_behavior",
+              "model_id": 17,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 18,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 19,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 20,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 21,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 22,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 23,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 24,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 25,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 26,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 27,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 28,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 29,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 30,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 31,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 32,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 33,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 34,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 35,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 36,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 37,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 38,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 39,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 40,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 41,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 42,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 43,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 44,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 45,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 46,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 47,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 48,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 49,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 50,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 51,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            },
+            {
+              "kind": "learned_behavior",
+              "model_id": 52,
+              "support": [
+                27,
+                28,
+                29
+              ],
+              "conflicts": []
+            }
+          ],
+          "trajectories": [],
+          "matching_paths": 0
+        }
+      ],
+      "input_state": {
+        "span0": "\"new sample: \"",
+        "number0": 100,
+        "span1": "\" with \"",
+        "number1": 7,
+        "span2": "\"\""
+      },
+      "search_limited": false,
+      "verified": false,
+      "scope": "Prediction of observed text-described transformations, not unrestricted prose understanding."
+    },
+    "correct": true
+  }
+}

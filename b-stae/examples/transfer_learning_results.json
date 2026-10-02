@@ -1,0 +1,35 @@
+{
+  "correct": 300,
+  "total": 300,
+  "domains": 3,
+  "behavior_training_pairs": 6,
+  "alignment_pairs": 9,
+  "missing_conditions": {
+    "status": "needs_information",
+    "missing_conditions": [
+      "simulation",
+      "unit_system"
+    ],
+    "question": "Provide observed values for: simulation, unit_system",
+    "model_calls": 0
+  },
+  "incompatible_conditions": {
+    "status": "not_applicable",
+    "conflicting_conditions": [
+      "simulation"
+    ],
+    "missing_conditions": [],
+    "model_calls": 0
+  },
+  "feedback": {
+    "status": "adapter_disabled",
+    "active": false,
+    "history_retained": true
+  },
+  "after_feedback": {
+    "status": "contested",
+    "reason": "adapter rejected by counterevidence",
+    "model_calls": 0
+  },
+  "scope": "Copy bindings from supplied aligned examples and explicit conditions; no inferred causal equivalence or physical-world understanding."
+}

@@ -95,17 +95,43 @@ class TextMemoryBridge:
             result.append(rule)
         return result
 
+    def parse_index(self,context,level):
+        # Reuse compiled evidence only while the database is unchanged. Grouping
+        # identical templates saves work without dropping their provenance.
+        version=(self.db.total_changes,self.db.execute('PRAGMA data_version').fetchone()[0],self.db.in_transaction)
+        if getattr(self,'_parse_version',None)!=version:
+            self._parse_version=version;self._parse_indexes={}
+        key=(encoded(context),level)
+        if not self.db.in_transaction and key in self._parse_indexes:return self._parse_indexes[key]
+        observations={};models={}
+        for row in self.db.execute('SELECT * FROM bridge_examples WHERE context=?',(encoded(context),)):
+            e=json.loads(row['example'])
+            units=tuple(tuple(numbers(t,level)) for t in pieces(e['text']))
+            observations.setdefault(units,[]).append((e['record'],{'example':row['id'],'kind':'observed'}))
+        for row in self.db.execute('SELECT * FROM bridge_models WHERE context=?',(encoded(context),)):
+            model=json.loads(row['model']);template=self.template(model,level)
+            if template is None:continue
+            group=models.setdefault(encoded(template),{'template':template,'limited':False,'evidence':[]})
+            group['limited']|=model.get('search_limited',False)
+            group['evidence'].append({'model':row['id'],'examples':model['examples'],'kind':'induced'})
+        if len(self._parse_indexes)>=8:self._parse_indexes.clear()
+        result=(observations,list(models.values()))
+        if not self.db.in_transaction:self._parse_indexes[key]=result
+        return result
+
     def parse(self,text,context=None,level='byte'):
         self.validate_text(text);tokens=[numbers(t,level) for t in pieces(text)];outputs={};limited=False
         def add(record,evidence):
-            c=outputs.setdefault(encoded(record),{'record':record,'evidence':[]});c['evidence'].append(evidence)
-        for row in self.db.execute('SELECT * FROM bridge_examples WHERE context=?',(encoded(context),)):
-            e=json.loads(row['example'])
-            if [numbers(t,level) for t in pieces(e['text'])]==tokens:add(e['record'],{'example':row['id'],'kind':'observed'})
-        for row in self.db.execute('SELECT * FROM bridge_models WHERE context=?',(encoded(context),)):
-            model=json.loads(row['model']);template=self.template(model,level)
-            if template is None or len(template)!=len(tokens):continue
-            limited|=model.get('search_limited',False)
+            c=outputs.setdefault(encoded(record),{'record':dict(record),'evidence':[]})
+            copied=dict(evidence)
+            if 'examples' in copied:copied['examples']=list(copied['examples'])
+            c['evidence'].append(copied)
+        observations,models=self.parse_index(context,level)
+        for record,evidence in observations.get(tuple(tuple(t) for t in tokens),[]):add(record,evidence)
+        for model in models:
+            template=model['template']
+            if len(template)!=len(tokens):continue
+            limited|=model['limited']
             states=[{}]
             for rule,token in zip(template,tokens):
                 if rule['kind']=='literal':
@@ -127,7 +153,8 @@ class TextMemoryBridge:
                         if len(next_states)>=128:limited=True;break
                         next_states.append({**state,field:value})
                 states=next_states
-            for record in states:add(record,{'model':row['id'],'examples':model['examples'],'kind':'induced'})
+            for record in states:
+                for evidence in model['evidence']:add(record,evidence)
         return {**self.result(outputs,limited),'operating_level':level,'input_numbers':tokens}
 
     def express(self,record,context=None,level='byte'):

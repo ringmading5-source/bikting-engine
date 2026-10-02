@@ -1,5 +1,361 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B-STAE knowledge and procedures</title><style>body{background:#111826;color:#e8eef9;font:16px system-ui;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:#1b293c;border:1px solid #314156;border-radius:12px;padding:20px;margin:20px 0}label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:6px}input,textarea{box-sizing:border-box;width:100%;background:#111b2b;color:#fff;border:1px solid #52647b}textarea{min-height:70px}button{background:#72dbbf;border:0;margin-top:12px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#adc0d8}</style></head><body><main>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B-STAE knowledge and procedures</title><style>body{background:#111826;color:#e8eef9;font:16px system-ui;margin:0}main{max-width:850px;margin:auto;padding:24px}section{background:#1b293c;border:1px solid #314156;border-radius:12px;padding:20px;margin:20px 0}label{display:block;margin:12px 0 5px}input,textarea,button{font:inherit;padding:10px;border-radius:6px}input,textarea{box-sizing:border-box;width:100%;background:#111b2b;color:#fff;border:1px solid #52647b}textarea{min-height:70px}button{background:#72dbbf;border:0;margin-top:12px;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere}small{color:#adc0d8}</style></head><body><main><p><a href="/chat" style="color:#72dbbf">Open B-STAE Chat →</a></p>
 <h1>B-STAE knowledge and procedures</h1><p>Store source knowledge and explicit procedures. Retrieve applicable procedures, compose bounded paths, and verify execution against the supplied target.</p><label for="token">Access token (for hosted deployments)</label><input id="token" type="password" autocomplete="off">
+<section><h2>Learn behavior from text observations</h2>
+<p>Enter observed descriptions in order. Separate trajectories with a blank line. State fields are derived automatically; no subject or action labels are required.</p>
+<label for="tb-context">Context (JSON)</label><input id="tb-context" value='"text-behavior-demo"'>
+<label for="tb-mode">Representation</label><select id="tb-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="tb-source">Source</label><input id="tb-source" value="user:text-observations">
+<label for="tb-training">Observed trajectories</label><textarea id="tb-training" style="min-height:180px">water: start 10
+water: middle 15
+water: end 30
+
+metal: start 20
+metal: middle 25
+metal: end 50
+
+oil: start 40
+oil: middle 45
+oil: end 90</textarea>
+<button id="tb-learn">Learn changes described by this text</button>
+<label for="tb-input">New description</label><input id="tb-input" value="copper: start 70">
+<button id="tb-next">Predict next description</button><button id="tb-path">Predict learned sequence</button><button id="tb-inspect">Show patterns and derived states</button>
+<label for="tb-after">Observed next description (to add evidence)</label><input id="tb-after" value="copper: middle 75"><button id="tb-observe">Learn this observed change</button>
+<p id="tb-result" aria-live="polite"></p><details><summary>Evidence and predicted descriptions</summary><pre id="tb-details"></pre></details>
+<small>This experiment recognizes integer runs and text spans. Observation order is supplied; predictions do not establish physical truth.</small>
+</section>
+<section><h2>Learn behavior from observed state changes</h2>
+<p>Learn transformations from observations, then learn recurring sequences of those transformations. The demo uses simulated data.</p>
+<label for="kb-context">Context (JSON)</label><input id="kb-context" value='"kb-demo"'>
+<label for="kb-source">Source</label><input id="kb-source" value="user:observed-states">
+<label for="kb-episodes">Observed trajectories (JSON arrays of states)</label><textarea id="kb-episodes" style="min-height:180px">[
+ [
+  {
+   "entity": "water",
+   "phase": "start",
+   "value": 10
+  },
+  {
+   "entity": "water",
+   "phase": "middle",
+   "value": 15
+  },
+  {
+   "entity": "water",
+   "phase": "end",
+   "value": 30
+  }
+ ],
+ [
+  {
+   "entity": "metal",
+   "phase": "start",
+   "value": 20
+  },
+  {
+   "entity": "metal",
+   "phase": "middle",
+   "value": 25
+  },
+  {
+   "entity": "metal",
+   "phase": "end",
+   "value": 50
+  }
+ ],
+ [
+  {
+   "entity": "oil",
+   "phase": "start",
+   "value": 40
+  },
+  {
+   "entity": "oil",
+   "phase": "middle",
+   "value": 45
+  },
+  {
+   "entity": "oil",
+   "phase": "end",
+   "value": 90
+  }
+ ]
+]</textarea>
+<button id="kb-learn">Learn observed behaviors and paths</button>
+<label for="kb-state">New state (JSON)</label><textarea id="kb-state">{"entity":"unseen material","phase":"start","value":70}</textarea>
+<label for="kb-after">Observed result state (for adding evidence)</label><textarea id="kb-after">{"entity":"unseen material","phase":"middle","value":75}</textarea><button id="kb-observe">Learn this observed change</button>
+<button id="kb-one">Predict one change</button><button id="kb-path">Predict learned path</button><button id="kb-inspect">Show behavior patterns</button>
+<p id="kb-result" aria-live="polite"></p><details><summary>Learned transformations and evidence</summary><pre id="kb-details"></pre></details>
+<small>State boundaries and observations are supplied. A learned prediction is not a verified physical outcome.</small>
+</section>
+<section><h2>Learn recursive patterns from raw text</h2>
+<p>Train on ordinary text observations. The model groups recurring character or byte sequences and looks for recurring relationships between variable spans.</p>
+<label for="raw-pattern-context">Context (JSON)</label><input id="raw-pattern-context" value='"raw-thermal"'>
+<label for="raw-pattern-mode">Representation</label><select id="raw-pattern-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="raw-pattern-text">Training observations (one per line)</label><textarea id="raw-pattern-text">the stove heats water.
+the fire heats water.
+the sun heats water.</textarea>
+<label for="raw-pattern-source">Source</label><input id="raw-pattern-source" value="user:raw-text">
+<button id="raw-pattern-train">Learn from this text</button>
+<label for="raw-pattern-query">Sentence with one missing span</label><input id="raw-pattern-query" value="the candle &lt;mask&gt; water.">
+<button id="raw-pattern-predict">Predict missing span</button><button id="raw-pattern-inspect">Show learned patterns</button>
+<p id="raw-pattern-result" aria-live="polite"></p><details><summary>Hierarchy, relationships, and evidence</summary><pre id="raw-pattern-details"></pre></details>
+<small>Learned structure can produce a plausible completion without establishing whether a statement is true.</small>
+</section>
+<section><h2>Adapt to patterns one example at a time</h2>
+<p>Supply an input and its correct result. After enough distinct examples, test a new input. Different patterns and counterexamples remain in memory.</p>
+<label for="adaptive-context">Context (JSON)</label><input id="adaptive-context" value='"adaptive-demo"'>
+<label for="adaptive-mode">Representation</label><select id="adaptive-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="adaptive-before">Training input</label><input id="adaptive-before" value="what is biology?">
+<label for="adaptive-after">Correct result</label><input id="adaptive-after" value="biology">
+<label for="adaptive-source">Source</label><input id="adaptive-source" value="user:example">
+<button id="adaptive-observe">Learn this example</button><button id="adaptive-demo">Learn six demo examples</button>
+<label for="adaptive-query">New input</label><input id="adaptive-query" value="what is chemistry?">
+<button id="adaptive-predict">Predict the missing result</button>
+<p id="adaptive-result" aria-live="polite"></p><details><summary>Patterns and evidence</summary><pre id="adaptive-details"></pre></details>
+<small>This experiment learns copying and reordering patterns. A predicted result can still be wrong; conflicting candidates are shown together.</small>
+</section>
+<section><h2>Learn question patterns and answer from knowledge</h2>
+<p>Learn how questions identify a subject, then retrieve its supplied definition with source evidence.</p>
+<label for="knowledge-context">Knowledge context (JSON)</label><input id="knowledge-context" value='"knowledge"'>
+<label for="knowledge-mode">Representation</label><select id="knowledge-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="knowledge-question-training">Question-to-subject training batches</label><textarea id="knowledge-question-training" style="min-height:180px">[
+ {
+  "label": "what-is",
+  "examples": [
+   {
+    "before": "what is biology?",
+    "after": "biology",
+    "source": "user:question-target"
+   },
+   {
+    "before": "what is physics?",
+    "after": "physics",
+    "source": "user:question-target"
+   },
+   {
+    "before": "what is history?",
+    "after": "history",
+    "source": "user:question-target"
+   },
+   {
+    "before": "what is art?",
+    "after": "art",
+    "source": "user:question-target"
+   },
+   {
+    "before": "what is music?",
+    "after": "music",
+    "source": "user:question-target"
+   },
+   {
+    "before": "what is law?",
+    "after": "law",
+    "source": "user:question-target"
+   }
+  ]
+ },
+ {
+  "label": "define",
+  "examples": [
+   {
+    "before": "define biology",
+    "after": "biology",
+    "source": "user:question-target"
+   },
+   {
+    "before": "define physics",
+    "after": "physics",
+    "source": "user:question-target"
+   },
+   {
+    "before": "define history",
+    "after": "history",
+    "source": "user:question-target"
+   },
+   {
+    "before": "define art",
+    "after": "art",
+    "source": "user:question-target"
+   },
+   {
+    "before": "define music",
+    "after": "music",
+    "source": "user:question-target"
+   },
+   {
+    "before": "define law",
+    "after": "law",
+    "source": "user:question-target"
+   }
+  ]
+ },
+ {
+  "label": "tell-about",
+  "examples": [
+   {
+    "before": "tell me about biology",
+    "after": "biology",
+    "source": "user:question-target"
+   },
+   {
+    "before": "tell me about physics",
+    "after": "physics",
+    "source": "user:question-target"
+   },
+   {
+    "before": "tell me about history",
+    "after": "history",
+    "source": "user:question-target"
+   },
+   {
+    "before": "tell me about art",
+    "after": "art",
+    "source": "user:question-target"
+   },
+   {
+    "before": "tell me about music",
+    "after": "music",
+    "source": "user:question-target"
+   },
+   {
+    "before": "tell me about law",
+    "after": "law",
+    "source": "user:question-target"
+   }
+  ]
+ }
+]</textarea>
+<label for="knowledge-facts">Knowledge records</label><textarea id="knowledge-facts" style="min-height:180px">[
+ {
+  "subject": "chemistry",
+  "definition": "Chemistry is the study of matter, its properties, and its changes.",
+  "source": "manually-written:demo"
+ },
+ {
+  "subject": "organic chemistry",
+  "definition": "Organic chemistry studies carbon compounds, including their structures and reactions.",
+  "source": "manually-written:demo"
+ },
+ {
+  "subject": "mathematics",
+  "definition": "Mathematics studies quantities, structures, patterns, and relationships.",
+  "source": "manually-written:demo"
+ }
+]</textarea><button id="knowledge-learn">Learn question patterns and store knowledge</button>
+<label for="knowledge-question">Question</label><input id="knowledge-question" value="What is chemistry?"><button id="knowledge-answer">Answer from learned patterns and knowledge</button>
+<p id="knowledge-note" aria-live="polite">Definitions are supplied data. Unknowns and conflicting definitions remain visible.</p><details><summary>Question bindings, verified subject matches and sources</summary><pre id="knowledge-result"></pre></details></section>
+<section><h2>Learn changes inside a state</h2>
+<p>Learn copied and reordered variable spans from paired examples over numerical state units.</p>
+<label for="internal-context">Rewrite context (JSON)</label><input id="internal-context" value='"internal-rewrite"'>
+<label for="internal-mode">Representation</label><select id="internal-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="internal-training">Before and after examples</label><textarea id="internal-training" style="min-height:200px">[
+ {
+  "before": "the cat carries books.",
+  "after": "books are carried by the cat.",
+  "source": "synthetic:paired"
+ },
+ {
+  "before": "the dog carries tools.",
+  "after": "tools are carried by the dog.",
+  "source": "synthetic:paired"
+ },
+ {
+  "before": "the farmer carries seeds.",
+  "after": "seeds are carried by the farmer.",
+  "source": "synthetic:paired"
+ }
+]</textarea><button id="internal-learn">Learn internal rewrite</button>
+<label for="internal-input">Unseen state</label><input id="internal-input" value="the young traveller carries old maps."><button id="internal-predict">Predict rewritten state</button>
+<p id="internal-note" aria-live="polite">Paired targets supply the rewrite. This is structural prediction, not a verified statement about reality.</p><details><summary>Learned bindings, hierarchy versions and alternatives</summary><pre id="internal-result"></pre></details></section>
+<section><h2>Search states by first, last and count</h2>
+<p>Use boundary features to select candidates, then recursively verify their interiors.</p>
+<label for="boundary-context">Search context (JSON)</label><input id="boundary-context" value='"boundary-demo"'>
+<label for="boundary-training">States to remember (one per line)</label><textarea id="boundary-training">cat
+cot
+rabbit
+dog
+horse</textarea><button id="boundary-store">Remember these states</button>
+<label for="boundary-input">Query state</label><input id="boundary-input" value="cat"><button id="boundary-compare">Compare index and full scan</button>
+<p id="boundary-note" aria-live="polite">Matching endpoints and length alone do not verify a match.</p><details><summary>Verified matches and search effort</summary><pre id="boundary-result"></pre></details></section>
+<section><h2>Learn and compose state transformations</h2>
+<p>Learn paired changes to whole states, then reuse them in a bounded sequence.</p>
+<label for="composed-mode">Representation</label><select id="composed-mode"><option value="character">Character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="composed-training">Paired training batches (contexts identify different transformations)</label><textarea id="composed-training" style="min-height:200px">[
+ {
+  "context": "plural",
+  "examples": [
+   {
+    "before": "cat",
+    "after": "cats",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "dog",
+    "after": "dogs",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "horse",
+    "after": "horses",
+    "source": "synthetic:paired"
+   }
+  ]
+ },
+ {
+  "context": "sentence",
+  "examples": [
+   {
+    "before": "cat",
+    "after": "The cat sleeps.",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "dog",
+    "after": "The dog sleeps.",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "horse",
+    "after": "The horse sleeps.",
+    "source": "synthetic:paired"
+   }
+  ]
+ },
+ {
+  "context": "report",
+  "examples": [
+   {
+    "before": "The cat sleeps.",
+    "after": "Report: The cat sleeps.",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "The dog sleeps.",
+    "after": "Report: The dog sleeps.",
+    "source": "synthetic:paired"
+   },
+   {
+    "before": "The horse sleeps.",
+    "after": "Report: The horse sleeps.",
+    "source": "synthetic:paired"
+   }
+  ]
+ }
+]</textarea><button id="composed-learn">Learn transformations</button>
+<label for="composed-input">Unseen input state</label><input id="composed-input" value="rabbit">
+<label for="composed-contexts">Transformation contexts in order (JSON)</label><input id="composed-contexts" value='["sentence","report"]'><button id="composed-run">Compose learned transformations</button>
+<p id="composed-note" aria-live="polite">Generated sentences are symbolic predictions. No real-world fact or action is verified.</p><details><summary>State units, rules and composition evidence</summary><pre id="composed-result"></pre></details></section>
+<section><h2>Discover patterns from characters upward</h2>
+<p>Provide raw observations. Recurring pairs become reusable units that can combine into larger patterns.</p>
+<label for="recursive-context">Discovery context (JSON)</label><input id="recursive-context" value='"raw-patterns"'>
+<label for="recursive-mode">Base representation</label><select id="recursive-mode"><option value="character">Unicode character numbers</option><option value="byte">UTF-8 bytes</option></select>
+<label for="recursive-training">Raw observations (one per line)</label><textarea id="recursive-training" style="min-height:180px">The cat carries books.
+The dog carries tools.
+The farmer carries seeds.
+The child carries papers.
+The robot carries boxes.</textarea><button id="recursive-learn">Discover and grow patterns</button>
+<label for="recursive-input">Unseen text</label><input id="recursive-input" value="The traveller carries maps."><button id="recursive-encode">Use learned units and reconstruct</button>
+<p id="recursive-note" aria-live="polite">This discovers recurring structure. It does not assign meanings or infer actions.</p><details><summary>Hierarchy, evidence counts and growth</summary><pre id="recursive-result"></pre></details></section>
 <section><h2>B-STAE connected prototype</h2>
 <p>Connect paired expressions, labeled state relationships, and observed before/after records.</p>
 <label for="meaning-context">Meaning context (JSON)</label><input id="meaning-context" value='"animals"'>
@@ -706,4 +1062,105 @@ el('meaning-run').onclick=async()=>{
  }catch(error){el('meaning-summary').textContent=error.message}
  finally{button.disabled=false}
 };
+
+el('recursive-learn').onclick=async()=>{
+ const button=el('recursive-learn');button.disabled=true;
+ try{const context=JSON.parse(el('recursive-context').value),mode=el('recursive-mode').value;
+  const examples=el('recursive-training').value.split(/\r?\n/).filter(t=>t.length).map(text=>({text,source:'user:raw-observation'}));
+  const learned=await call({action:'recursive_pattern_learn',examples,context,mode,rounds:32});
+  const inventory=await call({action:'recursive_pattern_inventory',context,mode});
+  el('recursive-result').textContent=JSON.stringify({learned,inventory},null,2);
+  el('recursive-note').textContent=learned.patterns_discovered+' patterns discovered; maximum nesting depth '+learned.maximum_depth+'. '+learned.original_units+' → '+learned.compressed_units+' working units.';
+ }catch(error){el('recursive-note').textContent=error.message}
+ finally{button.disabled=false}
+};
+el('recursive-encode').onclick=async()=>{
+ try{const mode=el('recursive-mode').value,context=JSON.parse(el('recursive-context').value);
+  const packet=await call({action:'recursive_pattern_encode',text:el('recursive-input').value,context,mode});
+  if(packet.status==='unknown'){el('recursive-note').textContent=packet.reason;return}
+  const decoded=await call({action:'recursive_pattern_decode',units:packet.units,mode});
+  el('recursive-result').textContent=JSON.stringify({packet,decoded},null,2);
+  el('recursive-note').textContent=packet.base_units+' → '+packet.compressed_units+' working units. Reconstructed: '+decoded.text;
+ }catch(error){el('recursive-note').textContent=error.message}
+};
+
+el('composed-learn').onclick=async()=>{
+ const button=el('composed-learn');button.disabled=true;
+ try{const mode=el('composed-mode').value,results=[];
+  for(const batch of JSON.parse(el('composed-training').value))results.push(await call({action:'composed_state_learn',examples:batch.examples,context:batch.context,mode}));
+  el('composed-result').textContent=JSON.stringify(results,null,2);el('composed-note').textContent=results.map(r=>r.status).join(', ');
+ }catch(error){el('composed-note').textContent=error.message}
+ finally{button.disabled=false}
+};
+el('composed-run').onclick=async()=>{
+ try{const result=await call({action:'composed_state_compose',text:el('composed-input').value,contexts:JSON.parse(el('composed-contexts').value),mode:el('composed-mode').value});
+  el('composed-result').textContent=JSON.stringify(result,null,2);el('composed-note').textContent=result.status+': '+result.candidates.map(c=>c.text).join(' | ');
+ }catch(error){el('composed-note').textContent=error.message}
+};
+
+el('boundary-store').onclick=async()=>{
+ try{const context=JSON.parse(el('boundary-context').value),results=[];
+  for(const text of el('boundary-training').value.split(/\r?\n/).filter(t=>t.length))results.push(await call({action:'boundary_state_observe',units:Array.from(text,c=>c.codePointAt(0)),payload:{text},source:'user:state',context}));
+  el('boundary-result').textContent=JSON.stringify(results,null,2);el('boundary-note').textContent=results.length+' observations remembered.';
+ }catch(error){el('boundary-note').textContent=error.message}
+};
+el('boundary-compare').onclick=async()=>{
+ try{const context=JSON.parse(el('boundary-context').value),units=Array.from(el('boundary-input').value,c=>c.codePointAt(0));
+  const scan=await call({action:'boundary_state_search',units,context,strategy:'scan'}),indexed=await call({action:'boundary_state_search',units,context,strategy:'indexed'});
+  el('boundary-result').textContent=JSON.stringify({scan,indexed},null,2);el('boundary-note').textContent=indexed.status+': '+indexed.matches.length+' verified matches; '+indexed.tested_states+' indexed checks versus '+scan.tested_states+' scan checks.';
+ }catch(error){el('boundary-note').textContent=error.message}
+};
+
+el('internal-learn').onclick=async()=>{
+ try{const result=await call({action:'internal_state_learn',examples:JSON.parse(el('internal-training').value),context:JSON.parse(el('internal-context').value),mode:el('internal-mode').value});
+  el('internal-result').textContent=JSON.stringify(result,null,2);el('internal-note').textContent=result.status+(result.reason?': '+result.reason:'');
+ }catch(error){el('internal-note').textContent=error.message}
+};
+el('internal-predict').onclick=async()=>{
+ try{const result=await call({action:'internal_state_predict',text:el('internal-input').value,context:JSON.parse(el('internal-context').value),mode:el('internal-mode').value});
+  el('internal-result').textContent=JSON.stringify(result,null,2);el('internal-note').textContent=result.status+': '+result.candidates.map(c=>c.text).join(' | ');
+ }catch(error){el('internal-note').textContent=error.message}
+};
+
+el('knowledge-learn').onclick=async()=>{
+ const button=el('knowledge-learn');button.disabled=true;
+ try{const context=JSON.parse(el('knowledge-context').value),mode=el('knowledge-mode').value,results=[];
+  for(const batch of JSON.parse(el('knowledge-question-training').value))results.push(await call({action:'knowledge_question_learn',examples:batch.examples,label:batch.label,context,mode}));
+  results.push(await call({action:'knowledge_fact_learn',facts:JSON.parse(el('knowledge-facts').value),context}));
+  el('knowledge-result').textContent=JSON.stringify(results,null,2);el('knowledge-note').textContent=results.map(r=>r.status).join(', ');
+ }catch(error){el('knowledge-note').textContent=error.message}
+ finally{button.disabled=false}
+};
+el('knowledge-answer').onclick=async()=>{
+ try{const result=await call({action:'knowledge_question_answer',question:el('knowledge-question').value,context:JSON.parse(el('knowledge-context').value),mode:el('knowledge-mode').value});
+  el('knowledge-result').textContent=JSON.stringify(result,null,2);el('knowledge-note').textContent=result.status+': '+(result.answers.length?result.answers.map(a=>a.text).join(' | '):result.reason);
+ }catch(error){el('knowledge-note').textContent=error.message}
+};
+
+function adaptiveScope(){return {context:JSON.parse(el('adaptive-context').value),mode:el('adaptive-mode').value}}
+function showAdaptive(result){el('adaptive-result').textContent=result.status+(result.candidates?' — '+result.candidates.map(c=>c.text).join(' / '):' — '+result.models_retained+' retained patterns');el('adaptive-details').textContent=JSON.stringify(result,null,2)}
+el('adaptive-observe').onclick=async()=>{try{showAdaptive(await call({action:'adaptive_pattern_observe',...adaptiveScope(),before:el('adaptive-before').value,after:el('adaptive-after').value,source:el('adaptive-source').value}))}catch(error){el('adaptive-result').textContent=error.message}};
+el('adaptive-predict').onclick=async()=>{try{showAdaptive(await call({action:'adaptive_pattern_predict',...adaptiveScope(),text:el('adaptive-query').value}))}catch(error){el('adaptive-result').textContent=error.message}};
+el('adaptive-demo').onclick=async()=>{const button=el('adaptive-demo');button.disabled=true;try{const scope=adaptiveScope();const pairs=[...['biology','physics','history'].map(s=>['what is '+s+'?',s]),...['cat','dog','book'].map(s=>['plural '+s,s+'s'])];for(const [before,after] of pairs){await call({action:'adaptive_pattern_observe',...scope,before,after,source:'synthetic:demo'})}showAdaptive(await call({action:'adaptive_pattern_predict',...scope,text:el('adaptive-query').value}))}catch(error){el('adaptive-result').textContent=error.message}finally{button.disabled=false}};
+
+function rawPatternScope(){return {context:JSON.parse(el('raw-pattern-context').value),mode:el('raw-pattern-mode').value}}
+function showRawPattern(result){el('raw-pattern-result').textContent=result.status+(result.preferred?' — '+result.preferred.map(c=>c.text).join(' / '):result.frames_discovered!==undefined?' — '+result.frames_discovered+' relationship patterns':'');el('raw-pattern-details').textContent=JSON.stringify(result,null,2)}
+el('raw-pattern-train').onclick=async()=>{const button=el('raw-pattern-train');button.disabled=true;try{const observations=el('raw-pattern-text').value.split('\n').filter(t=>t.trim()).map(text=>({text,source:el('raw-pattern-source').value}));showRawPattern(await call({action:'recursive_text_train',...rawPatternScope(),observations}))}catch(error){el('raw-pattern-result').textContent=error.message}finally{button.disabled=false}};
+el('raw-pattern-predict').onclick=async()=>{try{showRawPattern(await call({action:'recursive_text_predict',...rawPatternScope(),text:el('raw-pattern-query').value}))}catch(error){el('raw-pattern-result').textContent=error.message}};
+el('raw-pattern-inspect').onclick=async()=>{try{showRawPattern(await call({action:'recursive_text_inventory',...rawPatternScope()}))}catch(error){el('raw-pattern-result').textContent=error.message}};
+
+function behaviorScope(){return {context:JSON.parse(el('kb-context').value)}}
+function showBehavior(result){el('kb-result').textContent=(result.status||'patterns')+(result.candidates?' — '+result.candidates.map(c=>JSON.stringify(c.state)).join(' / '):'');el('kb-details').textContent=JSON.stringify(result,null,2)}
+el('kb-learn').onclick=async()=>{const button=el('kb-learn');button.disabled=true;try{showBehavior(await call({action:'knowledge_behavior_learn_episodes',...behaviorScope(),episodes:JSON.parse(el('kb-episodes').value),source:el('kb-source').value}))}catch(error){el('kb-result').textContent=error.message}finally{button.disabled=false}};
+for(const [id,action] of [['kb-one','knowledge_behavior_predict'],['kb-path','knowledge_behavior_predict_path']]){el(id).onclick=async()=>{try{showBehavior(await call({action,...behaviorScope(),state:JSON.parse(el('kb-state').value)}))}catch(error){el('kb-result').textContent=error.message}}}
+el('kb-inspect').onclick=async()=>{try{showBehavior(await call({action:'knowledge_behavior_inventory',...behaviorScope()}))}catch(error){el('kb-result').textContent=error.message}};
+
+el('kb-observe').onclick=async()=>{try{showBehavior(await call({action:'knowledge_behavior_observe',...behaviorScope(),before:JSON.parse(el('kb-state').value),after:JSON.parse(el('kb-after').value),source:el('kb-source').value}))}catch(error){el('kb-result').textContent=error.message}};
+
+function textBehaviorScope(){return {context:JSON.parse(el('tb-context').value),mode:el('tb-mode').value}}
+function showTextBehavior(result){el('tb-result').textContent=(result.status||'patterns')+(result.candidates?' — '+result.candidates.map(c=>c.text).join(' / '):'');el('tb-details').textContent=JSON.stringify(result,null,2)}
+el('tb-learn').onclick=async()=>{const button=el('tb-learn');button.disabled=true;try{const episodes=el('tb-training').value.trim().split(/\n\s*\n/).map(block=>block.split(/\r?\n/).filter(line=>line.trim()));showTextBehavior(await call({action:'text_behavior_learn',...textBehaviorScope(),episodes,source:el('tb-source').value}))}catch(error){el('tb-result').textContent=error.message}finally{button.disabled=false}};
+for(const [id,path] of [['tb-next',false],['tb-path',true]]){el(id).onclick=async()=>{try{showTextBehavior(await call({action:'text_behavior_predict',...textBehaviorScope(),text:el('tb-input').value,path}))}catch(error){el('tb-result').textContent=error.message}}}
+el('tb-observe').onclick=async()=>{try{showTextBehavior(await call({action:'text_behavior_observe',...textBehaviorScope(),before:el('tb-input').value,after:el('tb-after').value,source:el('tb-source').value}))}catch(error){el('tb-result').textContent=error.message}};
+el('tb-inspect').onclick=async()=>{try{showTextBehavior(await call({action:'text_behavior_inventory',...textBehaviorScope()}))}catch(error){el('tb-result').textContent=error.message}};
 </script></body></html>

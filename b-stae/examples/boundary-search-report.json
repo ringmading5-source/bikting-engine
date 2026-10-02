@@ -1,0 +1,433 @@
+{
+  "runs": [
+    {
+      "stored_states": 38,
+      "query_count": 6,
+      "timing_repeats": 10,
+      "strategies": {
+        "scan": {
+          "median_ms_per_query": 0.22248599998420104,
+          "tested_states_per_query_set": 228,
+          "recursive_nodes_per_query_set": 264
+        },
+        "indexed": {
+          "median_ms_per_query": 0.03096633334583506,
+          "tested_states_per_query_set": 7,
+          "recursive_nodes_per_query_set": 43
+        }
+      },
+      "same_answers": true,
+      "collision_check": {
+        "query": "cut",
+        "matches": [],
+        "status": "unknown"
+      },
+      "queries": [
+        {
+          "query": "A00000A",
+          "matches": [
+            {
+              "text": "A00000A"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "S00018xxxxxxxA",
+          "matches": [
+            {
+              "text": "S00018xxxxxxxA"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "J00035xxB",
+          "matches": [
+            {
+              "text": "J00035xxB"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cat",
+          "matches": [
+            {
+              "text": "cat"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cut",
+          "matches": [],
+          "status": "unknown"
+        },
+        {
+          "query": "unseen",
+          "matches": [],
+          "status": "unknown"
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "stored_states": 182,
+      "query_count": 6,
+      "timing_repeats": 10,
+      "strategies": {
+        "scan": {
+          "median_ms_per_query": 0.9253359166526327,
+          "tested_states_per_query_set": 1092,
+          "recursive_nodes_per_query_set": 1124
+        },
+        "indexed": {
+          "median_ms_per_query": 0.05296391668707656,
+          "tested_states_per_query_set": 7,
+          "recursive_nodes_per_query_set": 39
+        }
+      },
+      "same_answers": true,
+      "collision_check": {
+        "query": "cut",
+        "matches": [],
+        "status": "unknown"
+      },
+      "queries": [
+        {
+          "query": "A00000A",
+          "matches": [
+            {
+              "text": "A00000A"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "M00090xxD",
+          "matches": [
+            {
+              "text": "M00090xxD"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "X00179xxxG",
+          "matches": [
+            {
+              "text": "X00179xxxG"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cat",
+          "matches": [
+            {
+              "text": "cat"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cut",
+          "matches": [],
+          "status": "unknown"
+        },
+        {
+          "query": "unseen",
+          "matches": [],
+          "status": "unknown"
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "stored_states": 602,
+      "query_count": 6,
+      "timing_repeats": 10,
+      "strategies": {
+        "scan": {
+          "median_ms_per_query": 3.3596712499956993,
+          "tested_states_per_query_set": 3612,
+          "recursive_nodes_per_query_set": 3650
+        },
+        "indexed": {
+          "median_ms_per_query": 0.04951408330574243,
+          "tested_states_per_query_set": 7,
+          "recursive_nodes_per_query_set": 45
+        }
+      },
+      "same_answers": true,
+      "collision_check": {
+        "query": "cut",
+        "matches": [],
+        "status": "unknown"
+      },
+      "queries": [
+        {
+          "query": "A00000A",
+          "matches": [
+            {
+              "text": "A00000A"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "O00300xxxL",
+          "matches": [
+            {
+              "text": "O00300xxxL"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "B00599xxxxxX",
+          "matches": [
+            {
+              "text": "B00599xxxxxX"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cat",
+          "matches": [
+            {
+              "text": "cat"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cut",
+          "matches": [],
+          "status": "unknown"
+        },
+        {
+          "query": "unseen",
+          "matches": [],
+          "status": "unknown"
+        }
+      ],
+      "inference_writes": 0
+    },
+    {
+      "stored_states": 1802,
+      "query_count": 6,
+      "timing_repeats": 10,
+      "strategies": {
+        "scan": {
+          "median_ms_per_query": 10.130635833320412,
+          "tested_states_per_query_set": 10812,
+          "recursive_nodes_per_query_set": 10854
+        },
+        "indexed": {
+          "median_ms_per_query": 0.09188608332048412,
+          "tested_states_per_query_set": 7,
+          "recursive_nodes_per_query_set": 49
+        }
+      },
+      "same_answers": true,
+      "collision_check": {
+        "query": "cut",
+        "matches": [],
+        "status": "unknown"
+      },
+      "queries": [
+        {
+          "query": "A00000A",
+          "matches": [
+            {
+              "text": "A00000A"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "Q00900xxxxxxxxxI",
+          "matches": [
+            {
+              "text": "Q00900xxxxxxxxxI"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "F01799xxxxxxR",
+          "matches": [
+            {
+              "text": "F01799xxxxxxR"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cat",
+          "matches": [
+            {
+              "text": "cat"
+            }
+          ],
+          "status": "matched"
+        },
+        {
+          "query": "cut",
+          "matches": [],
+          "status": "unknown"
+        },
+        {
+          "query": "unseen",
+          "matches": [],
+          "status": "unknown"
+        }
+      ],
+      "inference_writes": 0
+    }
+  ],
+  "transformation_checks": [
+    {
+      "input": "cat",
+      "same_outputs": true,
+      "scan": {
+        "status": "matched",
+        "matches": [
+          {
+            "id": 1,
+            "payload": {
+              "example_id": 1
+            },
+            "source": "synthetic:paired",
+            "interior_verified": true
+          }
+        ],
+        "signature": {
+          "first": 99,
+          "last": 116,
+          "count": 3
+        },
+        "strategy": "scan",
+        "total_states": 3,
+        "candidate_states": 3,
+        "tested_states": 3,
+        "rejected_states": 2,
+        "recursive_nodes_visited": 5,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      },
+      "indexed": {
+        "status": "matched",
+        "matches": [
+          {
+            "id": 1,
+            "payload": {
+              "example_id": 1
+            },
+            "source": "synthetic:paired",
+            "interior_verified": true
+          }
+        ],
+        "signature": {
+          "first": 99,
+          "last": 116,
+          "count": 3
+        },
+        "strategy": "indexed",
+        "total_states": 3,
+        "candidate_states": 1,
+        "tested_states": 1,
+        "rejected_states": 0,
+        "recursive_nodes_visited": 3,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      }
+    },
+    {
+      "input": "rabbit",
+      "same_outputs": true,
+      "scan": {
+        "status": "unknown",
+        "matches": [],
+        "signature": {
+          "first": 114,
+          "last": 116,
+          "count": 6
+        },
+        "strategy": "scan",
+        "total_states": 3,
+        "candidate_states": 3,
+        "tested_states": 3,
+        "rejected_states": 3,
+        "recursive_nodes_visited": 3,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      },
+      "indexed": {
+        "status": "unknown",
+        "matches": [],
+        "signature": {
+          "first": 114,
+          "last": 116,
+          "count": 6
+        },
+        "strategy": "indexed",
+        "total_states": 3,
+        "candidate_states": 0,
+        "tested_states": 0,
+        "rejected_states": 0,
+        "recursive_nodes_visited": 0,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      }
+    },
+    {
+      "input": "cot",
+      "same_outputs": true,
+      "scan": {
+        "status": "unknown",
+        "matches": [],
+        "signature": {
+          "first": 99,
+          "last": 116,
+          "count": 3
+        },
+        "strategy": "scan",
+        "total_states": 3,
+        "candidate_states": 3,
+        "tested_states": 3,
+        "rejected_states": 3,
+        "recursive_nodes_visited": 5,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      },
+      "indexed": {
+        "status": "unknown",
+        "matches": [],
+        "signature": {
+          "first": 99,
+          "last": 116,
+          "count": 3
+        },
+        "strategy": "indexed",
+        "total_states": 3,
+        "candidate_states": 1,
+        "tested_states": 1,
+        "rejected_states": 1,
+        "recursive_nodes_visited": 3,
+        "search_limited": false,
+        "scope": "Exact sequence retrieval after recursive verification; not semantic equivalence or new-rule discovery."
+      }
+    }
+  ],
+  "scope": "Exact state retrieval and compatibility with existing predictions; not improved semantic accuracy or a general reasoning benchmark.",
+  "limits": [
+    "Synthetic signatures are deliberately varied; all-collision buckets can remove the indexing advantage.",
+    "Median of ten six-query batches on an in-memory SQLite database; total application latency is not measured.",
+    "Transformation rules and their full support/conflict inventory are still inspected separately."
+  ],
+  "model_calls": 0
+}

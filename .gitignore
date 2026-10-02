@@ -15,3 +15,8 @@ Thumbs.db
 
 
 data/
+
+# Python SDK build output
+b-stae/*.egg-info/
+b-stae/build/
+b-stae/dist/

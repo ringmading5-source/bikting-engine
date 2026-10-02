@@ -44,8 +44,12 @@ def infer_pattern(sequences):
         if any(values):
             if all(v==values[0] for v in values):pattern.extend({'literal':v} for v in values[0])
             else:
-                pattern.append({'slot':slot,'min_tokens':min(len(v) for v in values),
-                                'forbidden_tokens':[mark for mark in ('.','!','?') if all(mark not in v for v in values)]});slot_values[slot]=values;slot+=1
+                part={'slot':slot,'min_tokens':min(len(v) for v in values)}
+                # Punctuation boundaries apply to word tokens, not numerical states.
+                forbidden=[mark for mark in ('.','!','?') if all(mark not in v for v in values)]
+                if forbidden and all(isinstance(unit,str) for v in values for unit in v):
+                    part['forbidden_tokens']=forbidden
+                pattern.append(part);slot_values[slot]=values;slot+=1
         if position<len(anchors):pattern.append({'literal':anchors[position]})
     return pattern,slot_values
 
