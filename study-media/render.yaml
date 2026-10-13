@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: study-media
+    runtime: docker
+    rootDir: study-media
+    healthCheckPath: /api/health
+    disk:
+      name: study-media-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: APP_ORIGIN
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_SETUP_TOKEN
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false
+      - key: ICE_SERVERS_JSON
+        sync: false
+      - key: PAYMENT_INSTRUCTIONS
+        sync: false
