@@ -88,3 +88,12 @@ Notices are shared with all users who have site access. The site remains owner-p
 
 ## Teacher prep assignments
 Approved Assembly teachers can select Prep / homework when posting. Prep requires a subject, instructions and a due date, and may be scheduled for later publication. Students can filter Assembly to prep, see deadlines and mark their own work done or undo that status. Completion is private, self-reported activity: it is not a submission, teacher marking or a grade. Scheduled and withdrawn notice access rules also apply to prep.
+
+## Company-funded student rewards
+The app company can draft campaigns with actual prize descriptions, prize quantities, dates and eligibility/selection/delivery terms. Drafts remain private until the company confirms funding and opens them. No prizes, stock, budgets, campaigns or recipients are fabricated by the app.
+
+Students opt in to a campaign. Public board display is optional and uses a chosen alias; private participants and other students' award/delivery records are not exposed. Self-identified parents, teachers, approved teaching staff and company operators cannot join as student participants.
+
+The fixed participation score is five points for each distinct lesson answered correctly during the campaign after joining, plus one point per active practice day (UTC). Repeating correct answers to a lesson does not generate more lesson points. Offline practice counts when the server receives the sync, not a user-supplied timestamp, and must be synced before campaign close. Scores are participation evidence, not proof of mastery or automatic entitlement to a prize.
+
+Only the company can select recipients after close, following manual eligibility/activity review. Prize allocation is bounded by the announced quantity and prevents duplicate awards to the same student. Selection and actual delivery are separate statuses; delivery requires a real fulfilment reference and company confirmation. The app records fulfilment; it does not purchase, ship or fund prizes automatically.

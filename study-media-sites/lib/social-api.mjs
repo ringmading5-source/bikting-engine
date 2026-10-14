@@ -1,3 +1,4 @@
+import {rewardsAPI} from './rewards-api.mjs';
 import {assemblyAPI} from './assembly-api.mjs';
 import {learningAPI} from './learning-api.mjs';
 import {tutoringAPI} from './tutoring-api.mjs';
@@ -30,6 +31,7 @@ export async function handle(req,{env,getChatGPTUser}){try{
  await env.DB.batch(imports);
  }
  }
+ if(path==='/api/rewards'||path.startsWith('/api/rewards/'))return json(await rewardsAPI({path,method,b,u,q,one,run}));
  if(path==='/api/assembly'||path.startsWith('/api/assembly/'))return json(await assemblyAPI({path,method,b,u,env,q,one,run}));
  if(path.startsWith('/api/learning/'))return json(await learningAPI({path,method,b,url,u,env,q,one,run}));
  if(path.startsWith('/api/tutoring/'))return json(await tutoringAPI({path,method,b,url,u,env,q,one,run,rate}));
