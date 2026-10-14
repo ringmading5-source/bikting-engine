@@ -1,3 +1,4 @@
+import {videoAPI} from './video-api.mjs';
 import {schoolsAPI} from './schools-api.mjs';
 import {rewardsAPI} from './rewards-api.mjs';
 import {assemblyAPI} from './assembly-api.mjs';
@@ -37,6 +38,7 @@ export async function handle(req,{env,getChatGPTUser}){try{
  if(path==='/api/assembly'||path.startsWith('/api/assembly/'))return json(await assemblyAPI({path,method,b,u,env,q,one,run}));
  if(path.startsWith('/api/learning/'))return json(await learningAPI({path,method,b,url,u,env,q,one,run}));
  if(path.startsWith('/api/tutoring/'))return json(await tutoringAPI({path,method,b,url,u,env,q,one,run,rate}));
+ if(path==='/api/videos'||path.startsWith('/api/videos/'))return json(await videoAPI({path,method,b,url,u,env,q,one,run}));
  if(path==='/api/me')return json({user:u,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL),payments:!!env.PAYMENT_INSTRUCTIONS,uploads:!!env.BUCKET});
  if(path==='/api/health')return json({ok:true,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL)});
  if(path==='/api/logout')return json({signout:'/signout-with-chatgpt?return_to=%2F'});
@@ -48,9 +50,10 @@ export async function handle(req,{env,getChatGPTUser}){try{
  const reactions=u?await q('SELECT * FROM sm_reactions WHERE user_id=?',u.id):[],follows=u?await q('SELECT target FROM sm_follows WHERE user_id=?',u.id):[];
  if(url.searchParams.get('saved')==='1'){required();rows=rows.filter(r=>reactions.some(x=>x.lesson_id===r.id&&x.kind==='save'));}
  if(url.searchParams.get('following')==='1'){required();rows=rows.filter(r=>follows.some(x=>x.target===r.author));}
+ const generatedAssets=new Set((await q("SELECT asset FROM sm_video_jobs WHERE asset IS NOT NULL")).map(x=>x.asset));
  const counts=await q('SELECT lesson_id,kind,count(*) n FROM sm_reactions GROUP BY lesson_id,kind'),comments=await q('SELECT lesson_id,count(*) n FROM sm_comments GROUP BY lesson_id');
  const attempts=u?await q('SELECT lesson_id,correct FROM sm_attempts WHERE user_id=? ORDER BY created DESC,rowid DESC LIMIT 100',u.id):[];
- const results=rows.map(r=>{const x=JSON.parse(r.body);delete x.answer;delete x.rationale;return {...x,id:r.id,authorId:r.author,author:r.name,status:r.status,likes:counts.find(c=>c.lesson_id===r.id&&c.kind==='love')?.n||0,comments:comments.find(c=>c.lesson_id===r.id)?.n||0,loved:reactions.some(c=>c.lesson_id===r.id&&c.kind==='love'),saved:reactions.some(c=>c.lesson_id===r.id&&c.kind==='save'),following:follows.some(c=>c.target===r.author)}});
+ const results=rows.map(r=>{const x=JSON.parse(r.body);delete x.answer;delete x.rationale;return {...x,aiGeneratedVideo:generatedAssets.has(x.asset),id:r.id,authorId:r.author,author:r.name,status:r.status,likes:counts.find(c=>c.lesson_id===r.id&&c.kind==='love')?.n||0,comments:comments.find(c=>c.lesson_id===r.id)?.n||0,loved:reactions.some(c=>c.lesson_id===r.id&&c.kind==='love'),saved:reactions.some(c=>c.lesson_id===r.id&&c.kind==='save'),following:follows.some(c=>c.target===r.author)}});
  const course=u?await one('SELECT subjects FROM sm_courses WHERE user_id=?',u.id):null;const subjects=course?JSON.parse(course.subjects):[];const feedback=u?await q('SELECT lesson_id,helpful FROM sm_feedback WHERE user_id=?',u.id):[];const latest=new Map();for(const a of attempts)if(!latest.has(a.lesson_id))latest.set(a.lesson_id,a.correct);
  const score=l=>{const wrong=latest.has(l.id)&&!latest.get(l.id),interest=subjects.includes(l.subject),signal=feedback.find(f=>f.lesson_id===l.id);l.recommendation=wrong?'Revisit your last practice mistake':interest?'Matches your course subjects':'Discover a new idea';return (wrong?6:0)+(interest?3:0)+(signal?(signal.helpful?1:-4):0)};
  if(url.searchParams.get('saved')!=='1'){const ranked=results.map(l=>({l,score:score(l)}));ranked.sort((a,b)=>b.score-a.score);return json(ranked.map(r=>r.l))}
