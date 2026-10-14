@@ -40,3 +40,5 @@ export const smCommentInfo=sqliteTable('sm_comment_info',{comment:text('comment_
 export const smAssemblyTeachers=sqliteTable('sm_assembly_teachers',{user:text('user_id').primaryKey(),status:text('status').notNull(),reviewer:text('reviewer'),created:integer('created').notNull()});
 export const smAssembly=sqliteTable('sm_assembly',{id:text('id').primaryKey(),author:text('author').notNull(),title:text('title').notNull(),body:text('body').notNull(),subject:text('subject').notNull(),publish:integer('publish_at').notNull(),event:integer('event_at'),status:text('status').notNull(),created:integer('created').notNull()});
 export const smAssemblyReads=sqliteTable('sm_assembly_reads',{user:text('user_id').notNull(),post:text('post_id').notNull()},t=>[primaryKey({columns:[t.user,t.post]})]);
+export const smPrep=sqliteTable('sm_prep',{post:text('post_id').primaryKey()});
+export const smPrepDone=sqliteTable('sm_prep_done',{user:text('user_id').notNull(),post:text('post_id').notNull(),completed:integer('completed').notNull()},t=>[primaryKey({columns:[t.user,t.post]})]);
