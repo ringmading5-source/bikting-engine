@@ -1,3 +1,4 @@
+import {tutoringAPI} from './tutoring-api.mjs';
 import {selectNoteSections} from './note-sections.mjs';
 import {seedLessons} from './seed-lessons.mjs';
 import {fail,text,validateLesson,planLessons,generateLesson} from './social-core.mjs';
@@ -17,7 +18,7 @@ export async function handle(req,{env,getChatGPTUser}){try{
  if(method!=='GET')await rate(path.includes('/board')?'board':path.includes('/signal')?'signal':'api',path.includes('/board')?600:path.includes('/signal')?300:120);
  let b={};if(method==='POST'&&!path.startsWith('/api/assets')){if(!req.headers.get('content-type')?.startsWith('application/json'))fail(415,'JSON content type required.');const raw=await req.text();if(raw.length>150000)fail(413,'Request too large.');try{b=JSON.parse(raw||'{}')}catch{fail(400,'Invalid JSON.')}if(!b||typeof b!=='object'||Array.isArray(b))fail(400,'Invalid request.');}
  const notify=async(user,body)=>{if(user&&user!==u?.id&&user!=='study-media')await run('INSERT INTO sm_notifications(id,user_id,body,created) VALUES(?,?,?,?)',id(),user,JSON.stringify(body),now());};
- const member=async(rid)=>{required();if(await one('SELECT 1 FROM sm_bans WHERE room_id=? AND user_id=?',rid,u.id))fail(403,'The host has removed your access to this circle.');return !!await one('SELECT 1 FROM sm_members WHERE room_id=? AND user_id=? AND expires>?',rid,u.id,now());};
+ const member=async(rid)=>{required();const paid=await one('SELECT s.*,o.owner FROM sm_tut_sessions s JOIN sm_tut_offers o ON o.id=offer_id WHERE room_id=?',rid);if(paid&&(paid.status!=='scheduled'||now()<paid.start-600000||now()>paid.start+paid.minutes*60000||!u.admin&&paid.owner!==u.id&&!await one("SELECT 1 FROM sm_tut_bookings WHERE session_id=? AND student=? AND status='confirmed'",paid.id,u.id)))return false;if(await one('SELECT 1 FROM sm_bans WHERE room_id=? AND user_id=?',rid,u.id))fail(403,'The host has removed your access to this circle.');return !!await one('SELECT 1 FROM sm_members WHERE room_id=? AND user_id=? AND expires>?',rid,u.id,now());};
  const roomMembers=async rid=>q('SELECT sm_users.id,sm_users.name,sm_users.admin FROM sm_members JOIN sm_users ON sm_users.id=user_id WHERE room_id=? AND expires>?',rid,now());
  const emit=async(rid,event,target=null)=>run('INSERT INTO sm_events(room_id,target,body,created) VALUES(?,?,?,?)',rid,target,JSON.stringify(event),now());
  async function seed(){const statements=[env.DB.prepare('INSERT OR IGNORE INTO sm_users(id,name,email,admin) VALUES(?,?,?,0)').bind('study-media','Study Media','system@invalid.example')];for(const s of seedLessons)statements.push(env.DB.prepare('INSERT OR IGNORE INTO sm_lessons(id,author,body,status,created) VALUES(?,?,?,?,?)').bind(s.id,'study-media',JSON.stringify(s),'published',1));statements.push(env.DB.prepare('INSERT OR IGNORE INTO sm_rooms(id,title,subject,host,created) VALUES(?,?,?,?,?)').bind('statistics-circle','Statistics study circle','Statistics','study-media',1));await env.DB.batch(statements);
@@ -27,6 +28,7 @@ export async function handle(req,{env,getChatGPTUser}){try{
  await env.DB.batch(imports);
  }
  }
+ if(path.startsWith('/api/tutoring/'))return json(await tutoringAPI({path,method,b,url,u,env,q,one,run,rate}));
  if(path==='/api/me')return json({user:u,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL),payments:!!env.PAYMENT_INSTRUCTIONS,uploads:!!env.BUCKET});
  if(path==='/api/health')return json({ok:true,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL)});
  if(path==='/api/logout')return json({signout:'/signout-with-chatgpt?return_to=%2F'});
@@ -79,9 +81,9 @@ export async function handle(req,{env,getChatGPTUser}){try{
  if(b.mode==='plan'){const p=await one('SELECT body FROM sm_plans WHERE user_id=?',u.id);if(!p)fail(400,'Create a study plan first.');return json({text:await generate('Explain this study plan and suggest revision strategies. Do not invent curriculum coverage. PLAN:\n'+p.body),label:'AI planning advice'})}
  if(b.mode!=='ask')fail(400,'Invalid AI mode.');const l=await one("SELECT body FROM sm_lessons WHERE id=? AND status='published'",b.lessonId);if(!l)fail(404,'Lesson not found.');return json({text:await generate('Answer using this lesson. If unsupported, explain the limitation. LESSON DATA:\n'+l.body+'\nQUESTION:\n'+text(b.question,1500)),label:'AI response · check important claims'})
  }
- if(path==='/api/rooms'){await seed();if(method==='GET')return json(await q('SELECT r.*,sm_users.name hostName,(SELECT count(*) FROM sm_members WHERE room_id=r.id AND expires>?) online FROM sm_rooms r JOIN sm_users ON sm_users.id=host ORDER BY created DESC',now()));required();const rid=id();await run('INSERT INTO sm_rooms VALUES(?,?,?,?,?)',rid,text(b.title,100),text(b.subject,60),u.id,now());return json({id:rid},201)}
+ if(path==='/api/rooms'){await seed();if(method==='GET')return json(await q('SELECT r.*,sm_users.name hostName,(SELECT count(*) FROM sm_members WHERE room_id=r.id AND expires>?) online FROM sm_rooms r JOIN sm_users ON sm_users.id=host WHERE NOT EXISTS(SELECT 1 FROM sm_tut_sessions WHERE room_id=r.id) ORDER BY created DESC',now()));required();const rid=id();await run('INSERT INTO sm_rooms VALUES(?,?,?,?,?)',rid,text(b.title,100),text(b.subject,60),u.id,now());return json({id:rid},201)}
  const rm=path.match(/^\/api\/rooms\/([^/]+)\/(events|messages|signal|board|kick|ice|leave)$/);
- if(rm){required();const[,rid,action]=rm,r=await one('SELECT * FROM sm_rooms WHERE id=?',rid);if(!r)fail(404,'Room not found.');
+ if(rm){required();const[,rid,action]=rm,r=await one('SELECT * FROM sm_rooms WHERE id=?',rid);if(!r)fail(404,'Room not found.');const paid=await one('SELECT s.*,o.owner,o.status offer_status FROM sm_tut_sessions s JOIN sm_tut_offers o ON o.id=offer_id WHERE room_id=?',rid);if(paid&&action!=='leave'){if(!u.admin&&paid.owner!==u.id&&!await one("SELECT 1 FROM sm_tut_bookings WHERE session_id=? AND student=? AND status='confirmed'",paid.id,u.id))fail(403,'Verified payment required.');if(paid.status!=='scheduled'||paid.offer_status!=='approved'||now()<paid.start-600000||now()>paid.start+paid.minutes*60000)fail(403,'Paid classroom is outside its scheduled access window.');}
  if(await one('SELECT 1 FROM sm_bans WHERE room_id=? AND user_id=?',rid,u.id))fail(403,'The host has removed your access to this circle.');
  if(action==='messages'&&method==='GET')return json((await q('SELECT m.*,sm_users.name FROM sm_messages m JOIN sm_users ON sm_users.id=user_id WHERE room_id=? ORDER BY created DESC LIMIT 100',rid)).reverse());
  if(action==='ice'){let ice=[];try{ice=env.ICE_SERVERS_JSON?JSON.parse(env.ICE_SERVERS_JSON):[]}catch{fail(503,'Call relay configuration is invalid.')}return json({iceServers:ice,turnConfigured:ice.some(x=>[].concat(x.urls||[]).some(s=>/^turns?:/.test(s)))})}

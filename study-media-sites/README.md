@@ -58,3 +58,12 @@ Students can save subjects, a learning goal and daily study minutes. Feed rankin
 Every lesson can open a worked example, server-scored practice and related published lessons. Student explanations are drafts linked to a published parent lesson and require review. Related links identify a shared subject or explicit explanation relationship; they do not imply verified prerequisites.
 
 Finish & recap lists session lessons, observed quiz results and a next study action. Students can download the recap or stop on a clear break screen. Viewing thresholds measure activity, not understanding.
+
+## Paid live tutoring
+Tutors submit priced listings with explicit currency, scope and cancellation/refund terms. A reviewer approves the listing and selects the platform fee. No tutors or prices are fabricated. Tutors schedule individual or small-group sessions; human classrooms allow up to seven students plus a teacher. Listings remain empty until real offers are submitted.
+
+Reservations last up to 15 minutes. Students submit a payment reference; only reviewer verification of actual receipt unlocks access. The server checks the booking and time window on classroom and room APIs. Classrooms open ten minutes before start and close at the scheduled end. Tutor cancellation revokes access and creates refund-review requests. Refunded transfers retain both original payment evidence and the separate refund reference.
+
+The AI tutor is clearly labelled software. Its CSS avatar animates while device text-to-speech reads an answer. Typed questions, optional private course notes, a private transcript, session time limits and per-student turn budgets are supported. No photorealistic avatar service, continuous speech recognition or lip-synchronized video is implemented. Gemini credentials are required; absent credentials disable paid AI booking.
+
+After a reviewer verifies a delivered session and its scheduled end has passed, teacher earnings are recorded as gross minus the configured platform fee. These are accounting records. Payout and refund records require confirmation of a transfer actually sent outside the app; the app does not transfer money. Payment instructions must be configured before accepting bookings. AI usage, teacher attendance, mobile permissions and real cross-network calls need production/device validation before a public paid launch. TURN is still required for reliable peer calls.
