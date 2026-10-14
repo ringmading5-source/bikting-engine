@@ -31,3 +31,7 @@ export const smTutChat=sqliteTable('sm_tut_chat',{id:text('id').primaryKey(),boo
 export const smTutEarnings=sqliteTable('sm_tut_earnings',{booking:text('booking_id').primaryKey(),teacher:text('teacher').notNull(),gross:integer('gross').notNull(),fee:integer('fee').notNull(),net:integer('net').notNull(),currency:text('currency').notNull(),status:text('status').notNull(),reference:text('reference')});
 
 export const smTutRefunds=sqliteTable('sm_tut_refunds',{booking:text('booking_id').primaryKey(),reference:text('reference').notNull(),created:integer('created').notNull()});
+export const smConcepts=sqliteTable('sm_concepts',{id:text('id').primaryKey(),lesson:text('lesson_id').notNull(),label:text('label').notNull(),description:text('description').notNull()});
+export const smConceptEdges=sqliteTable('sm_concept_edges',{id:text('id').primaryKey(),from:text('from_id').notNull(),to:text('to_id').notNull(),kind:text('kind').notNull(),evidence:text('evidence').notNull()});
+export const smGuidance=sqliteTable('sm_guidance',{user:text('user_id').notNull(),lesson:text('lesson_id').notNull(),state:text('state').notNull(),mode:text('mode').notNull(),reflection:text('reflection').notNull(),updated:integer('updated').notNull()},t=>[primaryKey({columns:[t.user,t.lesson]})]);
+export const smSyncEvents=sqliteTable('sm_sync_events',{id:text('id').primaryKey(),payload:text('payload').notNull(),created:integer('created').notNull()});

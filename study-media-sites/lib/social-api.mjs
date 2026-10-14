@@ -1,3 +1,4 @@
+import {learningAPI} from './learning-api.mjs';
 import {tutoringAPI} from './tutoring-api.mjs';
 import {selectNoteSections} from './note-sections.mjs';
 import {seedLessons} from './seed-lessons.mjs';
@@ -28,6 +29,7 @@ export async function handle(req,{env,getChatGPTUser}){try{
  await env.DB.batch(imports);
  }
  }
+ if(path.startsWith('/api/learning/'))return json(await learningAPI({path,method,b,url,u,env,q,one,run}));
  if(path.startsWith('/api/tutoring/'))return json(await tutoringAPI({path,method,b,url,u,env,q,one,run,rate}));
  if(path==='/api/me')return json({user:u,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL),payments:!!env.PAYMENT_INSTRUCTIONS,uploads:!!env.BUCKET});
  if(path==='/api/health')return json({ok:true,ai:!!(env.GEMINI_API_KEY&&env.GEMINI_MODEL)});
