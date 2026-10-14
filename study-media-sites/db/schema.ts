@@ -22,3 +22,5 @@ export const smEntitlements=sqliteTable('sm_entitlements',{user:text('user_id').
 export const smRate=sqliteTable('sm_rate',{key:text('key').primaryKey(),count:integer('count').notNull()});
 export const smAssets=sqliteTable('sm_assets',{id:text('id').primaryKey(),user:text('user_id').notNull(),type:text('type').notNull(),name:text('name').notNull(),created:integer('created').notNull()});
 export const smNotes=sqliteTable('sm_notes',{id:text('id').primaryKey(),user:text('user_id').notNull(),title:text('title').notNull(),subject:text('subject').notNull(),body:text('body').notNull(),created:integer('created').notNull()});
+export const smCourses=sqliteTable('sm_courses',{user:text('user_id').primaryKey(),subjects:text('subjects').notNull(),goal:text('goal').notNull(),daily:integer('daily').notNull()});
+export const smFeedback=sqliteTable('sm_feedback',{user:text('user_id').notNull(),lesson:text('lesson_id').notNull(),helpful:integer('helpful').notNull()},t=>[primaryKey({columns:[t.user,t.lesson]})]);

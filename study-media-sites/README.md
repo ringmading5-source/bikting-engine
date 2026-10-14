@@ -49,3 +49,12 @@ Data saver defaults on: attached media loads only after a tap. Larger reading te
 Published lessons download as self-contained HTML with explanation, source excerpt, device voice and a local practice question. Downloaded copies need no network; media and account-progress syncing are excluded. Raw notes can download as text. These are explicit user downloads, not an automatic cache of private content.
 
 PDF extraction, OCR for scans, media transcription and offline voice installation are not implemented.
+
+## Course-led social learning
+Students can save subjects, a learning goal and daily study minutes. Feed ranking prioritizes their latest incorrect practice answers, selected subjects and useful/not-useful feedback, with a displayed reason. It does not optimize watch time or claim verified mastery.
+
+“Teach me from this” accepts a user-supplied description or transcript and an optional source link. It feeds the existing reviewed AI draft workflow or manual authoring; it does not fetch social-network clips or interpret images automatically. The AI provider key is still required.
+
+Every lesson can open a worked example, server-scored practice and related published lessons. Student explanations are drafts linked to a published parent lesson and require review. Related links identify a shared subject or explicit explanation relationship; they do not imply verified prerequisites.
+
+Finish & recap lists session lessons, observed quiz results and a next study action. Students can download the recap or stop on a clear break screen. Viewing thresholds measure activity, not understanding.
