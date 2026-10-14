@@ -1,0 +1,15 @@
+import {fail,text} from './social-core.mjs';
+export async function assemblyAPI({path,method,b,u,env,q,one,run}){
+ if(!u)fail(401,'Sign in to view Assembly.');const now=()=>Date.now();const teacher=await one("SELECT 1 FROM sm_assembly_teachers WHERE user_id=? AND status='approved'",u.id),canPost=!!(u.admin||teacher);
+ if(path==='/api/assembly/access'){
+ if(method==='POST'){await run("INSERT OR IGNORE INTO sm_assembly_teachers(user_id,status,created) VALUES(?,'pending',?)",u.id,now());return {requested:true}}
+ return {canPost,status:u.admin?'reviewer':(await one('SELECT status FROM sm_assembly_teachers WHERE user_id=?',u.id))?.status||'none',requests:u.admin?await q('SELECT a.user_id,a.status,a.created,sm_users.name FROM sm_assembly_teachers a JOIN sm_users ON sm_users.id=user_id ORDER BY a.created DESC'):[]};
+ }
+ if(path==='/api/assembly/teachers'&&method==='POST'){if(!u.admin)fail(403,'Reviewer access required.');if(!['approved','revoked'].includes(b.status)||typeof b.userId!=='string'||!await one('SELECT 1 FROM sm_users WHERE id=?',b.userId))fail(400,'Choose an existing user and valid access status.');await run('INSERT INTO sm_assembly_teachers VALUES(?,?,?,?) ON CONFLICT(user_id) DO UPDATE SET status=excluded.status,reviewer=excluded.reviewer',b.userId,b.status,u.id,now());if(b.status==='revoked')await run("UPDATE sm_assembly SET status='withdrawn' WHERE author=? AND publish_at>?",b.userId,now());return {ok:true}}
+ if(path==='/api/assembly'){
+ if(method==='GET')return await q("SELECT p.*,sm_users.name teacher,EXISTS(SELECT 1 FROM sm_assembly_reads r WHERE r.post_id=p.id AND r.user_id=?) is_read FROM sm_assembly p JOIN sm_users ON sm_users.id=author WHERE p.status='active' AND (p.publish_at<=? OR p.author=? OR ?=1) ORDER BY p.publish_at DESC LIMIT 100",u.id,now(),u.id,Number(u.admin));
+ if(!canPost)fail(403,'Approved teacher posting access is required.');const publish=b.publishAt??now(),event=b.eventAt??null;if(!Number.isInteger(publish)||publish<now()-300000||publish>now()+365*86400000||event!==null&&(!Number.isInteger(event)||event<publish||event>now()+730*86400000))fail(400,'Choose a valid publication time and an event time after publication.');if(typeof b.subject!=='string'||b.subject.length>60)fail(400,'Use a subject of up to 60 characters.');const id=crypto.randomUUID();await run('INSERT INTO sm_assembly VALUES(?,?,?,?,?,?,?,?,?)',id,u.id,text(b.title,150),text(b.body,6000),b.subject.trim(),publish,event,'active',now());return {id};
+ }
+ const pm=path.match(/^\/api\/assembly\/([^/]+)\/(read|withdraw)$/);if(pm&&method==='POST'){const[,id,action]=pm,p=await one("SELECT * FROM sm_assembly WHERE id=? AND status='active'",id);if(!p||p.publish_at>now()&&p.author!==u.id&&!u.admin)fail(404,'Announcement not found.');if(action==='withdraw'){if(p.author!==u.id&&!u.admin)fail(403,'Only the author or reviewer can withdraw this notice.');await run("UPDATE sm_assembly SET status='withdrawn' WHERE id=?",id);return {ok:true}}await run('INSERT OR IGNORE INTO sm_assembly_reads VALUES(?,?)',u.id,id);return {ok:true}}
+ fail(404,'Assembly action not found.');
+}

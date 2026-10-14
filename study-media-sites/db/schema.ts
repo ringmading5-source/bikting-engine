@@ -35,3 +35,8 @@ export const smConcepts=sqliteTable('sm_concepts',{id:text('id').primaryKey(),le
 export const smConceptEdges=sqliteTable('sm_concept_edges',{id:text('id').primaryKey(),from:text('from_id').notNull(),to:text('to_id').notNull(),kind:text('kind').notNull(),evidence:text('evidence').notNull()});
 export const smGuidance=sqliteTable('sm_guidance',{user:text('user_id').notNull(),lesson:text('lesson_id').notNull(),state:text('state').notNull(),mode:text('mode').notNull(),reflection:text('reflection').notNull(),updated:integer('updated').notNull()},t=>[primaryKey({columns:[t.user,t.lesson]})]);
 export const smSyncEvents=sqliteTable('sm_sync_events',{id:text('id').primaryKey(),payload:text('payload').notNull(),created:integer('created').notNull()});
+export const smCommunityRoles=sqliteTable('sm_community_roles',{user:text('user_id').primaryKey(),role:text('role').notNull()});
+export const smCommentInfo=sqliteTable('sm_comment_info',{comment:text('comment_id').primaryKey(),role:text('role').notNull(),audience:text('audience').notNull()});
+export const smAssemblyTeachers=sqliteTable('sm_assembly_teachers',{user:text('user_id').primaryKey(),status:text('status').notNull(),reviewer:text('reviewer'),created:integer('created').notNull()});
+export const smAssembly=sqliteTable('sm_assembly',{id:text('id').primaryKey(),author:text('author').notNull(),title:text('title').notNull(),body:text('body').notNull(),subject:text('subject').notNull(),publish:integer('publish_at').notNull(),event:integer('event_at'),status:text('status').notNull(),created:integer('created').notNull()});
+export const smAssemblyReads=sqliteTable('sm_assembly_reads',{user:text('user_id').notNull(),post:text('post_id').notNull()},t=>[primaryKey({columns:[t.user,t.post]})]);
