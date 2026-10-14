@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `school_class_user_unique` ON `sm_school_members` (`school_id`,`class_id`,`user_id`);

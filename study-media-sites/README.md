@@ -97,3 +97,10 @@ Students opt in to a campaign. Public board display is optional and uses a chose
 The fixed participation score is five points for each distinct lesson answered correctly during the campaign after joining, plus one point per active practice day (UTC). Repeating correct answers to a lesson does not generate more lesson points. Offline practice counts when the server receives the sync, not a user-supplied timestamp, and must be synced before campaign close. Scores are participation evidence, not proof of mastery or automatic entitlement to a prize.
 
 Only the company can select recipients after close, following manual eligibility/activity review. Prize allocation is bounded by the announced quantity and prevents duplicate awards to the same student. Selection and actual delivery are separate statuses; delivery requires a real fulfilment reference and company confirmation. The app records fulfilment; it does not purchase, ship or fund prizes automatically.
+
+## School-grounded communities
+School managers request spaces; the platform owner reviews the school and manager before opening them. The review is a human approval workflow, not automatic accreditation or identity verification. Approved managers create subject/class spaces and approve or revoke student, teacher and parent membership requests. Membership is unique per user/class; changing a self-declared profile role does not grant class access.
+
+School-wide Assembly is visible to approved members of that school and writable only by its manager. Class Assembly, prep, discussion and shared lesson links require membership of that exact class. Class teachers and managers can set prep; only students mark their own prep done. Parent access is to shared class content only. No private notes, reflections, individual practice records or guardian-child linkage is exposed.
+
+The platform-wide discovery feed, community Assembly, tutoring marketplace and reward campaigns remain separate from private school/class feeds. Site-level access remains owner-private; a real pilot needs both site access and school/class membership approval.
