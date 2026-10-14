@@ -40,3 +40,12 @@ Use the generated local Wrangler config to apply committed D1 migrations before 
 Backend tests cover identity, source draft privacy/review, reaction idempotence, follow discovery, notifications, quiz scoring/plans, reports, room signaling/bans, media ownership, payment entitlements, missing AI configuration and a mocked AI adapter. Type checks, JS syntax checks and the production build are required before publishing. Browser automation was unavailable; phone layout, actual speech playback, camera/microphone permissions and cross-network calls still need device testing.
 
 This is a pilot. It does not transcribe arbitrary media, scrape social networks, guarantee learning mastery, operate an automatic payment gateway or provide a large-room media server. Added content requires appropriate source rights and academic review. The quiz and feed personalization use observed attempts rather than a claimed validated learner model.
+
+## Phone-first study additions
+Private course notes support text-file import or pasted transcripts (up to 120,000 characters), reading and text download. Lessons link back to the uploader's full notes; other learners see the published source excerpt. Note-based AI uses at most five relevant text sections rather than the whole document. Selection is lexical, not a claim of semantic understanding.
+
+Data saver defaults on: attached media loads only after a tap. Larger reading text and per-device resume preferences are available in Study tools. A recall pause appears after five different lessons remain visible for at least four seconds. This is an attention checkpoint, not a certified learning measurement.
+
+Published lessons download as self-contained HTML with explanation, source excerpt, device voice and a local practice question. Downloaded copies need no network; media and account-progress syncing are excluded. Raw notes can download as text. These are explicit user downloads, not an automatic cache of private content.
+
+PDF extraction, OCR for scans, media transcription and offline voice installation are not implemented.
