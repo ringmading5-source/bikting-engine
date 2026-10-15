@@ -99,6 +99,13 @@
       "when": 1792002312502,
       "tag": "0013_gray_human_cannonball",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1792066779183,
+      "tag": "0014_complex_cloak",
+      "breakpoints": true
     }
   ]
 }
